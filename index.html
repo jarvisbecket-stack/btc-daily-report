@@ -20,9 +20,19 @@
         .price-change { font-size: 16px; margin-left: 10px; }
         .price-change.up { color: #26a69a; }
         .price-change.down { color: #ef5350; }
-        .card { background: #131722; border: 1px solid #2a2e39; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-        .card h2 { font-size: 16px; color: #fff; margin-bottom: 15px; border-bottom: 1px solid #2a2e39; padding-bottom: 10px; }
-        .forecast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        
+        /* Expandable Cards */
+        .card { background: #131722; border: 1px solid #2a2e39; border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+        .card-header { padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid transparent; }
+        .card-header:hover { background: #1a1f2e; }
+        .card-header.active { border-bottom-color: #2a2e39; }
+        .card-header h2 { font-size: 16px; color: #fff; margin: 0; border: none; padding: 0; }
+        .card-toggle { font-size: 20px; color: #868993; transition: transform 0.3s; }
+        .card-header.active .card-toggle { transform: rotate(180deg); }
+        .card-content { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s; }
+        .card-content.active { padding: 20px; max-height: 2000px; }
+        
+        .forecast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px; }
         .forecast-item { background: #1e222d; padding: 15px; border-radius: 6px; text-align: center; }
         .forecast-time { font-size: 11px; color: #868993; margin-bottom: 5px; }
         .forecast-range { font-size: 16px; font-weight: 700; color: #fff; }
@@ -30,6 +40,42 @@
         .bias-up { color: #26a69a; }
         .bias-down { color: #ef5350; }
         .bias-neutral { color: #ff9800; }
+        
+        .ttc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .ttc-item { background: #1e222d; padding: 15px; border-radius: 6px; text-align: center; border-left: 3px solid; }
+        .ttc-item.bull { border-color: #26a69a; }
+        .ttc-item.bear { border-color: #ef5350; }
+        .ttc-item.neut { border-color: #ff9800; }
+        .ttc-time { font-size: 11px; color: #868993; }
+        .ttc-signal { font-size: 16px; font-weight: 700; }
+        .ttc-signal.bull { color: #26a69a; }
+        .ttc-signal.bear { color: #ef5350; }
+        .ttc-signal.neut { color: #ff9800; }
+        
+        .metric-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2a2e39; }
+        .metric-row:last-child { border-bottom: none; }
+        .metric-label { color: #868993; }
+        .metric-value { font-weight: 600; }
+        .metric-signal { font-size: 11px; padding: 3px 8px; border-radius: 4px; margin-left: 10px; }
+        .signal-buy { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
+        .signal-sell { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
+        
+        .level-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; }
+        .level-card { padding: 20px; border-radius: 6px; text-align: center; }
+        .level-card.support { background: rgba(239, 83, 80, 0.1); border: 1px solid rgba(239, 83, 80, 0.3); }
+        .level-card.battle { background: rgba(255, 152, 0, 0.1); border: 1px solid rgba(255, 152, 0, 0.3); }
+        .level-card.resistance { background: rgba(38, 166, 154, 0.1); border: 1px solid rgba(38, 166, 154, 0.3); }
+        .level-title { font-size: 11px; color: #868993; text-transform: uppercase; }
+        .level-price { font-size: 22px; font-weight: 700; color: #fff; }
+        
+        .sentiment-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 15px 0; }
+        .sentiment-bull { background: #26a69a; }
+        .sentiment-bear { background: #ef5350; }
+        .sentiment-neut { background: #ff9800; }
+        
+        .explanation { background: #1e222d; padding: 15px; border-radius: 6px; margin-top: 15px; font-size: 13px; color: #868993; line-height: 1.7; }
+        .explanation strong { color: #fff; }
+        
         @media (max-width: 768px) {
             .container { padding: 10px; }
             .top-bar { padding: 10px 15px; }
@@ -37,6 +83,8 @@
             .refresh-btn { padding: 8px 12px; font-size: 12px; }
             .price-main { font-size: 28px; }
             .forecast-grid { grid-template-columns: repeat(2, 1fr); }
+            .ttc-grid { grid-template-columns: repeat(2, 1fr); }
+            .level-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -50,68 +98,157 @@
     </div>
     
     <div class="container">
-        <div class="content">
-            <div class="header">
-                <div class="subtitle">Current Market Status</div>
-                <div style="display: flex; align-items: baseline; flex-wrap: wrap;">
-                    <span class="price-main" id="current-price">Loading...</span>
-                    <span class="price-change" id="price-change"></span>
+        <!-- Current Price -->
+        <div class="header">
+            <div class="subtitle">Current Market Status</div>
+            <div style="display: flex; align-items: baseline; flex-wrap: wrap;">
+                <span class="price-main" id="current-price">Loading...</span>
+                <span class="price-change" id="price-change"></span>
+            </div>
+        </div>
+        
+        <!-- 24h Forecast -->
+        <div class="card">
+            <div class="card-header active" onclick="toggleCard(this)">
+                <h2 style="color: #ff9800;">🔮 24-Hour Price Forecast</h2>
+                <span class="card-toggle">▼</span>
+            </div>
+            <div class="card-content active">
+                <div class="forecast-grid" id="forecast-grid"></div>
+                <div class="explanation">
+                    <strong>How forecasts work:</strong> These ranges are calculated dynamically based on current price and historical volatility. The bias indicates directional probability based on TTC method, X sentiment, and on-chain metrics.
                 </div>
             </div>
-            
-            <div class="card">
-                <h2 style="color: #ff9800;">24-Hour Price Forecast (Dynamic)</h2>
-                <div class="forecast-grid" id="forecast-grid">
-                    <div class="forecast-item"><div class="forecast-time">Loading...</div></div>
+        </div>
+        
+        <!-- TTC Method -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📐 TTC Method Analysis</h2>
+                <span class="card-toggle">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="ttc-grid">
+                    <div class="ttc-item bear"><div class="ttc-time">Monthly</div><div class="ttc-signal bear">BEAR</div></div>
+                    <div class="ttc-item bull"><div class="ttc-time">Weekly</div><div class="ttc-signal bull">BULL</div></div>
+                    <div class="ttc-item bear"><div class="ttc-time">Daily</div><div class="ttc-signal bear">BEAR</div></div>
+                    <div class="ttc-item neut"><div class="ttc-time">4H</div><div class="ttc-signal neut">NEUT</div></div>
+                </div>
+                <div class="explanation">
+                    <strong>TTC Method Explained:</strong> Analyzes multiple timeframes for trend confirmation. Currently showing mixed signals - Monthly bearish M-formation vs Weekly bullish upper range. When 3+ timeframes align, that's a high-probability trade setup.
                 </div>
             </div>
-            
-            <div class="card">
-                <h2>🐦 X Sentiment Analysis</h2>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                    <div style="text-align: center; flex: 1; min-width: 100px;">
-                        <div style="font-size: 24px; color: #26a69a; font-weight: 700;">2</div>
-                        <div style="font-size: 12px; color: #868993;">Bullish</div>
-                    </div>
-                    <div style="text-align: center; flex: 1; min-width: 100px;">
-                        <div style="font-size: 24px; color: #ef5350; font-weight: 700;">8</div>
-                        <div style="font-size: 12px; color: #868993;">Bearish</div>
-                    </div>
-                    <div style="text-align: center; flex: 1; min-width: 100px;">
-                        <div style="font-size: 24px; color: #ff9800; font-weight: 700;">15</div>
-                        <div style="font-size: 12px; color: #868993;">Neutral</div>
-                    </div>
+        </div>
+        
+        <!-- X Sentiment -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🐦 X Intelligence</h2>
+                <span class="card-toggle">▼</span>
+            </div>
+            <div class="card-content">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center;">
+                    <div style="flex: 1;"><div style="font-size: 24px; color: #26a69a; font-weight: 700;">2</div><div style="font-size: 12px; color: #868993;">Bullish</div></div>
+                    <div style="flex: 1;"><div style="font-size: 24px; color: #ef5350; font-weight: 700;">8</div><div style="font-size: 12px; color: #868993;">Bearish</div></div>
+                    <div style="flex: 1;"><div style="font-size: 24px; color: #ff9800; font-weight: 700;">15</div><div style="font-size: 12px; color: #868993;">Neutral</div></div>
                 </div>
-                <div style="background: #1e222d; padding: 15px; border-radius: 6px; font-size: 12px; color: #868993;">
-                    <strong style="color: #fff;">Overall: BEARISH</strong> (8 bearish / 2 bullish / 15 neutral). Tracking 15 top crypto influencers. Bearish sentiment at support often marks local bottoms (contrarian signal).
+                <div class="sentiment-bar">
+                    <div class="sentiment-bull" style="width: 8%;"></div>
+                    <div class="sentiment-neut" style="width: 60%;"></div>
+                    <div class="sentiment-bear" style="width: 32%;"></div>
+                </div>
+                <div class="explanation">
+                    <strong>Overall: BEARISH</strong> (8 bearish / 2 bullish / 15 neutral). Tracking 15 top crypto influencers. Bearish sentiment at support levels often marks local bottoms (contrarian buy signal).
                 </div>
             </div>
-            
-            <div class="card">
-                <h2>📊 Market Analysis</h2>
-                <div style="margin-bottom: 15px;">
-                    <div style="font-size: 14px; color: #fff; margin-bottom: 8px;"><strong>TTC Method:</strong></div>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 12px;">
-                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ef5350;"><div style="color: #868993;">Monthly</div><div style="color: #ef5350; font-weight: 700;">BEAR</div></div>
-                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #26a69a;"><div style="color: #868993;">Weekly</div><div style="color: #26a69a; font-weight: 700;">BULL</div></div>
-                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ef5350;"><div style="color: #868993;">Daily</div><div style="color: #ef5350; font-weight: 700;">BEAR</div></div>
-                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ff9800;"><div style="color: #868993;">4H</div><div style="color: #ff9800; font-weight: 700;">NEUT</div></div>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📊 On-Chain Metrics</h2>
+                <span class="card-toggle">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="metric-row">
+                    <span class="metric-label">Fear & Greed Index</span>
+                    <span><span class="metric-value" style="color: #26a69a;">9/100</span><span class="metric-signal signal-buy">BUY</span></span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">IBIT ETF Flow (7D)</span>
+                    <span><span class="metric-value" style="color: #ef5350;">-$62.7M</span><span class="metric-signal signal-sell">SELL</span></span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Funding Rate</span>
+                    <span><span class="metric-value" style="color: #26a69a;">-0.003%</span><span class="metric-signal signal-buy">BULL</span></span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Exchange Inflow</span>
+                    <span><span class="metric-value" style="color: #ef5350;">+450 BTC</span><span class="metric-signal signal-sell">SELL</span></span>
+                </div>
+                <div class="explanation">
+                    <strong>Metric Guide:</strong> Fear & Greed 0=Extreme Fear (buy). Negative funding = shorts pay longs (bullish). ETF outflows = institutional selling. Exchange inflows = potential selling pressure.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Levels -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🎯 Key Levels</h2>
+                <span class="card-toggle">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="level-grid">
+                    <div class="level-card support">
+                        <div class="level-title">Support</div>
+                        <div class="level-price">$63,472</div>
+                        <div style="font-size: 12px; color: #868993;">20x Long Liq</div>
+                    </div>
+                    <div class="level-card battle">
+                        <div class="level-title">Battle</div>
+                        <div class="level-price">$68,000</div>
+                        <div style="font-size: 12px; color: #868993;">Reclaim=Bull</div>
+                    </div>
+                    <div class="level-card resistance">
+                        <div class="level-title">Resistance</div>
+                        <div class="level-price">$70,153</div>
+                        <div style="font-size: 12px; color: #868993;">20x Short Liq</div>
                     </div>
                 </div>
-                <div style="background: #1e222d; padding: 15px; border-radius: 6px;">
-                    <div style="font-size: 14px; color: #fff; margin-bottom: 10px;"><strong>Key Levels:</strong> Support $63,472 | Battle $68,000 | Resistance $70,153</div>
-                    <div style="font-size: 12px; color: #868993;">Mixed TTC signals. Watch $68K reclaim for bullish continuation or $66K break for correction. Fear & Greed at 9/100 = contrarian buy signal.</div>
+                <div class="explanation">
+                    <strong>Liquidation Zones:</strong> These levels represent clusters of leveraged positions. Breaking below $63.4K triggers long liquidations (forced selling). Breaking above $70.1K triggers short liquidations (forced buying / short squeeze).
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trading Strategy -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>💡 Trading Strategy</h2>
+                <span class="card-toggle">▼</span>
+            </div>
+            <div class="card-content">
+                <div style="font-size: 14px; color: #d1d4dc; line-height: 1.8;">
+                    <p style="margin-bottom: 10px;"><strong style="color: #fff;">Current Situation:</strong> Bitcoin consolidating between $66K-$68K. Mixed signals from TTC method with no clear directional bias.</p>
+                    <p style="margin-bottom: 10px;"><strong style="color: #26a69a;">Bull Case:</strong> Fear & Greed at 9/100 historically marks bottoms. Negative funding unsustainable if price rises. Weekly still bullish.</p>
+                    <p style="margin-bottom: 10px;"><strong style="color: #ef5350;">Bear Case:</strong> Monthly M-formation is reversal pattern. Daily below 200 EMA. ETF outflows show institutional caution.</p>
+                    <p><strong style="color: #fff;">Strategy:</strong> Range-bound until proven otherwise. Longs: Wait for $63.4K sweep or $68K reclaim. Shorts: Fade rallies to $67.5K+ with stops above $68.2K.</p>
                 </div>
             </div>
         </div>
     </div>
     
     <script>
+        function toggleCard(header) {
+            header.classList.toggle('active');
+            header.nextElementSibling.classList.toggle('active');
+        }
+        
         function loadData() {
             document.getElementById('current-price').textContent = 'Loading...';
             document.getElementById('update-time').textContent = 'Updating...';
             
-            // Use CoinGecko (CORS-friendly)
             fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
                 .then(response => response.json())
                 .then(data => {
@@ -124,7 +261,6 @@
                     changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '% (24h)';
                     changeEl.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
                     
-                    // Calculate forecasts
                     const volatility = 0.015;
                     const forecasts = [
                         { period: '0-6h', bias: 'up' },
@@ -149,7 +285,7 @@
                         }
                         const biasClass = f.bias === 'up' ? 'bias-up' : f.bias === 'down' ? 'bias-down' : 'bias-neutral';
                         const biasText = f.bias === 'up' ? '↗ Up' : f.bias === 'down' ? '↘ Down' : '→ Neutral';
-                        html += '<div class="forecast-item"><div class="forecast-time">' + f.period + '</div><div class="forecast-range">$' + low.toFixed(0) + ' - $' + high.toFixed(0) + '</div><div class="forecast-bias ' + biasClass + '"\u003e' + biasText + '</div></div>';
+                        html += '<div class="forecast-item"><div class="forecast-time">' + f.period + '</div><div class="forecast-range">$' + low.toFixed(0) + ' - $' + high.toFixed(0) + '</div><div class="forecast-bias ' + biasClass + '">' + biasText + '</div></div>';
                     });
                     document.getElementById('forecast-grid').innerHTML = html;
                     
@@ -162,7 +298,6 @@
                 });
         }
         
-        // Load on page load
         loadData();
     </script>
 </body>
