@@ -1,11 +1,1 @@
-{
-  "price": 67250.50,
-  "change_24h": 0.85,
-  "timestamp": "2026-02-20T22:35:00",
-  "forecasts": [
-    {"period": "0-6h", "low": 66900, "high": 67800, "bias": "up"},
-    {"period": "6-12h", "low": 67100, "high": 68000, "bias": "up"},
-    {"period": "12-18h", "low": 66700, "high": 67700, "bias": "neutral"},
-    {"period": "18-24h", "low": 66300, "high": 67300, "bias": "down"}
-  ]
-}
+{"price": 67243.99, "change_24h": 2.393, "timestamp": "2026-02-20T22:36:09.973836", "forecasts": [{"period": "0-6h", "low": 66941.39204500002, "high": 68050.91788000001, "bias": "up"}, {"period": "6-12h", "low": 67042.25803000001, "high": 67950.051895, "bias": "up"}, {"period": "12-18h", "low": 66739.660075, "high": 67748.319925, "bias": "neutral"}, {"period": "18-24h", "low": 66537.92810500001, "high": 67546.587955, "bias": "down"}]}
