@@ -1,0 +1,17 @@
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .container { padding: 10px !important; }
+    .header { padding: 15px !important; }
+    .header h1 { font-size: 22px !important; }
+    .price-main { font-size: 32px !important; }
+    .price-change { font-size: 16px !important; }
+    .grid { grid-template-columns: 1fr !important; gap: 15px !important; }
+    .grid-3 { grid-template-columns: 1fr !important; }
+    .ttc-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .level-grid { grid-template-columns: 1fr !important; }
+    .card { padding: 15px !important; }
+    .prediction-row { flex-direction: column !important; gap: 5px !important; }
+    .metric-row { flex-direction: column !important; align-items: flex-start !important; gap: 5px !important; }
+    .price-display { flex-wrap: wrap !important; }
+    body { font-size: 16px !important; }
+}
