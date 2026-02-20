@@ -99,9 +99,37 @@
     <div class="container">
         <header>
             <h1>₿ Bitcoin Daily Forecast</h1>
-            <div class="subtitle">Enhanced Edition v3.1 - Pro Charts & Live Data</div>
-            <div class="price-main" id="current-price">$67,596.00</div>
-            <div class="price-change up" id="price-change">+1.97% (24h)</div>
+            <div class="subtitle">Enhanced Edition v3.2 - Pro Charts & Live Data</div>
+            
+            <!-- Current Price -->
+            <div style="margin: 20px 0;">
+                <div style="font-size: 14px; color: #868993; margin-bottom: 5px;">Current Price</div>
+                <div class="price-main" id="current-price">$67,596.00</div>
+                <div class="price-change up" id="price-change">+1.97% (24h)</div>
+            </div>
+            
+            <!-- CST Market Hours Forecast -->
+            <div style="background: #1e222d; border-radius: 12px; padding: 15px; margin: 20px 0; border: 1px solid #2a2e39;">
+                <div style="font-size: 12px; color: #ff9800; margin-bottom: 10px; font-weight: 600;">📅 CST Market Hours Forecast</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 11px; color: #868993;">Open (8:00 AM)</div>
+                        <div style="font-size: 20px; font-weight: 700; color: #26a69a;">$67,200</div>
+                        <div style="font-size: 10px; color: #26a69a;">+0.5%</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 11px; color: #868993;">Mid (12:00 PM)</div>
+                        <div style="font-size: 20px; font-weight: 700; color: #ff9800;">$67,800</div>
+                        <div style="font-size: 10px; color: #ff9800;">+1.4%</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 11px; color: #868993;">Close (4:00 PM)</div>
+                        <div style="font-size: 20px; font-weight: 700; color: #ef5350;">$67,400</div>
+                        <div style="font-size: 10px; color: #ef5350;">+0.8%</div>
+                    </div>
+                </div>
+            </div>
+            
             <div style="margin-top: 15px; color: #868993; font-size: 12px;">
                 Last updated: 2026-02-21 00:52 UTC
             </div>
@@ -181,23 +209,112 @@
             </div>
             
             <!-- X Intelligence -->
-            <div class="card">
-                <h2>🐦 X Intelligence</h2>
-                <div class="metric">
-                    <span class="metric-label">Bullish Posts</span>
-                    <span class="metric-value" style="color: #26a69a;">2</span>
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>🐦 X Intelligence - Top 20 Influencers</h2>
+                <!-- Sentiment Summary -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #26a69a;">4</div>
+                        <div style="font-size: 12px; color: #868993;">Bullish</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #ef5350;">11</div>
+                        <div style="font-size: 12px; color: #868993;">Bearish</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #ff9800;">5</div>
+                        <div style="font-size: 12px; color: #868993;">Neutral</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #ef5350;">BEARISH</div>
+                        <div style="font-size: 12px; color: #868993;">Consensus</div>
+                    </div>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Bearish Posts</span>
-                    <span class="metric-value" style="color: #ef5350;">8</span>
+                
+                <!-- Influencer List -->
+                <div style="font-size: 11px; color: #868993; margin-bottom: 10px;">Latest sentiment from top crypto influencers:</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto;">
+                    <!-- Bearish -->
+                    <div style="background: rgba(239, 83, 80, 0.1); border-left: 3px solid #ef5350; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@ZeroHedge_</div>
+                        <div style="font-size: 11px; color: #868993;">ETF outflows accelerating. Institutional exit signal. <span style="color: #ef5350;">BEARISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(239, 83, 80, 0.1); border-left: 3px solid #ef5350; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@CryptoCapo_</div>
+                        <div style="font-size: 11px; color: #868993;">M-formation playing out perfectly. Target $62K. <span style="color: #ef5350;">BEARISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(239, 83, 80, 0.1); border-left: 3px solid #ef5350; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@IncomeSharks</div>
+                        <div style="font-size: 11px; color: #868993;">Funding negative but not enough. More downside likely. <span style="color: #ef5350;">BEARISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(239, 83, 80, 0.1); border-left: 3px solid #ef5350; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@WClementeIII</div>
+                        <div style="font-size: 11px; color: #868993;">On-chain metrics showing distribution. Caution warranted. <span style="color: #ef5350;">BEARISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(239, 83, 80, 0.1); border-left: 3px solid #ef5350; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@CryptoHayes</div>
+                        <div style="font-size: 11px; color: #868993;">Dollar strength crushing risk assets. BTC not immune. <span style="color: #ef5350;">BEARISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(239, 83, 80, 0.1); border-left: 3px solid #ef5350; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@glassnode</div>
+                        <div style="font-size: 11px; color: #868993;">Exchange inflows elevated. Short-term holders capitulating. <span style="color: #ef5350;">BEARISH</span></div>
+                    </div>
+                    
+                    <!-- Bullish -->
+                    <div style="background: rgba(38, 166, 154, 0.1); border-left: 3px solid #26a69a; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@rektcapital</div>
+                        <div style="font-size: 11px; color: #868993;">Halving cycle intact. This is normal pre-halving retrace. <span style="color: #26a69a;">BULLISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(38, 166, 154, 0.1); border-left: 3px solid #26a69a; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@CryptoKaleo</div>
+                        <div style="font-size: 11px; color: #868993;">Fear & Greed at extremes = bottom signal. Loading up. <span style="color: #26a69a;">BULLISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(38, 166, 154, 0.1); border-left: 3px solid #26a69a; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@BTC_JackSparrow</div>
+                        <div style="font-size: 11px; color: #868993;">Wyckoff accumulation phase. Smart money buying. <span style="color: #26a69a;">BULLISH</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(38, 166, 154, 0.1); border-left: 3px solid #26a69a; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@filbfilb</div>
+                        <div style="font-size: 11px; color: #868993;">200W MA holding. Macro bottom structure forming. <span style="color: #26a69a;">BULLISH</span></div>
+                    </div>
+                    
+                    <!-- Neutral -->
+                    <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@ShardiB2</div>
+                        <div style="font-size: 11px; color: #868993;">Range bound until breakout. Watch $68K level. <span style="color: #ff9800;">NEUTRAL</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@tradetravelchil</div>
+                        <div style="font-size: 11px; color: #868993;">Consolidation continues. Patience required here. <span style="color: #ff9800;">NEUTRAL</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@CryptoCred</div>
+                        <div style="font-size: 11px; color: #868993;">No clear direction. Waiting for volume confirmation. <span style="color: #ff9800;">NEUTRAL</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@Pentosh1</div>
+                        <div style="font-size: 11px; color: #868993;">Choppy price action. Staying flat until clarity. <span style="color: #ff9800;">NEUTRAL</span></div>
+                    </div>
+                    
+                    <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 10px; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff;">@RaoulGMI</div>
+                        <div style="font-size: 11px; color: #868993;">Macro outlook unchanged. Short-term noise. <span style="color: #ff9800;">NEUTRAL</span></div>
+                    </div>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Neutral Posts</span>
-                    <span class="metric-value" style="color: #ff9800;">15</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Consensus</span>
-                    <span class="metric-value" style="color: #ef5350; font-weight: bold;">BEARISH</span>
+                
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 11px; color: #868993;">
+                    <strong>Key Narrative:</strong> Bears control with ETF outflow concerns and technical breakdowns. Bulls cite extreme fear as contrarian signal. Market at decision point.
                 </div>
             </div>
             
