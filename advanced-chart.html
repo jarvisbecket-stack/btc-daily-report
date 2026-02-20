@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC-USD - Professional Chart</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #7d8590;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --accent-yellow: #d29922;
+            --accent-blue: #58a6ff;
+            --accent-purple: #a371f7;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .header-left { display: flex; flex-direction: column; gap: 4px; }
+        .header-title { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
+        .header-subtitle { font-size: 12px; color: var(--text-secondary); }
+        .header-right { text-align: right; }
+        .price-main { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .price-change { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+        
+        .main-container { display: flex; height: calc(100vh - 80px); }
+        .chart-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        @media (max-width: 1024px) { .sidebar { display: none; } }
+        
+        .chart-container { position: relative; width: 100%; }
+        #main-chart { height: 55%; min-height: 300px; }
+        
+        .indicator-row {
+            height: 15%;
+            min-height: 100px;
+            display: flex;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .indicator-chart { flex: 1; min-width: 0; }
+        .indicator-chart:not(:last-child) { border-right: 1px solid var(--border-color); }
+        
+        .legend {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(13, 17, 23, 0.95);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 11px;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+            max-width: 280px;
+        }
+        
+        .legend-title { font-weight: 600; margin-bottom: 8px; font-size: 12px; }
+        .legend-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+        .legend-color { width: 8px; height: 8px; border-radius: 2px; }
+        
+        .panel {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .panel-emoji { font-size: 18px; }
+        .panel-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .panel-score { font-size: 36px; font-weight: 800; text-align: center; margin: 8px 0; font-variant-numeric: tabular-nums; }
+        .panel-badge {
+            text-align: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .score-bar-bg { height: 6px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+        .score-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+        
+        .breakdown { display: flex; flex-direction: column; gap: 8px; }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        
+        .direction-badge {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .direction-bull { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); }
+        .direction-bear { background: rgba(248, 81, 73, 0.15); color: var(--accent-red); }
+        .direction-neutral { background: rgba(210, 153, 34, 0.15); color: var(--accent-yellow); }
+        
+        .forecast-metrics { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .metric { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .metric-label { color: var(--text-secondary); }
+        .metric-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+        
+        .scenario-grid { display: flex; gap: 8px; margin-bottom: 12px; }
+        .scenario-box { flex: 1; padding: 10px; border-radius: 6px; text-align: center; }
+        .scenario-box.bull { background: rgba(63, 185, 80, 0.1); }
+        .scenario-box.bear { background: rgba(248, 81, 73, 0.1); }
+        .scenario-label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .scenario-price { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        
+        .accuracy-grid { border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; gap: 12px; }
+        .accuracy-item { flex: 1; text-align: center; }
+        .accuracy-label { font-size: 11px; color: var(--text-secondary); }
+        .accuracy-value { font-size: 14px; font-weight: 600; color: var(--accent-blue); }
+        
+        .learning-content { max-height: 400px; overflow-y: auto; }
+        .learning-text {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 10px;
+            line-height: 1.4;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .info-section {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .info-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .info-item { font-size: 12px; }
+        .info-label { color: var(--text-secondary); display: block; font-size: 11px; }
+        .info-value { color: var(--text-primary); font-weight: 500; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <div class="header-title">BTC-USD - Advanced Chart</div>
+            <div class="header-subtitle">Professional Technical Analysis with Self-Learning AI</div>
+        </div>
+        <div class="header-right">
+            <div class="price-main" style="color: #4caf50;">$67,965.96</div>
+            <div class="price-change" style="color: #4caf50;">+1,008.44 (+1.51%)</div>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <div class="chart-area">
+            <div class="chart-container" id="main-chart">
+                
+    <div class="legend">
+        <div class="legend-title">Indicators</div>
+        <div class="legend-grid">
+            <div class="legend-item"><span class="legend-color" style="background: #00bcd4;"></span>EMA 9</div>
+            <div class="legend-item"><span class="legend-color" style="background: #ff9800;"></span>EMA 21</div>
+            <div class="legend-item"><span class="legend-color" style="background: #e91e63;"></span>EMA 50</div>
+            <div class="legend-item"><span class="legend-color" style="background: #9c27b0;"></span>EMA 200</div>
+            <div class="legend-item"><span class="legend-color" style="background: #ff5252;"></span>BB Upper</div>
+            <div class="legend-item"><span class="legend-color" style="background: #4caf50;"></span>BB Lower</div>
+            <div class="legend-item"><span class="legend-color" style="background: #ffeb3b;"></span>VWAP</div>
+            <div class="legend-item"><span class="legend-color" style="background: #00e676;"></span>SuperTrend</div>
+        </div>
+    </div>
+    
+            </div>
+            <div class="indicator-row">
+                <div class="indicator-chart" id="volume-chart"></div>
+                <div class="indicator-chart" id="rsi-chart"></div>
+            </div>
+            <div class="indicator-row">
+                <div class="indicator-chart" id="macd-chart"></div>
+                <div class="indicator-chart" id="atr-chart"></div>
+            </div>
+        </div>
+        
+        <aside class="sidebar">
+            
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-emoji">📉</span>
+                <span class="panel-title">Confluence Score</span>
+            </div>
+            <div class="panel-score" style="color: #ef5350;">36/100</div>
+            <div class="panel-badge" style="background: #ef535020; color: #ef5350;">
+                Sell
+            </div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width: 36.3%; background: #ff9800;"></div>
+            </div>
+            <div class="breakdown">
+                <div class="breakdown-row">
+                    <span>📈 Trend</span>
+                    <span style="color: #ef5350;">27</span>
+                </div>
+                <div class="breakdown-row">
+                    <span>⚡ Momentum</span>
+                    <span style="color: #ffc107;">48</span>
+                </div>
+                <div class="breakdown-row">
+                    <span>📊 Volume</span>
+                    <span style="color: #ef5350;">35</span>
+                </div>
+            </div>
+        </div>
+        
+            
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-emoji">📊</span>
+                <span class="panel-title">Ensemble Forecast</span>
+            </div>
+            <div class="direction-badge direction-bear">
+                🔻 BEAR
+            </div>
+            <div class="forecast-metrics">
+                <div class="metric">
+                    <span class="metric-label">Current</span>
+                    <span class="metric-value">$67,965.96</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Target</span>
+                    <span class="metric-value" style="color: #ef5350;">$65,587.15</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Confidence</span>
+                    <span class="metric-value">66%</span>
+                </div>
+            </div>
+            <div class="scenario-grid">
+                <div class="scenario-box bull">
+                    <div class="scenario-label">🟢 Bull</div>
+                    <div class="scenario-price">$69,793.25</div>
+                </div>
+                <div class="scenario-box bear">
+                    <div class="scenario-label">🔴 Bear</div>
+                    <div class="scenario-price">$61,381.05</div>
+                </div>
+            </div>
+            
+            <div class="accuracy-grid">
+                <div class="accuracy-item">
+                    <div class="accuracy-label">Direction Accuracy</div>
+                    <div class="accuracy-value">67%</div>
+                </div>
+                <div class="accuracy-item">
+                    <div class="accuracy-label">Band Hit Rate</div>
+                    <div class="accuracy-value">33%</div>
+                </div>
+            </div>
+            
+        </div>
+        
+            
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-emoji">🧠</span>
+                <span class="panel-title">Self-Learning AI</span>
+            </div>
+            <div class="learning-content">
+                <pre class="learning-text">======================================================================
+🧠 SELF-IMPROVING LEARNER - PERFORMANCE DASHBOARD
+======================================================================
+
+📊 OVERALL ACCURACY: 0.0%
+📈 RECENT ACCURACY (last 20): 0.0%
+🎯 TOTAL PREDICTIONS: 0
+🌊 CURRENT REGIME: RANGING
+
+──────────────────────────────────────────────────────────────────────
+ACCURACY BY REGIME
+──────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────
+INDICATOR RANKINGS (by recent accuracy)
+──────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────
+CURRENT METHOD WEIGHTS
+──────────────────────────────────────────────────────────────────────
+regression      ██████████░░░░░░░░░░ 1.00
+fibonacci       ██████████░░░░░░░░░░ 1.00
+pivot           ██████████░░░░░░░░░░ 1.00
+ema_crossover   ██████████░░░░░░░░░░ 1.00
+momentum        ██████████░░░░░░░░░░ 1.00
+
+──────────────────────────────────────────────────────────────────────
+WEIGHT EVOLUTION
+──────────────────────────────────────────────────────────────────────
+📉 regression: 1.00 (avg: 1.00)
+📉 fibonacci: 1.00 (avg: 1.00)
+📉 pivot: 1.00 (avg: 1.00)
+📉 ema_crossover: 1.00 (avg: 1.00)
+📉 momentum: 1.00 (avg: 1.00)
+======================================================================</pre>
+            </div>
+        </div>
+        
+            
+            <div class="info-section">
+                <div class="info-title">Indicator Guide</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">RSI</span>
+                        <span class="info-value">&gt;70 Overbought, &lt;30 Oversold</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">MACD</span>
+                        <span class="info-value">Crossover signals</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Bollinger</span>
+                        <span class="info-value">Volatility bands</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">ATR</span>
+                        <span class="info-value">Volatility measure</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const colors = {
+            background: '#0d1117',
+            grid: '#21262d',
+            text: '#e6edf3',
+            ema9: '#00bcd4',
+            ema21: '#ff9800',
+            ema50: '#e91e63',
+            ema200: '#9c27b0',
+            bbUpper: '#ff5252',
+            bbLower: '#4caf50',
+            vwap: '#ffeb3b',
+            supertrend: '#00e676',
+            tenkan: '#ff5252',
+            kijun: '#448aff'
+        };
+
+        const commonOptions = {
+            layout: { background: { type: 'solid', color: colors.background }, textColor: colors.text },
+            grid: { vertLines: { color: colors.grid, style: LightweightCharts.LineStyle.Dashed }, horzLines: { color: colors.grid, style: LightweightCharts.LineStyle.Dashed } },
+            crosshair: { mode: LightweightCharts.CrosshairMode.Normal, vertLine: { color: '#58a6ff', width: 1, style: LightweightCharts.LineStyle.Dashed }, horzLine: { color: '#58a6ff', width: 1, style: LightweightCharts.LineStyle.Dashed } },
+            rightPriceScale: { borderColor: colors.grid, scaleMargins: { top: 0.1, bottom: 0.1 } },
+            timeScale: { borderColor: colors.grid, timeVisible: true, secondsVisible: false },
+            handleScroll: { vertTouchDrag: false },
+        };
+
+        const mainChart = LightweightCharts.createChart(document.getElementById('main-chart'), { ...commonOptions, height: document.getElementById('main-chart').clientHeight });
+
+        const candleSeries = mainChart.addCandlestickSeries({
+            upColor: '#26a69a', downColor: '#ef5350',
+            borderUpColor: '#26a69a', borderDownColor: '#ef5350',
+            wickUpColor: '#26a69a', wickDownColor: '#ef5350'
+        });
+        candleSeries.setData([{'time': 1766448000000, 'open': 88490.03, 'high': 88898.38, 'low': 86606.98, 'close': 87414.0}, {'time': 1766534400000, 'open': 87404.32, 'high': 87956.88, 'low': 86411.8, 'close': 87611.96}, {'time': 1766620800000, 'open': 87608.32, 'high': 88501.79, 'low': 86949.26, 'close': 87234.74}, {'time': 1766707200000, 'open': 87235.51, 'high': 89459.43, 'low': 86628.14, 'close': 87301.43}, {'time': 1766793600000, 'open': 87301.43, 'high': 87874.78, 'low': 87182.98, 'close': 87802.16}, {'time': 1766880000000, 'open': 87799.34, 'high': 87986.89, 'low': 87394.95, 'close': 87835.84}, {'time': 1766966400000, 'open': 87835.79, 'high': 90299.16, 'low': 86717.91, 'close': 87138.14}, {'time': 1767052800000, 'open': 87134.35, 'high': 89297.94, 'low': 86735.55, 'close': 88430.13}, {'time': 1767139200000, 'open': 88429.59, 'high': 89080.29, 'low': 87130.56, 'close': 87508.83}, {'time': 1767225600000, 'open': 87508.05, 'high': 88803.23, 'low': 87399.41, 'close': 88731.98}, {'time': 1767312000000, 'open': 88733.06, 'high': 90884.46, 'low': 88298.62, 'close': 89944.7}, {'time': 1767398400000, 'open': 89945.05, 'high': 90679.57, 'low': 89328.07, 'close': 90603.19}, {'time': 1767484800000, 'open': 90603.0, 'high': 91712.59, 'low': 90595.1, 'close': 91413.49}, {'time': 1767571200000, 'open': 91414.62, 'high': 94762.07, 'low': 91414.62, 'close': 93882.55}, {'time': 1767657600000, 'open': 93876.95, 'high': 94395.3, 'low': 91286.55, 'close': 93729.03}, {'time': 1767744000000, 'open': 93727.47, 'high': 93738.79, 'low': 90601.8, 'close': 91308.05}, {'time': 1767830400000, 'open': 91309.64, 'high': 91485.85, 'low': 89233.88, 'close': 91027.12}, {'time': 1767916800000, 'open': 91026.27, 'high': 91910.67, 'low': 89625.38, 'close': 90513.1}, {'time': 1768003200000, 'open': 90510.1, 'high': 90713.03, 'low': 90283.4, 'close': 90386.65}, {'time': 1768089600000, 'open': 90385.36, 'high': 91155.23, 'low': 90212.02, 'close': 90827.46}, {'time': 1768176000000, 'open': 90825.86, 'high': 92395.52, 'low': 90055.02, 'close': 91192.99}, {'time': 1768262400000, 'open': 91185.34, 'high': 96011.62, 'low': 90941.93, 'close': 95321.78}, {'time': 1768348800000, 'open': 95322.91, 'high': 97860.6, 'low': 94583.05, 'close': 96929.33}, {'time': 1768435200000, 'open': 96931.29, 'high': 97150.17, 'low': 95103.24, 'close': 95551.19}, {'time': 1768521600000, 'open': 95554.1, 'high': 95801.89, 'low': 94259.27, 'close': 95525.12}, {'time': 1768608000000, 'open': 95525.16, 'high': 95598.48, 'low': 95005.62, 'close': 95099.92}, {'time': 1768694400000, 'open': 95101.18, 'high': 95491.51, 'low': 93588.87, 'close': 93634.43}, {'time': 1768780800000, 'open': 93655.67, 'high': 93660.83, 'low': 92089.25, 'close': 92553.59}, {'time': 1768867200000, 'open': 92553.6, 'high': 92798.43, 'low': 87814.93, 'close': 88310.91}, {'time': 1768953600000, 'open': 88326.51, 'high': 90430.41, 'low': 87231.57, 'close': 89376.96}, {'time': 1769040000000, 'open': 89378.52, 'high': 90258.96, 'low': 88438.45, 'close': 89462.45}, {'time': 1769126400000, 'open': 89462.05, 'high': 91100.25, 'low': 88486.36, 'close': 89503.88}, {'time': 1769212800000, 'open': 89506.15, 'high': 89811.61, 'low': 89044.29, 'close': 89110.73}, {'time': 1769299200000, 'open': 89104.77, 'high': 89193.15, 'low': 86003.71, 'close': 86572.22}, {'time': 1769385600000, 'open': 86566.52, 'high': 88743.07, 'low': 86429.29, 'close': 88267.14}, {'time': 1769472000000, 'open': 88257.48, 'high': 89427.12, 'low': 87228.92, 'close': 89102.57}, {'time': 1769558400000, 'open': 89104.05, 'high': 90439.29, 'low': 88721.46, 'close': 89184.57}, {'time': 1769644800000, 'open': 89169.85, 'high': 89200.78, 'low': 83250.6, 'close': 84561.59}, {'time': 1769731200000, 'open': 84562.73, 'high': 84602.16, 'low': 81071.48, 'close': 84128.66}, {'time': 1769817600000, 'open': 84126.5, 'high': 84136.92, 'low': 75815.88, 'close': 78621.12}, {'time': 1769904000000, 'open': 78626.12, 'high': 79322.61, 'low': 75698.9, 'close': 76974.45}, {'time': 1769990400000, 'open': 76968.88, 'high': 79258.61, 'low': 74551.34, 'close': 78688.77}, {'time': 1770076800000, 'open': 78693.51, 'high': 79118.85, 'low': 72897.14, 'close': 75633.55}, {'time': 1770163200000, 'open': 75640.09, 'high': 76864.66, 'low': 71779.93, 'close': 73019.7}, {'time': 1770249600000, 'open': 73016.38, 'high': 73161.55, 'low': 62353.54, 'close': 62702.1}, {'time': 1770336000000, 'open': 62704.45, 'high': 71681.3, 'low': 60074.2, 'close': 70555.39}, {'time': 1770422400000, 'open': 70553.8, 'high': 71611.15, 'low': 67364.45, 'close': 69281.97}, {'time': 1770508800000, 'open': 69283.73, 'high': 72206.91, 'low': 68852.9, 'close': 70264.73}, {'time': 1770595200000, 'open': 70243.33, 'high': 71369.97, 'low': 68291.03, 'close': 70120.78}, {'time': 1770681600000, 'open': 70137.39, 'high': 70464.27, 'low': 67913.09, 'close': 68793.96}, {'time': 1770768000000, 'open': 68791.86, 'high': 69242.68, 'low': 65757.3, 'close': 66991.97}, {'time': 1770854400000, 'open': 66992.2, 'high': 68339.49, 'low': 65092.11, 'close': 66221.84}, {'time': 1770940800000, 'open': 66213.38, 'high': 69382.84, 'low': 65835.78, 'close': 68857.84}, {'time': 1771027200000, 'open': 68856.98, 'high': 70481.16, 'low': 68706.62, 'close': 69767.62}, {'time': 1771113600000, 'open': 69764.95, 'high': 70939.29, 'low': 68052.55, 'close': 68788.19}, {'time': 1771200000000, 'open': 68782.4, 'high': 70067.23, 'low': 67301.59, 'close': 68843.16}, {'time': 1771286400000, 'open': 68843.09, 'high': 69201.87, 'low': 66615.28, 'close': 67494.22}, {'time': 1771372800000, 'open': 67488.02, 'high': 68434.43, 'low': 65845.9, 'close': 66425.32}, {'time': 1771459200000, 'open': 66425.62, 'high': 67277.12, 'low': 65637.43, 'close': 66957.52}, {'time': 1771545600000, 'open': 66959.87, 'high': 68242.56, 'low': 66570.2, 'close': 67965.96}]);
+
+        const ema9Series = mainChart.addLineSeries({ color: colors.ema9, lineWidth: 1, title: 'EMA 9', lastValueVisible: false });
+        const ema21Series = mainChart.addLineSeries({ color: colors.ema21, lineWidth: 1, title: 'EMA 21', lastValueVisible: false });
+        const ema50Series = mainChart.addLineSeries({ color: colors.ema50, lineWidth: 1, title: 'EMA 50', lastValueVisible: false });
+        const ema200Series = mainChart.addLineSeries({ color: colors.ema200, lineWidth: 2, title: 'EMA 200', lastValueVisible: false });
+        
+        ema9Series.setData([{'time': 1766448000000, 'value': 87414.0}, {'time': 1766534400000, 'value': 87453.59}, {'time': 1766620800000, 'value': 87409.82}, {'time': 1766707200000, 'value': 87388.14}, {'time': 1766793600000, 'value': 87470.95}, {'time': 1766880000000, 'value': 87543.92}, {'time': 1766966400000, 'value': 87462.77}, {'time': 1767052800000, 'value': 87656.24}, {'time': 1767139200000, 'value': 87626.76}, {'time': 1767225600000, 'value': 87847.8}, {'time': 1767312000000, 'value': 88267.18}, {'time': 1767398400000, 'value': 88734.38}, {'time': 1767484800000, 'value': 89270.2}, {'time': 1767571200000, 'value': 90192.67}, {'time': 1767657600000, 'value': 90899.95}, {'time': 1767744000000, 'value': 90981.57}, {'time': 1767830400000, 'value': 90990.68}, {'time': 1767916800000, 'value': 90895.16}, {'time': 1768003200000, 'value': 90793.46}, {'time': 1768089600000, 'value': 90800.26}, {'time': 1768176000000, 'value': 90878.81}, {'time': 1768262400000, 'value': 91767.4}, {'time': 1768348800000, 'value': 92799.79}, {'time': 1768435200000, 'value': 93350.07}, {'time': 1768521600000, 'value': 93785.08}, {'time': 1768608000000, 'value': 94048.05}, {'time': 1768694400000, 'value': 93965.32}, {'time': 1768780800000, 'value': 93682.98}, {'time': 1768867200000, 'value': 92608.56}, {'time': 1768953600000, 'value': 91962.24}, {'time': 1769040000000, 'value': 91462.28}, {'time': 1769126400000, 'value': 91070.6}, {'time': 1769212800000, 'value': 90678.63}, {'time': 1769299200000, 'value': 89857.35}, {'time': 1769385600000, 'value': 89539.31}, {'time': 1769472000000, 'value': 89451.96}, {'time': 1769558400000, 'value': 89398.48}, {'time': 1769644800000, 'value': 88431.1}, {'time': 1769731200000, 'value': 87570.61}, {'time': 1769817600000, 'value': 85780.71}, {'time': 1769904000000, 'value': 84019.46}, {'time': 1769990400000, 'value': 82953.32}, {'time': 1770076800000, 'value': 81489.37}, {'time': 1770163200000, 'value': 79795.43}, {'time': 1770249600000, 'value': 76376.77}, {'time': 1770336000000, 'value': 75212.49}, {'time': 1770422400000, 'value': 74026.39}, {'time': 1770508800000, 'value': 73274.05}, {'time': 1770595200000, 'value': 72643.4}, {'time': 1770681600000, 'value': 71873.51}, {'time': 1770768000000, 'value': 70897.2}, {'time': 1770854400000, 'value': 69962.13}, {'time': 1770940800000, 'value': 69741.27}, {'time': 1771027200000, 'value': 69746.54}, {'time': 1771113600000, 'value': 69554.87}, {'time': 1771200000000, 'value': 69412.53}, {'time': 1771286400000, 'value': 69028.87}, {'time': 1771372800000, 'value': 68508.16}, {'time': 1771459200000, 'value': 68198.03}, {'time': 1771545600000, 'value': 68151.62}]);
+        ema21Series.setData([{'time': 1766448000000, 'value': 87414.0}, {'time': 1766534400000, 'value': 87432.0}, {'time': 1766620800000, 'value': 87414.06}, {'time': 1766707200000, 'value': 87403.82}, {'time': 1766793600000, 'value': 87440.04}, {'time': 1766880000000, 'value': 87476.02}, {'time': 1766966400000, 'value': 87445.3}, {'time': 1767052800000, 'value': 87534.83}, {'time': 1767139200000, 'value': 87532.47}, {'time': 1767225600000, 'value': 87641.52}, {'time': 1767312000000, 'value': 87850.9}, {'time': 1767398400000, 'value': 88101.1}, {'time': 1767484800000, 'value': 88402.23}, {'time': 1767571200000, 'value': 88900.44}, {'time': 1767657600000, 'value': 89339.4}, {'time': 1767744000000, 'value': 89518.37}, {'time': 1767830400000, 'value': 89655.53}, {'time': 1767916800000, 'value': 89733.49}, {'time': 1768003200000, 'value': 89792.87}, {'time': 1768089600000, 'value': 89886.92}, {'time': 1768176000000, 'value': 90005.66}, {'time': 1768262400000, 'value': 90488.94}, {'time': 1768348800000, 'value': 91074.43}, {'time': 1768435200000, 'value': 91481.41}, {'time': 1768521600000, 'value': 91849.02}, {'time': 1768608000000, 'value': 92144.56}, {'time': 1768694400000, 'value': 92280.0}, {'time': 1768780800000, 'value': 92304.87}, {'time': 1768867200000, 'value': 91941.78}, {'time': 1768953600000, 'value': 91708.62}, {'time': 1769040000000, 'value': 91504.42}, {'time': 1769126400000, 'value': 91322.55}, {'time': 1769212800000, 'value': 91121.48}, {'time': 1769299200000, 'value': 90707.91}, {'time': 1769385600000, 'value': 90486.02}, {'time': 1769472000000, 'value': 90360.25}, {'time': 1769558400000, 'value': 90253.37}, {'time': 1769644800000, 'value': 89735.94}, {'time': 1769731200000, 'value': 89226.18}, {'time': 1769817600000, 'value': 88262.09}, {'time': 1769904000000, 'value': 87235.94}, {'time': 1769990400000, 'value': 86458.92}, {'time': 1770076800000, 'value': 85474.8}, {'time': 1770163200000, 'value': 84342.52}, {'time': 1770249600000, 'value': 82375.21}, {'time': 1770336000000, 'value': 81300.68}, {'time': 1770422400000, 'value': 80208.07}, {'time': 1770508800000, 'value': 79304.13}, {'time': 1770595200000, 'value': 78469.28}, {'time': 1770681600000, 'value': 77589.7}, {'time': 1770768000000, 'value': 76626.27}, {'time': 1770854400000, 'value': 75680.42}, {'time': 1770940800000, 'value': 75060.18}, {'time': 1771027200000, 'value': 74579.04}, {'time': 1771113600000, 'value': 74052.6}, {'time': 1771200000000, 'value': 73579.01}, {'time': 1771286400000, 'value': 73025.85}, {'time': 1771372800000, 'value': 72425.8}, {'time': 1771459200000, 'value': 71928.69}, {'time': 1771545600000, 'value': 71568.44}]);
+        ema50Series.setData([{'time': 1766448000000, 'value': 87414.0}, {'time': 1766534400000, 'value': 87421.76}, {'time': 1766620800000, 'value': 87414.43}, {'time': 1766707200000, 'value': 87410.0}, {'time': 1766793600000, 'value': 87425.38}, {'time': 1766880000000, 'value': 87441.47}, {'time': 1766966400000, 'value': 87429.58}, {'time': 1767052800000, 'value': 87468.81}, {'time': 1767139200000, 'value': 87470.38}, {'time': 1767225600000, 'value': 87519.86}, {'time': 1767312000000, 'value': 87614.95}, {'time': 1767398400000, 'value': 87732.14}, {'time': 1767484800000, 'value': 87876.5}, {'time': 1767571200000, 'value': 88112.03}, {'time': 1767657600000, 'value': 88332.31}, {'time': 1767744000000, 'value': 88449.0}, {'time': 1767830400000, 'value': 88550.11}, {'time': 1767916800000, 'value': 88627.09}, {'time': 1768003200000, 'value': 88696.09}, {'time': 1768089600000, 'value': 88779.67}, {'time': 1768176000000, 'value': 88874.31}, {'time': 1768262400000, 'value': 89127.16}, {'time': 1768348800000, 'value': 89433.12}, {'time': 1768435200000, 'value': 89673.05}, {'time': 1768521600000, 'value': 89902.54}, {'time': 1768608000000, 'value': 90106.36}, {'time': 1768694400000, 'value': 90244.71}, {'time': 1768780800000, 'value': 90335.26}, {'time': 1768867200000, 'value': 90255.87}, {'time': 1768953600000, 'value': 90221.41}, {'time': 1769040000000, 'value': 90191.64}, {'time': 1769126400000, 'value': 90164.67}, {'time': 1769212800000, 'value': 90123.34}, {'time': 1769299200000, 'value': 89984.08}, {'time': 1769385600000, 'value': 89916.75}, {'time': 1769472000000, 'value': 89884.82}, {'time': 1769558400000, 'value': 89857.36}, {'time': 1769644800000, 'value': 89649.68}, {'time': 1769731200000, 'value': 89433.17}, {'time': 1769817600000, 'value': 89009.17}, {'time': 1769904000000, 'value': 88537.22}, {'time': 1769990400000, 'value': 88151.01}, {'time': 1770076800000, 'value': 87660.13}, {'time': 1770163200000, 'value': 87085.99}, {'time': 1770249600000, 'value': 86129.76}, {'time': 1770336000000, 'value': 85519.0}, {'time': 1770422400000, 'value': 84882.25}, {'time': 1770508800000, 'value': 84309.02}, {'time': 1770595200000, 'value': 83752.62}, {'time': 1770681600000, 'value': 83166.0}, {'time': 1770768000000, 'value': 82531.73}, {'time': 1770854400000, 'value': 81892.12}, {'time': 1770940800000, 'value': 81380.97}, {'time': 1771027200000, 'value': 80925.55}, {'time': 1771113600000, 'value': 80449.57}, {'time': 1771200000000, 'value': 79994.42}, {'time': 1771286400000, 'value': 79504.22}, {'time': 1771372800000, 'value': 78991.32}, {'time': 1771459200000, 'value': 78519.41}, {'time': 1771545600000, 'value': 78105.54}]);
+        ema200Series.setData([{'time': 1766448000000, 'value': 87414.0}, {'time': 1766534400000, 'value': 87415.97}, {'time': 1766620800000, 'value': 87414.17}, {'time': 1766707200000, 'value': 87413.04}, {'time': 1766793600000, 'value': 87416.92}, {'time': 1766880000000, 'value': 87421.08}, {'time': 1766966400000, 'value': 87418.27}, {'time': 1767052800000, 'value': 87428.34}, {'time': 1767139200000, 'value': 87429.14}, {'time': 1767225600000, 'value': 87442.1}, {'time': 1767312000000, 'value': 87467.0}, {'time': 1767398400000, 'value': 87498.21}, {'time': 1767484800000, 'value': 87537.17}, {'time': 1767571200000, 'value': 87600.31}, {'time': 1767657600000, 'value': 87661.29}, {'time': 1767744000000, 'value': 87697.57}, {'time': 1767830400000, 'value': 87730.7}, {'time': 1767916800000, 'value': 87758.39}, {'time': 1768003200000, 'value': 87784.54}, {'time': 1768089600000, 'value': 87814.82}, {'time': 1768176000000, 'value': 87848.43}, {'time': 1768262400000, 'value': 87922.79}, {'time': 1768348800000, 'value': 88012.41}, {'time': 1768435200000, 'value': 88087.42}, {'time': 1768521600000, 'value': 88161.43}, {'time': 1768608000000, 'value': 88230.47}, {'time': 1768694400000, 'value': 88284.24}, {'time': 1768780800000, 'value': 88326.72}, {'time': 1768867200000, 'value': 88326.57}, {'time': 1768953600000, 'value': 88337.02}, {'time': 1769040000000, 'value': 88348.22}, {'time': 1769126400000, 'value': 88359.71}, {'time': 1769212800000, 'value': 88367.19}, {'time': 1769299200000, 'value': 88349.33}, {'time': 1769385600000, 'value': 88348.51}, {'time': 1769472000000, 'value': 88356.01}, {'time': 1769558400000, 'value': 88364.26}, {'time': 1769644800000, 'value': 88326.42}, {'time': 1769731200000, 'value': 88284.65}, {'time': 1769817600000, 'value': 88188.5}, {'time': 1769904000000, 'value': 88076.91}, {'time': 1769990400000, 'value': 87983.5}, {'time': 1770076800000, 'value': 87860.61}, {'time': 1770163200000, 'value': 87712.94}, {'time': 1770249600000, 'value': 87464.08}, {'time': 1770336000000, 'value': 87295.83}, {'time': 1770422400000, 'value': 87116.59}, {'time': 1770508800000, 'value': 86948.91}, {'time': 1770595200000, 'value': 86781.47}, {'time': 1770681600000, 'value': 86602.49}, {'time': 1770768000000, 'value': 86407.36}, {'time': 1770854400000, 'value': 86206.51}, {'time': 1770940800000, 'value': 86033.88}, {'time': 1771027200000, 'value': 85872.03}, {'time': 1771113600000, 'value': 85702.04}, {'time': 1771200000000, 'value': 85534.29}, {'time': 1771286400000, 'value': 85354.79}, {'time': 1771372800000, 'value': 85166.43}, {'time': 1771459200000, 'value': 84985.25}, {'time': 1771545600000, 'value': 84815.91}]);
+
+        const bbUpperSeries = mainChart.addLineSeries({ color: colors.bbUpper, lineWidth: 1, title: 'BB Upper', lastValueVisible: false });
+        const bbLowerSeries = mainChart.addLineSeries({ color: colors.bbLower, lineWidth: 1, title: 'BB Lower', lastValueVisible: false });
+        bbUpperSeries.setData([{'time': 1768089600000, 'value': 93790.56}, {'time': 1768176000000, 'value': 93918.69}, {'time': 1768262400000, 'value': 94866.96}, {'time': 1768348800000, 'value': 96044.32}, {'time': 1768435200000, 'value': 96653.5}, {'time': 1768521600000, 'value': 97172.39}, {'time': 1768608000000, 'value': 97508.09}, {'time': 1768694400000, 'value': 97457.18}, {'time': 1768780800000, 'value': 97383.46}, {'time': 1768867200000, 'value': 97275.9}, {'time': 1768953600000, 'value': 97217.21}, {'time': 1769040000000, 'value': 97247.95}, {'time': 1769126400000, 'value': 97297.87}, {'time': 1769212800000, 'value': 97368.35}, {'time': 1769299200000, 'value': 97497.35}, {'time': 1769385600000, 'value': 97356.3}, {'time': 1769472000000, 'value': 97345.74}, {'time': 1769558400000, 'value': 97335.54}, {'time': 1769644800000, 'value': 97752.82}, {'time': 1769731200000, 'value': 98112.99}, {'time': 1769817600000, 'value': 99265.22}, {'time': 1769904000000, 'value': 100247.09}, {'time': 1769990400000, 'value': 100032.76}, {'time': 1770076800000, 'value': 99630.32}, {'time': 1770163200000, 'value': 99496.64}, {'time': 1770249600000, 'value': 100890.1}, {'time': 1770336000000, 'value': 100068.3}, {'time': 1770422400000, 'value': 99287.74}, {'time': 1770508800000, 'value': 98259.77}, {'time': 1770595200000, 'value': 97682.1}, {'time': 1770681600000, 'value': 96815.48}, {'time': 1770768000000, 'value': 95809.52}, {'time': 1770854400000, 'value': 94550.79}, {'time': 1770940800000, 'value': 92909.36}, {'time': 1771027200000, 'value': 91505.04}, {'time': 1771113600000, 'value': 89518.86}, {'time': 1771200000000, 'value': 86940.71}, {'time': 1771286400000, 'value': 83795.26}, {'time': 1771372800000, 'value': 81536.63}, {'time': 1771459200000, 'value': 78827.89}, {'time': 1771545600000, 'value': 77380.87}]);
+        bbLowerSeries.setData([{'time': 1768089600000, 'value': 85273.89}, {'time': 1768176000000, 'value': 85523.66}, {'time': 1768262400000, 'value': 85346.38}, {'time': 1768348800000, 'value': 85138.47}, {'time': 1768435200000, 'value': 85354.28}, {'time': 1768521600000, 'value': 85607.68}, {'time': 1768608000000, 'value': 85998.39}, {'time': 1768694400000, 'value': 86698.92}, {'time': 1768780800000, 'value': 87185.0}, {'time': 1768867200000, 'value': 87372.76}, {'time': 1768953600000, 'value': 87495.95}, {'time': 1769040000000, 'value': 87416.99}, {'time': 1769126400000, 'value': 87257.14}, {'time': 1769212800000, 'value': 86956.37}, {'time': 1769299200000, 'value': 86096.34}, {'time': 1769385600000, 'value': 85691.2}, {'time': 1769472000000, 'value': 85481.21}, {'time': 1769558400000, 'value': 85307.16}, {'time': 1769644800000, 'value': 84294.73}, {'time': 1769731200000, 'value': 83308.76}, {'time': 1769817600000, 'value': 80935.89}, {'time': 1769904000000, 'value': 78532.17}, {'time': 1769990400000, 'value': 77083.19}, {'time': 1770076800000, 'value': 75356.06}, {'time': 1770163200000, 'value': 73236.59}, {'time': 1770249600000, 'value': 68560.83}, {'time': 1770336000000, 'value': 66928.18}, {'time': 1770422400000, 'value': 65273.49}, {'time': 1770508800000, 'value': 64072.57}, {'time': 1770595200000, 'value': 62831.23}, {'time': 1770681600000, 'value': 61639.55}, {'time': 1770768000000, 'value': 60398.47}, {'time': 1770854400000, 'value': 59328.99}, {'time': 1770940800000, 'value': 58945.13}, {'time': 1771027200000, 'value': 58669.0}, {'time': 1771113600000, 'value': 58707.28}, {'time': 1771200000000, 'value': 59259.49}, {'time': 1771286400000, 'value': 60235.9}, {'time': 1771372800000, 'value': 60680.91}, {'time': 1771459200000, 'value': 61672.53}, {'time': 1771545600000, 'value': 62054.03}]);
+
+        const vwapSeries = mainChart.addLineSeries({ color: colors.vwap, lineWidth: 2, title: 'VWAP', lastValueVisible: false });
+        vwapSeries.setData([{'time': 1766448000000, 'value': 87639.79}, {'time': 1766534400000, 'value': 87524.31}, {'time': 1766620800000, 'value': 87532.73}, {'time': 1766707200000, 'value': 87617.74}, {'time': 1766793600000, 'value': 87617.95}, {'time': 1766880000000, 'value': 87629.4}, {'time': 1766966400000, 'value': 87727.25}, {'time': 1767052800000, 'value': 87789.43}, {'time': 1767139200000, 'value': 87803.67}, {'time': 1767225600000, 'value': 87835.88}, {'time': 1767312000000, 'value': 88088.84}, {'time': 1767398400000, 'value': 88209.41}, {'time': 1767484800000, 'value': 88416.84}, {'time': 1767571200000, 'value': 89009.55}, {'time': 1767657600000, 'value': 89444.99}, {'time': 1767744000000, 'value': 89641.05}, {'time': 1767830400000, 'value': 89709.5}, {'time': 1767916800000, 'value': 89769.54}, {'time': 1768003200000, 'value': 89783.06}, {'time': 1768089600000, 'value': 89808.08}, {'time': 1768176000000, 'value': 89892.11}, {'time': 1768262400000, 'value': 90201.22}, {'time': 1768348800000, 'value': 90670.63}, {'time': 1768435200000, 'value': 90995.33}, {'time': 1768521600000, 'value': 91151.54}, {'time': 1768608000000, 'value': 91223.43}, {'time': 1768694400000, 'value': 91290.84}, {'time': 1768780800000, 'value': 91350.53}, {'time': 1768867200000, 'value': 91261.86}, {'time': 1768953600000, 'value': 91144.49}, {'time': 1769040000000, 'value': 91088.44}, {'time': 1769126400000, 'value': 91041.41}, {'time': 1769212800000, 'value': 91019.99}, {'time': 1769299200000, 'value': 90907.12}, {'time': 1769385600000, 'value': 90794.92}, {'time': 1769472000000, 'value': 90728.51}, {'time': 1769558400000, 'value': 90690.15}, {'time': 1769644800000, 'value': 90457.22}, {'time': 1769731200000, 'value': 90103.5}, {'time': 1769817600000, 'value': 89617.99}, {'time': 1769904000000, 'value': 89205.34}, {'time': 1769990400000, 'value': 88676.81}, {'time': 1770076800000, 'value': 88172.81}, {'time': 1770163200000, 'value': 87639.29}, {'time': 1770249600000, 'value': 86233.26}, {'time': 1770336000000, 'value': 85176.59}, {'time': 1770422400000, 'value': 84709.26}, {'time': 1770508800000, 'value': 84444.66}, {'time': 1770595200000, 'value': 84100.04}, {'time': 1770681600000, 'value': 83826.78}, {'time': 1770768000000, 'value': 83468.06}, {'time': 1770854400000, 'value': 83143.73}, {'time': 1770940800000, 'value': 82883.3}, {'time': 1771027200000, 'value': 82685.23}, {'time': 1771113600000, 'value': 82464.63}, {'time': 1771200000000, 'value': 82278.52}, {'time': 1771286400000, 'value': 82077.34}, {'time': 1771372800000, 'value': 81880.2}, {'time': 1771459200000, 'value': 81693.9}, {'time': 1771545600000, 'value': 81439.09}]);
+
+        const stSeries = mainChart.addLineSeries({ color: colors.supertrend, lineWidth: 2, title: 'SuperTrend', lastValueVisible: false });
+        stSeries.setData([{'time': 1767225600000, 'value': 93801.69}, {'time': 1767312000000, 'value': 93801.69}, {'time': 1767398400000, 'value': 93801.69}, {'time': 1767484800000, 'value': 93801.69}, {'time': 1767571200000, 'value': 93801.69}, {'time': 1767657600000, 'value': 93801.69}, {'time': 1767744000000, 'value': 93801.69}, {'time': 1767830400000, 'value': 93801.69}, {'time': 1767916800000, 'value': 93801.69}, {'time': 1768003200000, 'value': 93801.69}, {'time': 1768089600000, 'value': 93801.69}, {'time': 1768176000000, 'value': 93801.69}, {'time': 1768262400000, 'value': 93801.69}, {'time': 1768348800000, 'value': 93801.69}, {'time': 1768435200000, 'value': 93801.69}, {'time': 1768521600000, 'value': 93801.69}, {'time': 1768608000000, 'value': 93801.69}, {'time': 1768694400000, 'value': 93801.69}, {'time': 1768780800000, 'value': 93801.69}, {'time': 1768867200000, 'value': 93801.69}, {'time': 1768953600000, 'value': 93801.69}, {'time': 1769040000000, 'value': 93801.69}, {'time': 1769126400000, 'value': 93801.69}, {'time': 1769212800000, 'value': 93801.69}, {'time': 1769299200000, 'value': 93801.69}, {'time': 1769385600000, 'value': 93801.69}, {'time': 1769472000000, 'value': 93801.69}, {'time': 1769558400000, 'value': 93801.69}, {'time': 1769644800000, 'value': 93801.69}, {'time': 1769731200000, 'value': 91027.02}, {'time': 1769817600000, 'value': 89703.27}, {'time': 1769904000000, 'value': 87778.58}, {'time': 1769990400000, 'value': 87778.58}, {'time': 1770076800000, 'value': 87778.58}, {'time': 1770163200000, 'value': 87423.04}, {'time': 1770249600000, 'value': 83406.56}, {'time': 1770336000000, 'value': 83406.56}, {'time': 1770422400000, 'value': 83406.56}, {'time': 1770508800000, 'value': 83406.56}, {'time': 1770595200000, 'value': 83406.56}, {'time': 1770681600000, 'value': 83406.56}, {'time': 1770768000000, 'value': 83406.56}, {'time': 1770854400000, 'value': 82821.34}, {'time': 1770940800000, 'value': 82821.34}, {'time': 1771027200000, 'value': 82821.34}, {'time': 1771113600000, 'value': 81429.62}, {'time': 1771200000000, 'value': 77965.68}, {'time': 1771286400000, 'value': 76691.81}, {'time': 1771372800000, 'value': 75693.76}, {'time': 1771459200000, 'value': 74579.1}, {'time': 1771545600000, 'value': 74579.1}]);
+
+        const tenkanSeries = mainChart.addLineSeries({ color: colors.tenkan, lineWidth: 1, title: 'Tenkan', lastValueVisible: false });
+        const kijunSeries = mainChart.addLineSeries({ color: colors.kijun, lineWidth: 1, title: 'Kijun', lastValueVisible: false });
+        tenkanSeries.setData([{'time': 1767139200000, 'value': 88355.48}, {'time': 1767225600000, 'value': 88355.48}, {'time': 1767312000000, 'value': 88756.3}, {'time': 1767398400000, 'value': 88756.3}, {'time': 1767484800000, 'value': 89215.25}, {'time': 1767571200000, 'value': 90739.99}, {'time': 1767657600000, 'value': 90739.99}, {'time': 1767744000000, 'value': 90748.81}, {'time': 1767830400000, 'value': 90946.32}, {'time': 1767916800000, 'value': 91080.74}, {'time': 1768003200000, 'value': 91530.34}, {'time': 1768089600000, 'value': 91997.97}, {'time': 1768176000000, 'value': 91997.97}, {'time': 1768262400000, 'value': 92622.75}, {'time': 1768348800000, 'value': 93547.24}, {'time': 1768435200000, 'value': 93547.24}, {'time': 1768521600000, 'value': 93547.24}, {'time': 1768608000000, 'value': 93742.99}, {'time': 1768694400000, 'value': 93957.81}, {'time': 1768780800000, 'value': 93957.81}, {'time': 1768867200000, 'value': 92837.77}, {'time': 1768953600000, 'value': 92546.09}, {'time': 1769040000000, 'value': 92546.09}, {'time': 1769126400000, 'value': 92190.87}, {'time': 1769212800000, 'value': 91516.73}, {'time': 1769299200000, 'value': 90801.09}, {'time': 1769385600000, 'value': 90747.61}, {'time': 1769472000000, 'value': 89832.27}, {'time': 1769558400000, 'value': 89401.07}, {'time': 1769644800000, 'value': 87175.43}, {'time': 1769731200000, 'value': 86085.86}, {'time': 1769817600000, 'value': 83458.07}, {'time': 1769904000000, 'value': 83069.09}, {'time': 1769990400000, 'value': 82495.31}, {'time': 1770076800000, 'value': 81668.21}, {'time': 1770163200000, 'value': 81109.61}, {'time': 1770249600000, 'value': 76396.41}, {'time': 1770336000000, 'value': 74637.49}, {'time': 1770422400000, 'value': 72338.18}, {'time': 1770508800000, 'value': 72105.56}, {'time': 1770595200000, 'value': 69698.41}, {'time': 1770681600000, 'value': 69666.41}, {'time': 1770768000000, 'value': 69596.53}, {'time': 1770854400000, 'value': 68469.43}, {'time': 1770940800000, 'value': 66617.88}, {'time': 1771027200000, 'value': 66140.55}, {'time': 1771113600000, 'value': 68649.51}, {'time': 1771200000000, 'value': 68649.51}, {'time': 1771286400000, 'value': 68231.04}, {'time': 1771372800000, 'value': 68015.7}, {'time': 1771459200000, 'value': 68015.7}, {'time': 1771545600000, 'value': 68015.7}]);
+        kijunSeries.setData([{'time': 1768608000000, 'value': 92136.2}, {'time': 1768694400000, 'value': 92136.2}, {'time': 1768780800000, 'value': 92244.37}, {'time': 1768867200000, 'value': 92244.37}, {'time': 1768953600000, 'value': 92289.26}, {'time': 1769040000000, 'value': 92289.26}, {'time': 1769126400000, 'value': 92289.26}, {'time': 1769212800000, 'value': 92298.07}, {'time': 1769299200000, 'value': 91932.16}, {'time': 1769385600000, 'value': 91932.16}, {'time': 1769472000000, 'value': 91932.16}, {'time': 1769558400000, 'value': 91932.16}, {'time': 1769644800000, 'value': 90555.6}, {'time': 1769731200000, 'value': 89466.04}, {'time': 1769817600000, 'value': 86838.24}, {'time': 1769904000000, 'value': 86779.75}, {'time': 1769990400000, 'value': 86205.97}, {'time': 1770076800000, 'value': 85378.87}, {'time': 1770163200000, 'value': 84820.27}, {'time': 1770249600000, 'value': 80107.07}, {'time': 1770336000000, 'value': 78967.4}, {'time': 1770422400000, 'value': 78967.4}, {'time': 1770508800000, 'value': 78967.4}, {'time': 1770595200000, 'value': 78612.19}, {'time': 1770681600000, 'value': 77938.05}, {'time': 1770768000000, 'value': 77836.34}, {'time': 1770854400000, 'value': 77782.86}, {'time': 1770940800000, 'value': 76867.52}, {'time': 1771027200000, 'value': 76436.32}, {'time': 1771113600000, 'value': 75587.23}, {'time': 1771200000000, 'value': 75587.23}, {'time': 1771286400000, 'value': 75587.23}, {'time': 1771372800000, 'value': 75256.75}, {'time': 1771459200000, 'value': 75256.75}, {'time': 1771545600000, 'value': 75256.75}]);
+
+        
+        // Regression Channel
+        const regLineSeries = mainChart.addLineSeries({ color: '#9c27b0', lineWidth: 2, title: 'Reg Line' });
+        const regUpper1Series = mainChart.addLineSeries({ color: '#9c27b0', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, title: 'Reg +1σ' });
+        const regLower1Series = mainChart.addLineSeries({ color: '#9c27b0', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, title: 'Reg -1σ' });
+        
+        regLineSeries.setData([{'time': 1769040000000, 'value': 88725.94}, {'time': 1769126400000, 'value': 87808.9}, {'time': 1769212800000, 'value': 86891.85}, {'time': 1769299200000, 'value': 85974.81}, {'time': 1769385600000, 'value': 85057.76}, {'time': 1769472000000, 'value': 84140.72}, {'time': 1769558400000, 'value': 83223.67}, {'time': 1769644800000, 'value': 82306.63}, {'time': 1769731200000, 'value': 81389.59}, {'time': 1769817600000, 'value': 80472.54}, {'time': 1769904000000, 'value': 79555.5}, {'time': 1769990400000, 'value': 78638.45}, {'time': 1770076800000, 'value': 77721.41}, {'time': 1770163200000, 'value': 76804.36}, {'time': 1770249600000, 'value': 75887.32}, {'time': 1770336000000, 'value': 74970.28}, {'time': 1770422400000, 'value': 74053.23}, {'time': 1770508800000, 'value': 73136.19}, {'time': 1770595200000, 'value': 72219.14}, {'time': 1770681600000, 'value': 71302.1}, {'time': 1770768000000, 'value': 70385.06}, {'time': 1770854400000, 'value': 69468.01}, {'time': 1770940800000, 'value': 68550.97}, {'time': 1771027200000, 'value': 67633.92}, {'time': 1771113600000, 'value': 66716.88}, {'time': 1771200000000, 'value': 65799.83}, {'time': 1771286400000, 'value': 64882.79}, {'time': 1771372800000, 'value': 63965.75}, {'time': 1771459200000, 'value': 63048.7}, {'time': 1771545600000, 'value': 62131.66}]);
+        regUpper1Series.setData([{'time': 1769040000000, 'value': 92633.17}, {'time': 1769126400000, 'value': 91716.12}, {'time': 1769212800000, 'value': 90799.08}, {'time': 1769299200000, 'value': 89882.03}, {'time': 1769385600000, 'value': 88964.99}, {'time': 1769472000000, 'value': 88047.94}, {'time': 1769558400000, 'value': 87130.9}, {'time': 1769644800000, 'value': 86213.86}, {'time': 1769731200000, 'value': 85296.81}, {'time': 1769817600000, 'value': 84379.77}, {'time': 1769904000000, 'value': 83462.72}, {'time': 1769990400000, 'value': 82545.68}, {'time': 1770076800000, 'value': 81628.64}, {'time': 1770163200000, 'value': 80711.59}, {'time': 1770249600000, 'value': 79794.55}, {'time': 1770336000000, 'value': 78877.5}, {'time': 1770422400000, 'value': 77960.46}, {'time': 1770508800000, 'value': 77043.41}, {'time': 1770595200000, 'value': 76126.37}, {'time': 1770681600000, 'value': 75209.33}, {'time': 1770768000000, 'value': 74292.28}, {'time': 1770854400000, 'value': 73375.24}, {'time': 1770940800000, 'value': 72458.19}, {'time': 1771027200000, 'value': 71541.15}, {'time': 1771113600000, 'value': 70624.1}, {'time': 1771200000000, 'value': 69707.06}, {'time': 1771286400000, 'value': 68790.02}, {'time': 1771372800000, 'value': 67872.97}, {'time': 1771459200000, 'value': 66955.93}, {'time': 1771545600000, 'value': 66038.88}]);
+        regLower1Series.setData([{'time': 1769040000000, 'value': 84818.71}, {'time': 1769126400000, 'value': 83901.67}, {'time': 1769212800000, 'value': 82984.62}, {'time': 1769299200000, 'value': 82067.58}, {'time': 1769385600000, 'value': 81150.54}, {'time': 1769472000000, 'value': 80233.49}, {'time': 1769558400000, 'value': 79316.45}, {'time': 1769644800000, 'value': 78399.4}, {'time': 1769731200000, 'value': 77482.36}, {'time': 1769817600000, 'value': 76565.32}, {'time': 1769904000000, 'value': 75648.27}, {'time': 1769990400000, 'value': 74731.23}, {'time': 1770076800000, 'value': 73814.18}, {'time': 1770163200000, 'value': 72897.14}, {'time': 1770249600000, 'value': 71980.09}, {'time': 1770336000000, 'value': 71063.05}, {'time': 1770422400000, 'value': 70146.01}, {'time': 1770508800000, 'value': 69228.96}, {'time': 1770595200000, 'value': 68311.92}, {'time': 1770681600000, 'value': 67394.87}, {'time': 1770768000000, 'value': 66477.83}, {'time': 1770854400000, 'value': 65560.78}, {'time': 1770940800000, 'value': 64643.74}, {'time': 1771027200000, 'value': 63726.7}, {'time': 1771113600000, 'value': 62809.65}, {'time': 1771200000000, 'value': 61892.61}, {'time': 1771286400000, 'value': 60975.56}, {'time': 1771372800000, 'value': 60058.52}, {'time': 1771459200000, 'value': 59141.48}, {'time': 1771545600000, 'value': 58224.43}]);
+        
+        const pivotSeries = mainChart.addLineSeries({ color: '#ffd700', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, title: 'Pivot', lastValueVisible: true });
+        pivotSeries.setData([{'time': 1766448000000, 'value': 67592.91}, {'time': 1766534400000, 'value': 67592.91}, {'time': 1766620800000, 'value': 67592.91}, {'time': 1766707200000, 'value': 67592.91}, {'time': 1766793600000, 'value': 67592.91}, {'time': 1766880000000, 'value': 67592.91}, {'time': 1766966400000, 'value': 67592.91}, {'time': 1767052800000, 'value': 67592.91}, {'time': 1767139200000, 'value': 67592.91}, {'time': 1767225600000, 'value': 67592.91}, {'time': 1767312000000, 'value': 67592.91}, {'time': 1767398400000, 'value': 67592.91}, {'time': 1767484800000, 'value': 67592.91}, {'time': 1767571200000, 'value': 67592.91}, {'time': 1767657600000, 'value': 67592.91}, {'time': 1767744000000, 'value': 67592.91}, {'time': 1767830400000, 'value': 67592.91}, {'time': 1767916800000, 'value': 67592.91}, {'time': 1768003200000, 'value': 67592.91}, {'time': 1768089600000, 'value': 67592.91}, {'time': 1768176000000, 'value': 67592.91}, {'time': 1768262400000, 'value': 67592.91}, {'time': 1768348800000, 'value': 67592.91}, {'time': 1768435200000, 'value': 67592.91}, {'time': 1768521600000, 'value': 67592.91}, {'time': 1768608000000, 'value': 67592.91}, {'time': 1768694400000, 'value': 67592.91}, {'time': 1768780800000, 'value': 67592.91}, {'time': 1768867200000, 'value': 67592.91}, {'time': 1768953600000, 'value': 67592.91}, {'time': 1769040000000, 'value': 67592.91}, {'time': 1769126400000, 'value': 67592.91}, {'time': 1769212800000, 'value': 67592.91}, {'time': 1769299200000, 'value': 67592.91}, {'time': 1769385600000, 'value': 67592.91}, {'time': 1769472000000, 'value': 67592.91}, {'time': 1769558400000, 'value': 67592.91}, {'time': 1769644800000, 'value': 67592.91}, {'time': 1769731200000, 'value': 67592.91}, {'time': 1769817600000, 'value': 67592.91}, {'time': 1769904000000, 'value': 67592.91}, {'time': 1769990400000, 'value': 67592.91}, {'time': 1770076800000, 'value': 67592.91}, {'time': 1770163200000, 'value': 67592.91}, {'time': 1770249600000, 'value': 67592.91}, {'time': 1770336000000, 'value': 67592.91}, {'time': 1770422400000, 'value': 67592.91}, {'time': 1770508800000, 'value': 67592.91}, {'time': 1770595200000, 'value': 67592.91}, {'time': 1770681600000, 'value': 67592.91}, {'time': 1770768000000, 'value': 67592.91}, {'time': 1770854400000, 'value': 67592.91}, {'time': 1770940800000, 'value': 67592.91}, {'time': 1771027200000, 'value': 67592.91}, {'time': 1771113600000, 'value': 67592.91}, {'time': 1771200000000, 'value': 67592.91}, {'time': 1771286400000, 'value': 67592.91}, {'time': 1771372800000, 'value': 67592.91}, {'time': 1771459200000, 'value': 67592.91}, {'time': 1771545600000, 'value': 67592.91}]);
+        
+        const r1Series = mainChart.addLineSeries({ color: '#ff6b6b', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, title: 'R1', lastValueVisible: true });
+        r1Series.setData([{'time': 1766448000000, 'value': 68615.62}, {'time': 1766534400000, 'value': 68615.62}, {'time': 1766620800000, 'value': 68615.62}, {'time': 1766707200000, 'value': 68615.62}, {'time': 1766793600000, 'value': 68615.62}, {'time': 1766880000000, 'value': 68615.62}, {'time': 1766966400000, 'value': 68615.62}, {'time': 1767052800000, 'value': 68615.62}, {'time': 1767139200000, 'value': 68615.62}, {'time': 1767225600000, 'value': 68615.62}, {'time': 1767312000000, 'value': 68615.62}, {'time': 1767398400000, 'value': 68615.62}, {'time': 1767484800000, 'value': 68615.62}, {'time': 1767571200000, 'value': 68615.62}, {'time': 1767657600000, 'value': 68615.62}, {'time': 1767744000000, 'value': 68615.62}, {'time': 1767830400000, 'value': 68615.62}, {'time': 1767916800000, 'value': 68615.62}, {'time': 1768003200000, 'value': 68615.62}, {'time': 1768089600000, 'value': 68615.62}, {'time': 1768176000000, 'value': 68615.62}, {'time': 1768262400000, 'value': 68615.62}, {'time': 1768348800000, 'value': 68615.62}, {'time': 1768435200000, 'value': 68615.62}, {'time': 1768521600000, 'value': 68615.62}, {'time': 1768608000000, 'value': 68615.62}, {'time': 1768694400000, 'value': 68615.62}, {'time': 1768780800000, 'value': 68615.62}, {'time': 1768867200000, 'value': 68615.62}, {'time': 1768953600000, 'value': 68615.62}, {'time': 1769040000000, 'value': 68615.62}, {'time': 1769126400000, 'value': 68615.62}, {'time': 1769212800000, 'value': 68615.62}, {'time': 1769299200000, 'value': 68615.62}, {'time': 1769385600000, 'value': 68615.62}, {'time': 1769472000000, 'value': 68615.62}, {'time': 1769558400000, 'value': 68615.62}, {'time': 1769644800000, 'value': 68615.62}, {'time': 1769731200000, 'value': 68615.62}, {'time': 1769817600000, 'value': 68615.62}, {'time': 1769904000000, 'value': 68615.62}, {'time': 1769990400000, 'value': 68615.62}, {'time': 1770076800000, 'value': 68615.62}, {'time': 1770163200000, 'value': 68615.62}, {'time': 1770249600000, 'value': 68615.62}, {'time': 1770336000000, 'value': 68615.62}, {'time': 1770422400000, 'value': 68615.62}, {'time': 1770508800000, 'value': 68615.62}, {'time': 1770595200000, 'value': 68615.62}, {'time': 1770681600000, 'value': 68615.62}, {'time': 1770768000000, 'value': 68615.62}, {'time': 1770854400000, 'value': 68615.62}, {'time': 1770940800000, 'value': 68615.62}, {'time': 1771027200000, 'value': 68615.62}, {'time': 1771113600000, 'value': 68615.62}, {'time': 1771200000000, 'value': 68615.62}, {'time': 1771286400000, 'value': 68615.62}, {'time': 1771372800000, 'value': 68615.62}, {'time': 1771459200000, 'value': 68615.62}, {'time': 1771545600000, 'value': 68615.62}]);
+        
+        const r2Series = mainChart.addLineSeries({ color: '#ff5252', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, title: 'R2', lastValueVisible: true });
+        r2Series.setData([{'time': 1766448000000, 'value': 69265.27}, {'time': 1766534400000, 'value': 69265.27}, {'time': 1766620800000, 'value': 69265.27}, {'time': 1766707200000, 'value': 69265.27}, {'time': 1766793600000, 'value': 69265.27}, {'time': 1766880000000, 'value': 69265.27}, {'time': 1766966400000, 'value': 69265.27}, {'time': 1767052800000, 'value': 69265.27}, {'time': 1767139200000, 'value': 69265.27}, {'time': 1767225600000, 'value': 69265.27}, {'time': 1767312000000, 'value': 69265.27}, {'time': 1767398400000, 'value': 69265.27}, {'time': 1767484800000, 'value': 69265.27}, {'time': 1767571200000, 'value': 69265.27}, {'time': 1767657600000, 'value': 69265.27}, {'time': 1767744000000, 'value': 69265.27}, {'time': 1767830400000, 'value': 69265.27}, {'time': 1767916800000, 'value': 69265.27}, {'time': 1768003200000, 'value': 69265.27}, {'time': 1768089600000, 'value': 69265.27}, {'time': 1768176000000, 'value': 69265.27}, {'time': 1768262400000, 'value': 69265.27}, {'time': 1768348800000, 'value': 69265.27}, {'time': 1768435200000, 'value': 69265.27}, {'time': 1768521600000, 'value': 69265.27}, {'time': 1768608000000, 'value': 69265.27}, {'time': 1768694400000, 'value': 69265.27}, {'time': 1768780800000, 'value': 69265.27}, {'time': 1768867200000, 'value': 69265.27}, {'time': 1768953600000, 'value': 69265.27}, {'time': 1769040000000, 'value': 69265.27}, {'time': 1769126400000, 'value': 69265.27}, {'time': 1769212800000, 'value': 69265.27}, {'time': 1769299200000, 'value': 69265.27}, {'time': 1769385600000, 'value': 69265.27}, {'time': 1769472000000, 'value': 69265.27}, {'time': 1769558400000, 'value': 69265.27}, {'time': 1769644800000, 'value': 69265.27}, {'time': 1769731200000, 'value': 69265.27}, {'time': 1769817600000, 'value': 69265.27}, {'time': 1769904000000, 'value': 69265.27}, {'time': 1769990400000, 'value': 69265.27}, {'time': 1770076800000, 'value': 69265.27}, {'time': 1770163200000, 'value': 69265.27}, {'time': 1770249600000, 'value': 69265.27}, {'time': 1770336000000, 'value': 69265.27}, {'time': 1770422400000, 'value': 69265.27}, {'time': 1770508800000, 'value': 69265.27}, {'time': 1770595200000, 'value': 69265.27}, {'time': 1770681600000, 'value': 69265.27}, {'time': 1770768000000, 'value': 69265.27}, {'time': 1770854400000, 'value': 69265.27}, {'time': 1770940800000, 'value': 69265.27}, {'time': 1771027200000, 'value': 69265.27}, {'time': 1771113600000, 'value': 69265.27}, {'time': 1771200000000, 'value': 69265.27}, {'time': 1771286400000, 'value': 69265.27}, {'time': 1771372800000, 'value': 69265.27}, {'time': 1771459200000, 'value': 69265.27}, {'time': 1771545600000, 'value': 69265.27}]);
+        
+        const s1Series = mainChart.addLineSeries({ color: '#4caf50', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, title: 'S1', lastValueVisible: true });
+        s1Series.setData([{'time': 1766448000000, 'value': 66943.25}, {'time': 1766534400000, 'value': 66943.25}, {'time': 1766620800000, 'value': 66943.25}, {'time': 1766707200000, 'value': 66943.25}, {'time': 1766793600000, 'value': 66943.25}, {'time': 1766880000000, 'value': 66943.25}, {'time': 1766966400000, 'value': 66943.25}, {'time': 1767052800000, 'value': 66943.25}, {'time': 1767139200000, 'value': 66943.25}, {'time': 1767225600000, 'value': 66943.25}, {'time': 1767312000000, 'value': 66943.25}, {'time': 1767398400000, 'value': 66943.25}, {'time': 1767484800000, 'value': 66943.25}, {'time': 1767571200000, 'value': 66943.25}, {'time': 1767657600000, 'value': 66943.25}, {'time': 1767744000000, 'value': 66943.25}, {'time': 1767830400000, 'value': 66943.25}, {'time': 1767916800000, 'value': 66943.25}, {'time': 1768003200000, 'value': 66943.25}, {'time': 1768089600000, 'value': 66943.25}, {'time': 1768176000000, 'value': 66943.25}, {'time': 1768262400000, 'value': 66943.25}, {'time': 1768348800000, 'value': 66943.25}, {'time': 1768435200000, 'value': 66943.25}, {'time': 1768521600000, 'value': 66943.25}, {'time': 1768608000000, 'value': 66943.25}, {'time': 1768694400000, 'value': 66943.25}, {'time': 1768780800000, 'value': 66943.25}, {'time': 1768867200000, 'value': 66943.25}, {'time': 1768953600000, 'value': 66943.25}, {'time': 1769040000000, 'value': 66943.25}, {'time': 1769126400000, 'value': 66943.25}, {'time': 1769212800000, 'value': 66943.25}, {'time': 1769299200000, 'value': 66943.25}, {'time': 1769385600000, 'value': 66943.25}, {'time': 1769472000000, 'value': 66943.25}, {'time': 1769558400000, 'value': 66943.25}, {'time': 1769644800000, 'value': 66943.25}, {'time': 1769731200000, 'value': 66943.25}, {'time': 1769817600000, 'value': 66943.25}, {'time': 1769904000000, 'value': 66943.25}, {'time': 1769990400000, 'value': 66943.25}, {'time': 1770076800000, 'value': 66943.25}, {'time': 1770163200000, 'value': 66943.25}, {'time': 1770249600000, 'value': 66943.25}, {'time': 1770336000000, 'value': 66943.25}, {'time': 1770422400000, 'value': 66943.25}, {'time': 1770508800000, 'value': 66943.25}, {'time': 1770595200000, 'value': 66943.25}, {'time': 1770681600000, 'value': 66943.25}, {'time': 1770768000000, 'value': 66943.25}, {'time': 1770854400000, 'value': 66943.25}, {'time': 1770940800000, 'value': 66943.25}, {'time': 1771027200000, 'value': 66943.25}, {'time': 1771113600000, 'value': 66943.25}, {'time': 1771200000000, 'value': 66943.25}, {'time': 1771286400000, 'value': 66943.25}, {'time': 1771372800000, 'value': 66943.25}, {'time': 1771459200000, 'value': 66943.25}, {'time': 1771545600000, 'value': 66943.25}]);
+        
+        const s2Series = mainChart.addLineSeries({ color: '#2e7d32', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, title: 'S2', lastValueVisible: true });
+        s2Series.setData([{'time': 1766448000000, 'value': 65920.54}, {'time': 1766534400000, 'value': 65920.54}, {'time': 1766620800000, 'value': 65920.54}, {'time': 1766707200000, 'value': 65920.54}, {'time': 1766793600000, 'value': 65920.54}, {'time': 1766880000000, 'value': 65920.54}, {'time': 1766966400000, 'value': 65920.54}, {'time': 1767052800000, 'value': 65920.54}, {'time': 1767139200000, 'value': 65920.54}, {'time': 1767225600000, 'value': 65920.54}, {'time': 1767312000000, 'value': 65920.54}, {'time': 1767398400000, 'value': 65920.54}, {'time': 1767484800000, 'value': 65920.54}, {'time': 1767571200000, 'value': 65920.54}, {'time': 1767657600000, 'value': 65920.54}, {'time': 1767744000000, 'value': 65920.54}, {'time': 1767830400000, 'value': 65920.54}, {'time': 1767916800000, 'value': 65920.54}, {'time': 1768003200000, 'value': 65920.54}, {'time': 1768089600000, 'value': 65920.54}, {'time': 1768176000000, 'value': 65920.54}, {'time': 1768262400000, 'value': 65920.54}, {'time': 1768348800000, 'value': 65920.54}, {'time': 1768435200000, 'value': 65920.54}, {'time': 1768521600000, 'value': 65920.54}, {'time': 1768608000000, 'value': 65920.54}, {'time': 1768694400000, 'value': 65920.54}, {'time': 1768780800000, 'value': 65920.54}, {'time': 1768867200000, 'value': 65920.54}, {'time': 1768953600000, 'value': 65920.54}, {'time': 1769040000000, 'value': 65920.54}, {'time': 1769126400000, 'value': 65920.54}, {'time': 1769212800000, 'value': 65920.54}, {'time': 1769299200000, 'value': 65920.54}, {'time': 1769385600000, 'value': 65920.54}, {'time': 1769472000000, 'value': 65920.54}, {'time': 1769558400000, 'value': 65920.54}, {'time': 1769644800000, 'value': 65920.54}, {'time': 1769731200000, 'value': 65920.54}, {'time': 1769817600000, 'value': 65920.54}, {'time': 1769904000000, 'value': 65920.54}, {'time': 1769990400000, 'value': 65920.54}, {'time': 1770076800000, 'value': 65920.54}, {'time': 1770163200000, 'value': 65920.54}, {'time': 1770249600000, 'value': 65920.54}, {'time': 1770336000000, 'value': 65920.54}, {'time': 1770422400000, 'value': 65920.54}, {'time': 1770508800000, 'value': 65920.54}, {'time': 1770595200000, 'value': 65920.54}, {'time': 1770681600000, 'value': 65920.54}, {'time': 1770768000000, 'value': 65920.54}, {'time': 1770854400000, 'value': 65920.54}, {'time': 1770940800000, 'value': 65920.54}, {'time': 1771027200000, 'value': 65920.54}, {'time': 1771113600000, 'value': 65920.54}, {'time': 1771200000000, 'value': 65920.54}, {'time': 1771286400000, 'value': 65920.54}, {'time': 1771372800000, 'value': 65920.54}, {'time': 1771459200000, 'value': 65920.54}, {'time': 1771545600000, 'value': 65920.54}]);
+        
+        const fib618Series = mainChart.addLineSeries({ color: '#00bcd4', lineWidth: 1, title: 'Fib 618', lastValueVisible: true });
+        fib618Series.setData([{'time': 1766448000000, 'value': 79265.6}, {'time': 1766534400000, 'value': 79265.6}, {'time': 1766620800000, 'value': 79265.6}, {'time': 1766707200000, 'value': 79265.6}, {'time': 1766793600000, 'value': 79265.6}, {'time': 1766880000000, 'value': 79265.6}, {'time': 1766966400000, 'value': 79265.6}, {'time': 1767052800000, 'value': 79265.6}, {'time': 1767139200000, 'value': 79265.6}, {'time': 1767225600000, 'value': 79265.6}, {'time': 1767312000000, 'value': 79265.6}, {'time': 1767398400000, 'value': 79265.6}, {'time': 1767484800000, 'value': 79265.6}, {'time': 1767571200000, 'value': 79265.6}, {'time': 1767657600000, 'value': 79265.6}, {'time': 1767744000000, 'value': 79265.6}, {'time': 1767830400000, 'value': 79265.6}, {'time': 1767916800000, 'value': 79265.6}, {'time': 1768003200000, 'value': 79265.6}, {'time': 1768089600000, 'value': 79265.6}, {'time': 1768176000000, 'value': 79265.6}, {'time': 1768262400000, 'value': 79265.6}, {'time': 1768348800000, 'value': 79265.6}, {'time': 1768435200000, 'value': 79265.6}, {'time': 1768521600000, 'value': 79265.6}, {'time': 1768608000000, 'value': 79265.6}, {'time': 1768694400000, 'value': 79265.6}, {'time': 1768780800000, 'value': 79265.6}, {'time': 1768867200000, 'value': 79265.6}, {'time': 1768953600000, 'value': 79265.6}, {'time': 1769040000000, 'value': 79265.6}, {'time': 1769126400000, 'value': 79265.6}, {'time': 1769212800000, 'value': 79265.6}, {'time': 1769299200000, 'value': 79265.6}, {'time': 1769385600000, 'value': 79265.6}, {'time': 1769472000000, 'value': 79265.6}, {'time': 1769558400000, 'value': 79265.6}, {'time': 1769644800000, 'value': 79265.6}, {'time': 1769731200000, 'value': 79265.6}, {'time': 1769817600000, 'value': 79265.6}, {'time': 1769904000000, 'value': 79265.6}, {'time': 1769990400000, 'value': 79265.6}, {'time': 1770076800000, 'value': 79265.6}, {'time': 1770163200000, 'value': 79265.6}, {'time': 1770249600000, 'value': 79265.6}, {'time': 1770336000000, 'value': 79265.6}, {'time': 1770422400000, 'value': 79265.6}, {'time': 1770508800000, 'value': 79265.6}, {'time': 1770595200000, 'value': 79265.6}, {'time': 1770681600000, 'value': 79265.6}, {'time': 1770768000000, 'value': 79265.6}, {'time': 1770854400000, 'value': 79265.6}, {'time': 1770940800000, 'value': 79265.6}, {'time': 1771027200000, 'value': 79265.6}, {'time': 1771113600000, 'value': 79265.6}, {'time': 1771200000000, 'value': 79265.6}, {'time': 1771286400000, 'value': 79265.6}, {'time': 1771372800000, 'value': 79265.6}, {'time': 1771459200000, 'value': 79265.6}, {'time': 1771545600000, 'value': 79265.6}]);
+        
+        const fib1000Series = mainChart.addLineSeries({ color: '#ff9800', lineWidth: 1, title: 'Fib 1000', lastValueVisible: true });
+        fib1000Series.setData([{'time': 1766448000000, 'value': 89503.88}, {'time': 1766534400000, 'value': 89503.88}, {'time': 1766620800000, 'value': 89503.88}, {'time': 1766707200000, 'value': 89503.88}, {'time': 1766793600000, 'value': 89503.88}, {'time': 1766880000000, 'value': 89503.88}, {'time': 1766966400000, 'value': 89503.88}, {'time': 1767052800000, 'value': 89503.88}, {'time': 1767139200000, 'value': 89503.88}, {'time': 1767225600000, 'value': 89503.88}, {'time': 1767312000000, 'value': 89503.88}, {'time': 1767398400000, 'value': 89503.88}, {'time': 1767484800000, 'value': 89503.88}, {'time': 1767571200000, 'value': 89503.88}, {'time': 1767657600000, 'value': 89503.88}, {'time': 1767744000000, 'value': 89503.88}, {'time': 1767830400000, 'value': 89503.88}, {'time': 1767916800000, 'value': 89503.88}, {'time': 1768003200000, 'value': 89503.88}, {'time': 1768089600000, 'value': 89503.88}, {'time': 1768176000000, 'value': 89503.88}, {'time': 1768262400000, 'value': 89503.88}, {'time': 1768348800000, 'value': 89503.88}, {'time': 1768435200000, 'value': 89503.88}, {'time': 1768521600000, 'value': 89503.88}, {'time': 1768608000000, 'value': 89503.88}, {'time': 1768694400000, 'value': 89503.88}, {'time': 1768780800000, 'value': 89503.88}, {'time': 1768867200000, 'value': 89503.88}, {'time': 1768953600000, 'value': 89503.88}, {'time': 1769040000000, 'value': 89503.88}, {'time': 1769126400000, 'value': 89503.88}, {'time': 1769212800000, 'value': 89503.88}, {'time': 1769299200000, 'value': 89503.88}, {'time': 1769385600000, 'value': 89503.88}, {'time': 1769472000000, 'value': 89503.88}, {'time': 1769558400000, 'value': 89503.88}, {'time': 1769644800000, 'value': 89503.88}, {'time': 1769731200000, 'value': 89503.88}, {'time': 1769817600000, 'value': 89503.88}, {'time': 1769904000000, 'value': 89503.88}, {'time': 1769990400000, 'value': 89503.88}, {'time': 1770076800000, 'value': 89503.88}, {'time': 1770163200000, 'value': 89503.88}, {'time': 1770249600000, 'value': 89503.88}, {'time': 1770336000000, 'value': 89503.88}, {'time': 1770422400000, 'value': 89503.88}, {'time': 1770508800000, 'value': 89503.88}, {'time': 1770595200000, 'value': 89503.88}, {'time': 1770681600000, 'value': 89503.88}, {'time': 1770768000000, 'value': 89503.88}, {'time': 1770854400000, 'value': 89503.88}, {'time': 1770940800000, 'value': 89503.88}, {'time': 1771027200000, 'value': 89503.88}, {'time': 1771113600000, 'value': 89503.88}, {'time': 1771200000000, 'value': 89503.88}, {'time': 1771286400000, 'value': 89503.88}, {'time': 1771372800000, 'value': 89503.88}, {'time': 1771459200000, 'value': 89503.88}, {'time': 1771545600000, 'value': 89503.88}]);
+        
+        const fib1618Series = mainChart.addLineSeries({ color: '#e91e63', lineWidth: 1, title: 'Fib 1618', lastValueVisible: true });
+        fib1618Series.setData([{'time': 1766448000000, 'value': 106067.37}, {'time': 1766534400000, 'value': 106067.37}, {'time': 1766620800000, 'value': 106067.37}, {'time': 1766707200000, 'value': 106067.37}, {'time': 1766793600000, 'value': 106067.37}, {'time': 1766880000000, 'value': 106067.37}, {'time': 1766966400000, 'value': 106067.37}, {'time': 1767052800000, 'value': 106067.37}, {'time': 1767139200000, 'value': 106067.37}, {'time': 1767225600000, 'value': 106067.37}, {'time': 1767312000000, 'value': 106067.37}, {'time': 1767398400000, 'value': 106067.37}, {'time': 1767484800000, 'value': 106067.37}, {'time': 1767571200000, 'value': 106067.37}, {'time': 1767657600000, 'value': 106067.37}, {'time': 1767744000000, 'value': 106067.37}, {'time': 1767830400000, 'value': 106067.37}, {'time': 1767916800000, 'value': 106067.37}, {'time': 1768003200000, 'value': 106067.37}, {'time': 1768089600000, 'value': 106067.37}, {'time': 1768176000000, 'value': 106067.37}, {'time': 1768262400000, 'value': 106067.37}, {'time': 1768348800000, 'value': 106067.37}, {'time': 1768435200000, 'value': 106067.37}, {'time': 1768521600000, 'value': 106067.37}, {'time': 1768608000000, 'value': 106067.37}, {'time': 1768694400000, 'value': 106067.37}, {'time': 1768780800000, 'value': 106067.37}, {'time': 1768867200000, 'value': 106067.37}, {'time': 1768953600000, 'value': 106067.37}, {'time': 1769040000000, 'value': 106067.37}, {'time': 1769126400000, 'value': 106067.37}, {'time': 1769212800000, 'value': 106067.37}, {'time': 1769299200000, 'value': 106067.37}, {'time': 1769385600000, 'value': 106067.37}, {'time': 1769472000000, 'value': 106067.37}, {'time': 1769558400000, 'value': 106067.37}, {'time': 1769644800000, 'value': 106067.37}, {'time': 1769731200000, 'value': 106067.37}, {'time': 1769817600000, 'value': 106067.37}, {'time': 1769904000000, 'value': 106067.37}, {'time': 1769990400000, 'value': 106067.37}, {'time': 1770076800000, 'value': 106067.37}, {'time': 1770163200000, 'value': 106067.37}, {'time': 1770249600000, 'value': 106067.37}, {'time': 1770336000000, 'value': 106067.37}, {'time': 1770422400000, 'value': 106067.37}, {'time': 1770508800000, 'value': 106067.37}, {'time': 1770595200000, 'value': 106067.37}, {'time': 1770681600000, 'value': 106067.37}, {'time': 1770768000000, 'value': 106067.37}, {'time': 1770854400000, 'value': 106067.37}, {'time': 1770940800000, 'value': 106067.37}, {'time': 1771027200000, 'value': 106067.37}, {'time': 1771113600000, 'value': 106067.37}, {'time': 1771200000000, 'value': 106067.37}, {'time': 1771286400000, 'value': 106067.37}, {'time': 1771372800000, 'value': 106067.37}, {'time': 1771459200000, 'value': 106067.37}, {'time': 1771545600000, 'value': 106067.37}]);
+        
+
+        const volumeChart = LightweightCharts.createChart(document.getElementById('volume-chart'), { ...commonOptions, height: document.getElementById('volume-chart').clientHeight });
+        const volumeSeries = volumeChart.addHistogramSeries({ color: '#26a69a', priceFormat: { type: 'volume' }, priceScaleId: '' });
+        volumeSeries.setData([{'time': 1766448000000, 'value': 43683011533, 'color': '#ef5350'}, {'time': 1766534400000, 'value': 25550297986, 'color': '#26a69a'}, {'time': 1766620800000, 'value': 19953216347, 'color': '#ef5350'}, {'time': 1766707200000, 'value': 42455674908, 'color': '#26a69a'}, {'time': 1766793600000, 'value': 13741199310, 'color': '#26a69a'}, {'time': 1766880000000, 'value': 15156557929, 'color': '#26a69a'}, {'time': 1766966400000, 'value': 48411625849, 'color': '#ef5350'}, {'time': 1767052800000, 'value': 35586356225, 'color': '#26a69a'}, {'time': 1767139200000, 'value': 33830210616, 'color': '#ef5350'}, {'time': 1767225600000, 'value': 18849043990, 'color': '#26a69a'}, {'time': 1767312000000, 'value': 46398906171, 'color': '#26a69a'}, {'time': 1767398400000, 'value': 20774828592, 'color': '#26a69a'}, {'time': 1767484800000, 'value': 26770491368, 'color': '#26a69a'}, {'time': 1767571200000, 'value': 53376407252, 'color': '#26a69a'}, {'time': 1767657600000, 'value': 52430605257, 'color': '#ef5350'}, {'time': 1767744000000, 'value': 43461295053, 'color': '#ef5350'}, {'time': 1767830400000, 'value': 42386697030, 'color': '#ef5350'}, {'time': 1767916800000, 'value': 38305906684, 'color': '#ef5350'}, {'time': 1768003200000, 'value': 12385895282, 'color': '#ef5350'}, {'time': 1768089600000, 'value': 17165568977, 'color': '#26a69a'}, {'time': 1768176000000, 'value': 41346275358, 'color': '#26a69a'}, {'time': 1768262400000, 'value': 54980674354, 'color': '#26a69a'}, {'time': 1768348800000, 'value': 60592490863, 'color': '#26a69a'}, {'time': 1768435200000, 'value': 53086363027, 'color': '#ef5350'}, {'time': 1768521600000, 'value': 33248170537, 'color': '#ef5350'}, {'time': 1768608000000, 'value': 16021715122, 'color': '#ef5350'}, {'time': 1768694400000, 'value': 20809781232, 'color': '#ef5350'}, {'time': 1768780800000, 'value': 39195241508, 'color': '#ef5350'}, {'time': 1768867200000, 'value': 53072968031, 'color': '#ef5350'}, {'time': 1768953600000, 'value': 56330422434, 'color': '#26a69a'}, {'time': 1769040000000, 'value': 35549685694, 'color': '#26a69a'}, {'time': 1769126400000, 'value': 38997586037, 'color': '#26a69a'}, {'time': 1769212800000, 'value': 14558687712, 'color': '#ef5350'}, {'time': 1769299200000, 'value': 36124986722, 'color': '#ef5350'}, {'time': 1769385600000, 'value': 45329286974, 'color': '#26a69a'}, {'time': 1769472000000, 'value': 38744942267, 'color': '#26a69a'}, {'time': 1769558400000, 'value': 39807419296, 'color': '#26a69a'}, {'time': 1769644800000, 'value': 64653083162, 'color': '#ef5350'}, {'time': 1769731200000, 'value': 72083816087, 'color': '#ef5350'}, {'time': 1769817600000, 'value': 70479259159, 'color': '#ef5350'}, {'time': 1769904000000, 'value': 53372509744, 'color': '#ef5350'}, {'time': 1769990400000, 'value': 75140589684, 'color': '#26a69a'}, {'time': 1770076800000, 'value': 68249110822, 'color': '#ef5350'}, {'time': 1770163200000, 'value': 67215363944, 'color': '#ef5350'}, {'time': 1770249600000, 'value': 125509410908, 'color': '#ef5350'}, {'time': 1770336000000, 'value': 114674259489, 'color': '#26a69a'}, {'time': 1770422400000, 'value': 62347107663, 'color': '#ef5350'}, {'time': 1770508800000, 'value': 39721722619, 'color': '#26a69a'}, {'time': 1770595200000, 'value': 52081598792, 'color': '#ef5350'}, {'time': 1770681600000, 'value': 40593063077, 'color': '#ef5350'}, {'time': 1770768000000, 'value': 49671946030, 'color': '#ef5350'}, {'time': 1770854400000, 'value': 44651071271, 'color': '#ef5350'}, {'time': 1770940800000, 'value': 40820775886, 'color': '#26a69a'}, {'time': 1771027200000, 'value': 36012397645, 'color': '#26a69a'}, {'time': 1771113600000, 'value': 40191152750, 'color': '#ef5350'}, {'time': 1771200000000, 'value': 33618145426, 'color': '#26a69a'}, {'time': 1771286400000, 'value': 34866936040, 'color': '#ef5350'}, {'time': 1771372800000, 'value': 33094301643, 'color': '#ef5350'}, {'time': 1771459200000, 'value': 31492987019, 'color': '#26a69a'}, {'time': 1771545600000, 'value': 47461732352, 'color': '#26a69a'}]);
+        volumeChart.timeScale().fitContent();
+        volumeChart.applyOptions({ leftPriceScale: { visible: false }, rightPriceScale: { visible: true, borderColor: colors.grid } });
+
+        const rsiChart = LightweightCharts.createChart(document.getElementById('rsi-chart'), { ...commonOptions, height: document.getElementById('rsi-chart').clientHeight });
+        const rsiSeries = rsiChart.addLineSeries({ color: '#2196f3', lineWidth: 2, title: 'RSI', lastValueVisible: false });
+        rsiSeries.setData([{'time': 1767571200000, 'value': 80.92}, {'time': 1767657600000, 'value': 79.75}, {'time': 1767744000000, 'value': 64.4}, {'time': 1767830400000, 'value': 64.88}, {'time': 1767916800000, 'value': 62.18}, {'time': 1768003200000, 'value': 60.08}, {'time': 1768089600000, 'value': 61.31}, {'time': 1768176000000, 'value': 65.73}, {'time': 1768262400000, 'value': 71.91}, {'time': 1768348800000, 'value': 78.7}, {'time': 1768435200000, 'value': 70.58}, {'time': 1768521600000, 'value': 68.14}, {'time': 1768608000000, 'value': 64.84}, {'time': 1768694400000, 'value': 57.03}, {'time': 1768780800000, 'value': 45.39}, {'time': 1768867200000, 'value': 35.36}, {'time': 1768953600000, 'value': 44.37}, {'time': 1769040000000, 'value': 45.39}, {'time': 1769126400000, 'value': 46.94}, {'time': 1769212800000, 'value': 46.19}, {'time': 1769299200000, 'value': 38.71}, {'time': 1769385600000, 'value': 42.75}, {'time': 1769472000000, 'value': 31.58}, {'time': 1769558400000, 'value': 24.78}, {'time': 1769644800000, 'value': 20.46}, {'time': 1769731200000, 'value': 20.02}, {'time': 1769817600000, 'value': 15.8}, {'time': 1769904000000, 'value': 15.68}, {'time': 1769990400000, 'value': 22.16}, {'time': 1770076800000, 'value': 23.27}, {'time': 1770163200000, 'value': 17.63}, {'time': 1770249600000, 'value': 12.31}, {'time': 1770336000000, 'value': 28.12}, {'time': 1770422400000, 'value': 27.56}, {'time': 1770508800000, 'value': 30.87}, {'time': 1770595200000, 'value': 27.91}, {'time': 1770681600000, 'value': 25.57}, {'time': 1770768000000, 'value': 24.37}, {'time': 1770854400000, 'value': 26.75}, {'time': 1770940800000, 'value': 31.66}, {'time': 1771027200000, 'value': 38.05}, {'time': 1771113600000, 'value': 38.75}, {'time': 1771200000000, 'value': 35.82}, {'time': 1771286400000, 'value': 37.67}, {'time': 1771372800000, 'value': 39.52}, {'time': 1771459200000, 'value': 59.81}, {'time': 1771545600000, 'value': 41.27}]);
+        
+        const firstTime = 1770768000000;
+        const lastTime = 1771545600000;
+        
+        const rsi70 = rsiChart.addLineSeries({ color: '#ef5350', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, lastValueVisible: false });
+        const rsi30 = rsiChart.addLineSeries({ color: '#4caf50', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dashed, lastValueVisible: false });
+        const rsi50 = rsiChart.addLineSeries({ color: '#7d8590', lineWidth: 1, lineStyle: LightweightCharts.LineStyle.Dotted, lastValueVisible: false });
+        
+        rsi70.setData([{ time: firstTime, value: 70 }, { time: lastTime, value: 70 }]);
+        rsi30.setData([{ time: firstTime, value: 30 }, { time: lastTime, value: 30 }]);
+        rsi50.setData([{ time: firstTime, value: 50 }, { time: lastTime, value: 50 }]);
+        
+        rsiChart.applyOptions({ rightPriceScale: { visible: true, borderColor: colors.grid, minimumValue: 0, maximumValue: 100 } });
+        rsiChart.timeScale().fitContent();
+
+        const macdChart = LightweightCharts.createChart(document.getElementById('macd-chart'), { ...commonOptions, height: document.getElementById('macd-chart').clientHeight });
+        const macdSeries = macdChart.addLineSeries({ color: '#2196f3', lineWidth: 2, title: 'MACD', lastValueVisible: false });
+        const macdSignalSeries = macdChart.addLineSeries({ color: '#ff9800', lineWidth: 1, title: 'Signal', lastValueVisible: false });
+        const macdHistSeries = macdChart.addHistogramSeries({ color: '#26a69a', title: 'Hist' });
+        
+        macdSeries.setData([{'time': 1766448000000, 'value': 0.0}, {'time': 1766534400000, 'value': 15.79}, {'time': 1766620800000, 'value': -2.11}, {'time': 1766707200000, 'value': -10.79}, {'time': 1766793600000, 'value': 22.48}, {'time': 1766880000000, 'value': 50.97}, {'time': 1766966400000, 'value': 17.06}, {'time': 1767052800000, 'value': 93.36}, {'time': 1767139200000, 'value': 78.58}, {'time': 1767225600000, 'value': 163.68}, {'time': 1767312000000, 'value': 325.23}, {'time': 1767398400000, 'value': 500.62}, {'time': 1767484800000, 'value': 696.97}, {'time': 1767571200000, 'value': 1039.83}, {'time': 1767657600000, 'value': 1284.35}, {'time': 1767744000000, 'value': 1268.16}, {'time': 1767830400000, 'value': 1218.62}, {'time': 1767916800000, 'value': 1124.91}, {'time': 1768003200000, 'value': 1028.59}, {'time': 1768089600000, 'value': 976.56}, {'time': 1768176000000, 'value': 953.83}, {'time': 1768262400000, 'value': 1254.51}, {'time': 1768348800000, 'value': 1604.03}, {'time': 1768435200000, 'value': 1749.66}, {'time': 1768521600000, 'value': 1841.73}, {'time': 1768608000000, 'value': 1858.96}, {'time': 1768694400000, 'value': 1734.37}, {'time': 1768780800000, 'value': 1530.77}, {'time': 1768867200000, 'value': 1015.36}, {'time': 1768953600000, 'value': 685.02}, {'time': 1769040000000, 'value': 425.22}, {'time': 1769126400000, 'value': 220.14}, {'time': 1769212800000, 'value': 25.58}, {'time': 1769299200000, 'value': -329.64}, {'time': 1769385600000, 'value': -468.98}, {'time': 1769472000000, 'value': -506.16}, {'time': 1769558400000, 'value': -522.99}, {'time': 1769644800000, 'value': -898.99}, {'time': 1769731200000, 'value': -1217.87}, {'time': 1769817600000, 'value': -1893.18}, {'time': 1769904000000, 'value': -2532.05}, {'time': 1769990400000, 'value': -2866.98}, {'time': 1770076800000, 'value': -3340.43}, {'time': 1770163200000, 'value': -3881.82}, {'time': 1770249600000, 'value': -5084.8}, {'time': 1770336000000, 'value': -5342.89}, {'time': 1770422400000, 'value': -5585.79}, {'time': 1770508800000, 'value': -5634.05}, {'time': 1770595200000, 'value': -5619.13}, {'time': 1770681600000, 'value': -5649.25}, {'time': 1770768000000, 'value': -5752.22}, {'time': 1770854400000, 'value': -5828.78}, {'time': 1770940800000, 'value': -5612.05}, {'time': 1771027200000, 'value': -5305.72}, {'time': 1771113600000, 'value': -5083.39}, {'time': 1771200000000, 'value': -4846.88}, {'time': 1771286400000, 'value': -4713.96}, {'time': 1771372800000, 'value': -4641.36}, {'time': 1771459200000, 'value': -4489.13}, {'time': 1771545600000, 'value': -4238.27}]);
+        macdSignalSeries.setData([{'time': 1766448000000, 'value': 0.0}, {'time': 1766534400000, 'value': 3.16}, {'time': 1766620800000, 'value': 2.11}, {'time': 1766707200000, 'value': -0.47}, {'time': 1766793600000, 'value': 4.12}, {'time': 1766880000000, 'value': 13.49}, {'time': 1766966400000, 'value': 14.2}, {'time': 1767052800000, 'value': 30.03}, {'time': 1767139200000, 'value': 39.74}, {'time': 1767225600000, 'value': 64.53}, {'time': 1767312000000, 'value': 116.67}, {'time': 1767398400000, 'value': 193.46}, {'time': 1767484800000, 'value': 294.16}, {'time': 1767571200000, 'value': 443.3}, {'time': 1767657600000, 'value': 611.51}, {'time': 1767744000000, 'value': 742.84}, {'time': 1767830400000, 'value': 837.99}, {'time': 1767916800000, 'value': 895.38}, {'time': 1768003200000, 'value': 922.02}, {'time': 1768089600000, 'value': 932.93}, {'time': 1768176000000, 'value': 937.11}, {'time': 1768262400000, 'value': 1000.59}, {'time': 1768348800000, 'value': 1121.28}, {'time': 1768435200000, 'value': 1246.95}, {'time': 1768521600000, 'value': 1365.91}, {'time': 1768608000000, 'value': 1464.52}, {'time': 1768694400000, 'value': 1518.49}, {'time': 1768780800000, 'value': 1520.95}, {'time': 1768867200000, 'value': 1419.83}, {'time': 1768953600000, 'value': 1272.87}, {'time': 1769040000000, 'value': 1103.34}, {'time': 1769126400000, 'value': 926.7}, {'time': 1769212800000, 'value': 746.48}, {'time': 1769299200000, 'value': 531.25}, {'time': 1769385600000, 'value': 331.21}, {'time': 1769472000000, 'value': 163.73}, {'time': 1769558400000, 'value': 26.39}, {'time': 1769644800000, 'value': -158.69}, {'time': 1769731200000, 'value': -370.52}, {'time': 1769817600000, 'value': -675.06}, {'time': 1769904000000, 'value': -1046.45}, {'time': 1769990400000, 'value': -1410.56}, {'time': 1770076800000, 'value': -1796.53}, {'time': 1770163200000, 'value': -2213.59}, {'time': 1770249600000, 'value': -2787.83}, {'time': 1770336000000, 'value': -3298.84}, {'time': 1770422400000, 'value': -3756.23}, {'time': 1770508800000, 'value': -4131.8}, {'time': 1770595200000, 'value': -4429.26}, {'time': 1770681600000, 'value': -4673.26}, {'time': 1770768000000, 'value': -4889.05}, {'time': 1770854400000, 'value': -5077.0}, {'time': 1770940800000, 'value': -5184.01}, {'time': 1771027200000, 'value': -5208.35}, {'time': 1771113600000, 'value': -5183.36}, {'time': 1771200000000, 'value': -5116.06}, {'time': 1771286400000, 'value': -5035.64}, {'time': 1771372800000, 'value': -4956.79}, {'time': 1771459200000, 'value': -4863.26}, {'time': 1771545600000, 'value': -4738.26}]);
+        macdHistSeries.setData([{'time': 1766448000000, 'value': 0.0}, {'time': 1766534400000, 'value': 12.63}, {'time': 1766620800000, 'value': -4.21}, {'time': 1766707200000, 'value': -10.31}, {'time': 1766793600000, 'value': 18.36}, {'time': 1766880000000, 'value': 37.49}, {'time': 1766966400000, 'value': 2.86}, {'time': 1767052800000, 'value': 63.33}, {'time': 1767139200000, 'value': 38.84}, {'time': 1767225600000, 'value': 99.15}, {'time': 1767312000000, 'value': 208.56}, {'time': 1767398400000, 'value': 307.16}, {'time': 1767484800000, 'value': 402.81}, {'time': 1767571200000, 'value': 596.53}, {'time': 1767657600000, 'value': 672.84}, {'time': 1767744000000, 'value': 525.33}, {'time': 1767830400000, 'value': 380.63}, {'time': 1767916800000, 'value': 229.53}, {'time': 1768003200000, 'value': 106.57}, {'time': 1768089600000, 'value': 43.63}, {'time': 1768176000000, 'value': 16.72}, {'time': 1768262400000, 'value': 253.92}, {'time': 1768348800000, 'value': 482.75}, {'time': 1768435200000, 'value': 502.7}, {'time': 1768521600000, 'value': 475.82}, {'time': 1768608000000, 'value': 394.44}, {'time': 1768694400000, 'value': 215.88}, {'time': 1768780800000, 'value': 9.82}, {'time': 1768867200000, 'value': -404.47}, {'time': 1768953600000, 'value': -587.84}, {'time': 1769040000000, 'value': -678.12}, {'time': 1769126400000, 'value': -706.56}, {'time': 1769212800000, 'value': -720.89}, {'time': 1769299200000, 'value': -860.89}, {'time': 1769385600000, 'value': -800.19}, {'time': 1769472000000, 'value': -669.9}, {'time': 1769558400000, 'value': -549.37}, {'time': 1769644800000, 'value': -740.3}, {'time': 1769731200000, 'value': -847.35}, {'time': 1769817600000, 'value': -1218.12}, {'time': 1769904000000, 'value': -1485.59}, {'time': 1769990400000, 'value': -1456.42}, {'time': 1770076800000, 'value': -1543.9}, {'time': 1770163200000, 'value': -1668.23}, {'time': 1770249600000, 'value': -2296.97}, {'time': 1770336000000, 'value': -2044.05}, {'time': 1770422400000, 'value': -1829.56}, {'time': 1770508800000, 'value': -1502.25}, {'time': 1770595200000, 'value': -1189.87}, {'time': 1770681600000, 'value': -975.99}, {'time': 1770768000000, 'value': -863.17}, {'time': 1770854400000, 'value': -751.78}, {'time': 1770940800000, 'value': -428.04}, {'time': 1771027200000, 'value': -97.37}, {'time': 1771113600000, 'value': 99.97}, {'time': 1771200000000, 'value': 269.18}, {'time': 1771286400000, 'value': 321.69}, {'time': 1771372800000, 'value': 315.43}, {'time': 1771459200000, 'value': 374.12}, {'time': 1771545600000, 'value': 499.99}]);
+        macdChart.timeScale().fitContent();
+
+        const atrChart = LightweightCharts.createChart(document.getElementById('atr-chart'), { ...commonOptions, height: document.getElementById('atr-chart').clientHeight });
+        const atrSeries = atrChart.addLineSeries({ color: '#ff5722', lineWidth: 1, title: 'ATR(14)', lastValueVisible: false });
+        atrSeries.setData([{'time': 1767571200000, 'value': 1957.47}, {'time': 1767657600000, 'value': 2015.86}, {'time': 1767744000000, 'value': 2129.56}, {'time': 1767830400000, 'value': 2179.52}, {'time': 1767916800000, 'value': 2140.52}, {'time': 1768003200000, 'value': 2121.8}, {'time': 1768089600000, 'value': 2146.89}, {'time': 1768176000000, 'value': 2058.26}, {'time': 1768262400000, 'value': 2237.36}, {'time': 1768348800000, 'value': 2332.2}, {'time': 1768435200000, 'value': 2378.14}, {'time': 1768521600000, 'value': 2303.62}, {'time': 1768608000000, 'value': 2249.43}, {'time': 1768694400000, 'value': 2305.52}, {'time': 1768780800000, 'value': 2178.59}, {'time': 1768867200000, 'value': 2312.5}, {'time': 1768953600000, 'value': 2316.92}, {'time': 1769040000000, 'value': 2286.1}, {'time': 1769126400000, 'value': 2309.57}, {'time': 1769212800000, 'value': 2333.69}, {'time': 1769299200000, 'value': 2494.13}, {'time': 1769385600000, 'value': 2492.23}, {'time': 1769472000000, 'value': 2287.12}, {'time': 1769558400000, 'value': 2175.71}, {'time': 1769644800000, 'value': 2454.51}, {'time': 1769731200000, 'value': 2596.52}, {'time': 1769817600000, 'value': 3148.53}, {'time': 1769904000000, 'value': 3271.46}, {'time': 1769990400000, 'value': 3495.44}, {'time': 1770076800000, 'value': 3583.89}, {'time': 1770163200000, 'value': 3718.59}, {'time': 1770249600000, 'value': 4360.56}, {'time': 1770336000000, 'value': 5002.93}, {'time': 1770422400000, 'value': 5251.46}, {'time': 1770508800000, 'value': 5263.21}, {'time': 1770595200000, 'value': 5317.87}, {'time': 1770681600000, 'value': 5343.08}, {'time': 1770768000000, 'value': 5469.33}, {'time': 1770854400000, 'value': 5276.27}, {'time': 1770940800000, 'value': 5277.44}, {'time': 1771027200000, 'value': 4809.84}, {'time': 1771113600000, 'value': 4757.2}, {'time': 1771200000000, 'value': 4618.51}, {'time': 1771286400000, 'value': 4358.86}, {'time': 1771372800000, 'value': 4180.56}, {'time': 1771459200000, 'value': 3525.68}, {'time': 1771545600000, 'value': 2816.05}]);
+        atrChart.timeScale().fitContent();
+
+        const syncCharts = (source, targets) => {
+            source.timeScale().subscribeVisibleTimeRangeChange((range) => {
+                if (range) targets.forEach(target => target.timeScale().setVisibleLogicalRange(range));
+            });
+        };
+        
+        syncCharts(mainChart, [volumeChart, rsiChart, macdChart, atrChart]);
+        mainChart.timeScale().fitContent();
+
+        const handleResize = () => {
+            const mainHeight = document.getElementById('main-chart').clientHeight;
+            const indicatorHeight = document.getElementById('volume-chart').clientHeight;
+            mainChart.applyOptions({ height: mainHeight, width: document.getElementById('main-chart').clientWidth });
+            volumeChart.applyOptions({ height: indicatorHeight, width: document.getElementById('volume-chart').clientWidth });
+            rsiChart.applyOptions({ height: indicatorHeight, width: document.getElementById('rsi-chart').clientWidth });
+            macdChart.applyOptions({ height: indicatorHeight, width: document.getElementById('macd-chart').clientWidth });
+            atrChart.applyOptions({ height: indicatorHeight, width: document.getElementById('atr-chart').clientWidth });
+        };
+        
+        window.addEventListener('resize', handleResize);
+        setTimeout(handleResize, 100);
+    </script>
+</body>
+</html>

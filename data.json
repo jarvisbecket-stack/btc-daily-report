@@ -1,1 +1,56 @@
-{"price": 67243.99, "change_24h": 2.393, "timestamp": "2026-02-20T22:36:09.973836", "forecasts": [{"period": "0-6h", "low": 66941.39204500002, "high": 68050.91788000001, "bias": "up"}, {"period": "6-12h", "low": 67042.25803000001, "high": 67950.051895, "bias": "up"}, {"period": "12-18h", "low": 66739.660075, "high": 67748.319925, "bias": "neutral"}, {"period": "18-24h", "low": 66537.92810500001, "high": 67546.587955, "bias": "down"}]}
+{
+  "price": 67965.96,
+  "change_24h": 1.48,
+  "timestamp": "2026-02-21T07:54:00.000000",
+  "forecasts": [
+    {"period": "0-6h", "low": 66941.39, "high": 68050.92, "bias": "up"},
+    {"period": "6-12h", "low": 67042.26, "high": 67950.05, "bias": "up"},
+    {"period": "12-18h", "low": 66739.66, "high": 67748.32, "bias": "neutral"},
+    {"period": "18-24h", "low": 66537.93, "high": 67546.59, "bias": "down"}
+  ],
+  "advanced_analysis": {
+    "confluence_score": 36,
+    "signal": "SELL",
+    "trend_score": 27,
+    "momentum_score": 48,
+    "volume_score": 35,
+    "bullish_signals": 0,
+    "bearish_signals": 6,
+    "neutral_signals": 5,
+    "total_indicators": 15,
+    "ensemble_direction": "BEAR",
+    "confidence": 66,
+    "bull_target": 69771.40,
+    "bear_target": 61369.13,
+    "key_levels": {
+      "current_price": 67965.96,
+      "ema9": 68151.62,
+      "ema21": 71568.44,
+      "ema50": 78105.54
+    },
+    "indicator_signals": {
+      "ema_alignment": "bear",
+      "ema_crossover": "neutral",
+      "supertrend": "bear",
+      "long_term_trend": "bear",
+      "rsi": "neutral",
+      "macd": "neutral-bull",
+      "stoch_rsi": "bear",
+      "price_momentum": "neutral",
+      "volume_trend": "neutral",
+      "obv": "bear",
+      "mfi": "bear"
+    },
+    "features": [
+      "15+ Technical Indicators",
+      "Confluence Scoring System (0-100)",
+      "Self-Learning AI",
+      "Ensemble Forecasting",
+      "Regression Channels",
+      "Fibonacci Extensions",
+      "Pivot Points",
+      "Real-time Signal Generation"
+    ],
+    "last_updated": "2026-02-21T07:54:00.000000"
+  }
+}
