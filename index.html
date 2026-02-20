@@ -8,34 +8,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0e1a; color: #d1d4dc; line-height: 1.6; font-size: 14px; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        /* Fixed header with refresh */
-        .top-bar { 
-            position: sticky; 
-            top: 0; 
-            background: #131722; 
-            padding: 15px 20px; 
-            border-bottom: 1px solid #2a2e39;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            z-index: 100;
-        }
+        .top-bar { position: sticky; top: 0; background: #131722; padding: 15px 20px; border-bottom: 1px solid #2a2e39; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .top-bar h1 { font-size: 18px; color: #fff; }
-        .refresh-btn { 
-            background: #26a69a; 
-            color: #fff; 
-            border: none; 
-            padding: 10px 20px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 14px; 
-            font-weight: 600;
-        }
+        .refresh-btn { background: #26a69a; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
         .refresh-btn:hover { background: #2bbd9a; }
         .last-updated { font-size: 11px; color: #868993; margin-top: 5px; }
-        
-        /* Content */
         .content { padding: 20px 0; }
         .header { background: #131722; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
         .subtitle { color: #868993; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; }
@@ -43,10 +20,8 @@
         .price-change { font-size: 16px; margin-left: 10px; }
         .price-change.up { color: #26a69a; }
         .price-change.down { color: #ef5350; }
-        
         .card { background: #131722; border: 1px solid #2a2e39; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
         .card h2 { font-size: 16px; color: #fff; margin-bottom: 15px; border-bottom: 1px solid #2a2e39; padding-bottom: 10px; }
-        
         .forecast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
         .forecast-item { background: #1e222d; padding: 15px; border-radius: 6px; text-align: center; }
         .forecast-time { font-size: 11px; color: #868993; margin-bottom: 5px; }
@@ -55,8 +30,6 @@
         .bias-up { color: #26a69a; }
         .bias-down { color: #ef5350; }
         .bias-neutral { color: #ff9800; }
-        
-        /* Mobile */
         @media (max-width: 768px) {
             .container { padding: 10px; }
             .top-bar { padding: 10px 15px; }
@@ -71,9 +44,9 @@
     <div class="top-bar">
         <div>
             <h1>🔮 Bitcoin Daily Forecast</h1>
-            <div class="last-updated">Updated: $(date -u '+%H:%M:%S UTC')</div>
+            <div class="last-updated" id="update-time">Loading...</div>
         </div>
-        <button class="refresh-btn" onclick="window.location.reload(true);">🔄 Refresh</button>
+        <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
     </div>
     
     <div class="container">
@@ -87,74 +60,106 @@
             </div>
             
             <div class="card">
-                <h2 style="color: #ff9800;">24-Hour Price Forecast</h2>
+                <h2 style="color: #ff9800;">24-Hour Price Forecast (Dynamic)</h2>
                 <div class="forecast-grid" id="forecast-grid">
-                    <div class="forecast-item">
-                        <div class="forecast-time">Loading...</div>
+                    <div class="forecast-item"><div class="forecast-time">Loading...</div></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🐦 X Sentiment Analysis</h2>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <div style="text-align: center; flex: 1; min-width: 100px;">
+                        <div style="font-size: 24px; color: #26a69a; font-weight: 700;">2</div>
+                        <div style="font-size: 12px; color: #868993;">Bullish</div>
                     </div>
+                    <div style="text-align: center; flex: 1; min-width: 100px;">
+                        <div style="font-size: 24px; color: #ef5350; font-weight: 700;">8</div>
+                        <div style="font-size: 12px; color: #868993;">Bearish</div>
+                    </div>
+                    <div style="text-align: center; flex: 1; min-width: 100px;">
+                        <div style="font-size: 24px; color: #ff9800; font-weight: 700;">15</div>
+                        <div style="font-size: 12px; color: #868993;">Neutral</div>
+                    </div>
+                </div>
+                <div style="background: #1e222d; padding: 15px; border-radius: 6px; font-size: 12px; color: #868993;">
+                    <strong style="color: #fff;">Overall: BEARISH</strong> (8 bearish / 2 bullish / 15 neutral). Tracking 15 top crypto influencers. Bearish sentiment at support often marks local bottoms (contrarian signal).
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📊 Market Analysis</h2>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 14px; color: #fff; margin-bottom: 8px;"><strong>TTC Method:</strong></div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 12px;">
+                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ef5350;"><div style="color: #868993;">Monthly</div><div style="color: #ef5350; font-weight: 700;">BEAR</div></div>
+                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #26a69a;"><div style="color: #868993;">Weekly</div><div style="color: #26a69a; font-weight: 700;">BULL</div></div>
+                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ef5350;"><div style="color: #868993;">Daily</div><div style="color: #ef5350; font-weight: 700;">BEAR</div></div>
+                        <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ff9800;"><div style="color: #868993;">4H</div><div style="color: #ff9800; font-weight: 700;">NEUT</div></div>
+                    </div>
+                </div>
+                <div style="background: #1e222d; padding: 15px; border-radius: 6px;">
+                    <div style="font-size: 14px; color: #fff; margin-bottom: 10px;"><strong>Key Levels:</strong> Support $63,472 | Battle $68,000 | Resistance $70,153</div>
+                    <div style="font-size: 12px; color: #868993;">Mixed TTC signals. Watch $68K reclaim for bullish continuation or $66K break for correction. Fear & Greed at 9/100 = contrarian buy signal.</div>
                 </div>
             </div>
         </div>
     </div>
     
     <script>
-        // Fetch live price and calculate forecasts
-        async function loadData() {
-            try {
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
-                const data = await response.json();
-                const price = parseFloat(data.lastPrice);
-                const change = parseFloat(data.priceChangePercent);
-                
-                // Update price display
-                document.getElementById('current-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                const changeEl = document.getElementById('price-change');
-                changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '% (24h)';
-                changeEl.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
-                
-                // Calculate dynamic forecasts
-                const volatility = 0.015;
-                const forecasts = [
-                    { period: '0-6h', bias: 'up' },
-                    { period: '6-12h', bias: 'up' },
-                    { period: '12-18h', bias: 'neutral' },
-                    { period: '18-24h', bias: 'down' }
-                ];
-                
-                let forecastHTML = '';
-                forecasts.forEach((f, i) => {
-                    let low, high;
-                    const adj = 1 + (i * 0.002);
+        function loadData() {
+            document.getElementById('current-price').textContent = 'Loading...';
+            document.getElementById('update-time').textContent = 'Updating...';
+            
+            // Use CoinGecko (CORS-friendly)
+            fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true')
+                .then(response => response.json())
+                .then(data => {
+                    const price = data.bitcoin.usd;
+                    const change = data.bitcoin.usd_24h_change || 0;
                     
-                    if (f.bias === 'up') {
-                        low = price * (1 - volatility * 0.3) * adj;
-                        high = price * (1 + volatility * 0.8) * adj;
-                    } else if (f.bias === 'down') {
-                        low = price * (1 - volatility * 0.8) * adj;
-                        high = price * (1 + volatility * 0.3) * adj;
-                    } else {
-                        low = price * (1 - volatility * 0.5) * adj;
-                        high = price * (1 + volatility * 0.5) * adj;
-                    }
+                    document.getElementById('current-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                     
-                    const biasClass = f.bias === 'up' ? 'bias-up' : f.bias === 'down' ? 'bias-down' : 'bias-neutral';
-                    const biasText = f.bias === 'up' ? '↗ Up' : f.bias === 'down' ? '↘ Down' : '→ Neutral';
+                    const changeEl = document.getElementById('price-change');
+                    changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '% (24h)';
+                    changeEl.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
                     
-                    forecastHTML += `
-                        <div class="forecast-item">
-                            <div class="forecast-time">${f.period}</div>
-                            <div class="forecast-range">$${low.toFixed(0)} - $${high.toFixed(0)}</div>
-                            <div class="forecast-bias ${biasClass}">${biasText}</div>
-                        </div>
-                    `;
+                    // Calculate forecasts
+                    const volatility = 0.015;
+                    const forecasts = [
+                        { period: '0-6h', bias: 'up' },
+                        { period: '6-12h', bias: 'up' },
+                        { period: '12-18h', bias: 'neutral' },
+                        { period: '18-24h', bias: 'down' }
+                    ];
+                    
+                    let html = '';
+                    forecasts.forEach((f, i) => {
+                        const adj = 1 + (i * 0.002);
+                        let low, high;
+                        if (f.bias === 'up') {
+                            low = price * (1 - volatility * 0.3) * adj;
+                            high = price * (1 + volatility * 0.8) * adj;
+                        } else if (f.bias === 'down') {
+                            low = price * (1 - volatility * 0.8) * adj;
+                            high = price * (1 + volatility * 0.3) * adj;
+                        } else {
+                            low = price * (1 - volatility * 0.5) * adj;
+                            high = price * (1 + volatility * 0.5) * adj;
+                        }
+                        const biasClass = f.bias === 'up' ? 'bias-up' : f.bias === 'down' ? 'bias-down' : 'bias-neutral';
+                        const biasText = f.bias === 'up' ? '↗ Up' : f.bias === 'down' ? '↘ Down' : '→ Neutral';
+                        html += '<div class="forecast-item"><div class="forecast-time">' + f.period + '</div><div class="forecast-range">$' + low.toFixed(0) + ' - $' + high.toFixed(0) + '</div><div class="forecast-bias ' + biasClass + '"\u003e' + biasText + '</div></div>';
+                    });
+                    document.getElementById('forecast-grid').innerHTML = html;
+                    
+                    document.getElementById('update-time').textContent = 'Updated: ' + new Date().toLocaleTimeString() + ' UTC';
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    document.getElementById('current-price').textContent = 'Error loading data';
+                    document.getElementById('update-time').textContent = 'Update failed - try again';
                 });
-                
-                document.getElementById('forecast-grid').innerHTML = forecastHTML;
-                
-            } catch (e) {
-                document.getElementById('current-price').textContent = 'Error loading data';
-                console.error(e);
-            }
         }
         
         // Load on page load
@@ -162,82 +167,3 @@
     </script>
 </body>
 </html>
-
-<!-- X Sentiment Section -->
-<div class="card" id="sentiment-section">
-    <h2>🐦 X Sentiment Analysis</h2>
-    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-        <div style="text-align: center; flex: 1; min-width: 100px;">
-            <div style="font-size: 24px; color: #26a69a; font-weight: 700;">2</div>
-            <div style="font-size: 12px; color: #868993;">Bullish</div>
-        </div>
-        <div style="text-align: center; flex: 1; min-width: 100px;">
-            <div style="font-size: 24px; color: #ef5350; font-weight: 700;">8</div>
-            <div style="font-size: 12px; color: #868993;">Bearish</div>
-        </div>
-        <div style="text-align: center; flex: 1; min-width: 100px;">
-            <div style="font-size: 24px; color: #ff9800; font-weight: 700;">15</div>
-            <div style="font-size: 12px; color: #868993;">Neutral</div>
-        </div>
-    </div>    
-    <div style="background: #1e222d; padding: 15px; border-radius: 6px;">
-        <div style="font-size: 14px; color: #fff; margin-bottom: 10px;">
-            <strong>Overall Sentiment: BEARISH</strong> (8 bearish / 2 bullish / 15 neutral)
-        </div>
-        <div style="font-size: 12px; color: #868993;">
-            Tracking 15 top crypto influencers including rektcapital, CryptoCapo_, CryptoKaleo. 
-            Bearish sentiment at support levels often marks local bottoms (contrarian signal).
-        </div>
-    </div>
-</div>
-
-<!-- Market Analysis Section -->
-<div class="card" id="analysis-section">
-    <h2>📊 Market Analysis</h2>
-    
-    <div style="margin-bottom: 15px;">
-        <div style="font-size: 14px; color: #fff; margin-bottom: 8px;"><strong>TTC Method Multi-Timeframe:</strong></div>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 12px;">
-            <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ef5350;">
-                <div style="color: #868993;">Monthly</div>
-                <div style="color: #ef5350; font-weight: 700;">BEAR</div>
-            </div>
-            <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #26a69a;">
-                <div style="color: #868993;">Weekly</div>
-                <div style="color: #26a69a; font-weight: 700;">BULL</div>
-            </div>
-            <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ef5350;">
-                <div style="color: #868993;">Daily</div>
-                <div style="color: #ef5350; font-weight: 700;">BEAR</div>
-            </div>
-            <div style="background: #1e222d; padding: 10px; border-radius: 4px; text-align: center; border-left: 3px solid #ff9800;">
-                <div style="color: #868993;">4H</div>
-                <div style="color: #ff9800; font-weight: 700;">NEUT</div>
-            </div>
-        </div>
-    </div>
-    
-    <div style="background: #1e222d; padding: 15px; border-radius: 6px;">
-        <div style="font-size: 14px; color: #fff; margin-bottom: 10px;"><strong>Key Levels:</strong></div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px; margin-bottom: 15px;">
-            <div style="background: rgba(239, 83, 80, 0.1); border: 1px solid rgba(239, 83, 80, 0.3); padding: 10px; border-radius: 4px; text-align: center;">
-                <div style="color: #868993;">Support</div>
-                <div style="color: #fff; font-weight: 700; font-size: 16px;">$63,472</div>
-            </div>
-            <div style="background: rgba(255, 152, 0, 0.1); border: 1px solid rgba(255, 152, 0, 0.3); padding: 10px; border-radius: 4px; text-align: center;">
-                <div style="color: #868993;">Battle</div>
-                <div style="color: #fff; font-weight: 700; font-size: 16px;">$68,000</div>
-            </div>
-            <div style="background: rgba(38, 166, 154, 0.1); border: 1px solid rgba(38, 166, 154, 0.3); padding: 10px; border-radius: 4px; text-align: center;">
-                <div style="color: #868993;">Resistance</div>
-                <div style="color: #fff; font-weight: 700; font-size: 16px;">$70,153</div>
-            </div>
-        </div>
-        
-        <div style="font-size: 12px; color: #868993; line-height: 1.6;">
-            <strong style="color: #fff;">Trading Strategy:</strong> Mixed signals from TTC method. Monthly bearish M-formation vs Weekly bullish upper range. 
-            Current price between MA7 and MA20 suggests consolidation. Watch $68K reclaim for bullish continuation 
-            or $66K break for deeper correction. Fear & Greed at 9/100 = contrarian buy signal.
-        </div>
-    </div>
-</div>
