@@ -112,7 +112,7 @@
         .section-icon.x { background: linear-gradient(135deg, #1da1f2, #0d8bd9); }
         .section-icon.youtube { background: linear-gradient(135deg, #ff0000, #cc0000); }
         .section-icon.ttc { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-        .section-icon.strategy { background: linear-gradient(135deg, #4caf50, #388e3c); }
+        .section-icon.reddit { background: linear-gradient(135deg, #ff4500, #cc3700); }
         .section-info { display: flex; flex-direction: column; }
         .section-title { font-size: 18px; font-weight: 600; color: #fff; }
         .section-subtitle { font-size: 12px; color: #868993; margin-top: 2px; }
@@ -642,9 +642,109 @@
             </div>
         </div>
         
+        <!-- Reddit Intelligence (Section 10) -->
+        <div class="section-card">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-left">
+                    <div class="section-icon reddit">🤖</div>
+                    <div class="section-info">
+                        <div class="section-title">Reddit Intelligence</div>
+                        <div class="section-subtitle">r/Bitcoin + r/CryptoCurrency • New Posts Only</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="section-badge badge-neutral">NEUTRAL</span>
+                    <span class="section-toggle">▼</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="sentiment-summary">
+                        <div class="sentiment-item">
+                            <div class="sentiment-count" style="color: #26a69a;">5</div>
+                            <div class="sentiment-label">Bullish</div>
+                        </div>
+                        <div class="sentiment-item">
+                            <div class="sentiment-count" style="color: #ef5350;">5</div>
+                            <div class="sentiment-label">Bearish</div>
+                        </div>
+                        <div class="sentiment-item">
+                            <div class="sentiment-count" style="color: #ff9800;">19</div>
+                            <div class="sentiment-label">Neutral</div>
+                        </div>
+                        <div class="sentiment-item">
+                            <div class="sentiment-count" style="color: #ff9800;">NEUT</div>
+                            <div class="sentiment-label">Consensus</div>
+                        </div>
+                    </div>
+                    
+                    <div class="live-banner">
+                        <div class="live-dot"></div>
+                        <span><strong>Fresh Posts:</strong> Last 24 hours only • 29 posts from r/Bitcoin + r/CryptoCurrency</span>
+                    </div>
+                    
+                    <div class="influencer-grid">
+                        <div class="influencer-card neutral">
+                            <div class="influencer-header">
+                                <span class="influencer-name">r/Bitcoin - u/SkepticWatcher</span>
+                                <span class="influencer-date">198 pts</span>
+                            </div>
+                            <div class="influencer-text">Watching a skeptic explain why BTC is over for the 100th time...</div>
+                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL • 11 comments</div>
+                        </div>
+                        
+                        <div class="influencer-card neutral">
+                            <div class="influencer-header">
+                                <span class="influencer-name">r/Bitcoin - u/BitcoinFamily</span>
+                                <span class="influencer-date">126 pts</span>
+                            </div>
+                            <div class="influencer-text">Today My Family Got off Zero & Joined the .1 club🚀</div>
+                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL • 32 comments</div>
+                        </div>
+                        
+                        <div class="influencer-card bearish">
+                            <div class="influencer-header">
+                                <span class="influencer-name">r/Bitcoin - u/PowerLawTrader</span>
+                                <span class="influencer-date">26 pts</span>
+                            </div>
+                            <div class="influencer-text">Power Law model shows BTC at $68k is deep in the buy zone (1.4 sigma below trend)</div>
+                            <div class="influencer-stance" style="color: #ef5350;">BEARISH • 20 comments</div>
+                        </div>
+                        
+                        <div class="influencer-card neutral">
+                            <div class="influencer-header">
+                                <span class="influencer-name">r/Bitcoin - u/RealMoneyBTC</span>
+                                <span class="influencer-date">24 pts</span>
+                            </div>
+                            <div class="influencer-text">Bitcoin is real money. Change my mind.</div>
+                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL • 28 comments</div>
+                        </div>
+                        
+                        <div class="influencer-card bullish">
+                            <div class="influencer-header">
+                                <span class="influencer-name">r/CryptoCurrency - u/BullRun2026</span>
+                                <span class="influencer-date">45 pts</span>
+                            </div>
+                            <div class="influencer-text">ETF inflows resuming. This is the accumulation phase before the halving pump.</div>
+                            <div class="influencer-stance" style="color: #26a69a;">BULLISH • 15 comments</div>
+                        </div>
+                        
+                        <div class="influencer-card bearish">
+                            <div class="influencer-header">
+                                <span class="influencer-name">r/CryptoCurrency - u/CryptoBear</span>
+                                <span class="influencer-date">32 pts</span>
+                            </div>
+                            <div class="influencer-text">We're going lower. $60K is not the bottom. Macro conditions worsening.</div>
+                            <div class="influencer-stance" style="color: #ef5350;">BEARISH • 42 comments</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Footer -->
         <div class="footer">
-            <p>Data: CoinGecko • Charts: Yahoo Finance/mplfinance • X: Live API • YouTube: Latest Videos</p>
+            <p>Data: CoinGecko • Charts: Yahoo Finance • X: Live API • YouTube: Latest • Reddit: r/Bitcoin + r/CC</p>
             <p style="margin-top: 10px;">⚠️ Not financial advice. DYOR. Trade responsibly.</p>
         </div>
     </div>
