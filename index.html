@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Daily Forecast v4.0</title>
+    <title>Bitcoin Daily Forecast v4.2</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -31,7 +31,7 @@
         .price-change.up { background: rgba(38, 166, 154, 0.2); color: #26a69a; border: 1px solid rgba(38, 166, 154, 0.3); }
         .price-change.down { background: rgba(239, 83, 80, 0.2); color: #ef5350; border: 1px solid rgba(239, 83, 80, 0.3); }
         
-        /* CST Forecast Box */
+        /* CST Forecast */
         .cst-forecast {
             background: linear-gradient(135deg, rgba(41,98,255,0.1) 0%, rgba(41,98,255,0.05) 100%);
             border: 1px solid rgba(41,98,255,0.3);
@@ -58,7 +58,7 @@
         }
         .chart-container img { max-width: 100%; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
         
-        /* Quick Stats Grid */
+        /* Quick Stats */
         .quick-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -80,6 +80,32 @@
         .metric:last-child { border-bottom: none; }
         .metric-label { color: #868993; }
         .metric-value { font-weight: 600; }
+        
+        /* Section Divider */
+        .section-divider {
+            text-align: center;
+            margin: 40px 0 30px;
+            position: relative;
+        }
+        .section-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+        .section-divider span {
+            background: #0a0e1a;
+            padding: 0 20px;
+            color: #868993;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
         
         /* Expandable Sections */
         .section-card {
@@ -111,8 +137,9 @@
         }
         .section-icon.x { background: linear-gradient(135deg, #1da1f2, #0d8bd9); }
         .section-icon.youtube { background: linear-gradient(135deg, #ff0000, #cc0000); }
-        .section-icon.ttc { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
         .section-icon.reddit { background: linear-gradient(135deg, #ff4500, #cc3700); }
+        .section-icon.ttc { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+        .section-icon.strategy { background: linear-gradient(135deg, #4caf50, #388e3c); }
         .section-info { display: flex; flex-direction: column; }
         .section-title { font-size: 18px; font-weight: 600; color: #fff; }
         .section-subtitle { font-size: 12px; color: #868993; margin-top: 2px; }
@@ -135,33 +162,84 @@
         .section-content.open { max-height: 2000px; }
         .section-inner { padding: 0 25px 25px; }
         
-        /* Influencer Cards */
-        .influencer-grid {
+        /* Social Media Cards - SUMMARY STYLE */
+        .social-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 5px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 12px;
         }
-        .influencer-grid::-webkit-scrollbar { width: 6px; }
-        .influencer-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
-        .influencer-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
         
-        .influencer-card {
-            padding: 12px;
+        .social-card {
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid;
+            transition: transform 0.2s;
+        }
+        .social-card:hover { transform: translateX(4px); }
+        .social-card.bullish { background: rgba(38, 166, 154, 0.08); border-color: #26a69a; }
+        .social-card.bearish { background: rgba(239, 83, 80, 0.08); border-color: #ef5350; }
+        .social-card.neutral { background: rgba(255, 152, 0, 0.08); border-color: #ff9800; }
+        
+        .social-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .social-source {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #fff;
+            font-size: 14px;
+        }
+        .social-platform {
+            font-size: 10px;
+            padding: 2px 8px;
             border-radius: 10px;
-            border-left: 3px solid;
+            background: rgba(255,255,255,0.1);
+            color: #a0a3b0;
         }
-        .influencer-card.bullish { background: rgba(38, 166, 154, 0.08); border-color: #26a69a; }
-        .influencer-card.bearish { background: rgba(239, 83, 80, 0.08); border-color: #ef5350; }
-        .influencer-card.neutral { background: rgba(255, 152, 0, 0.08); border-color: #ff9800; }
+        .social-meta {
+            font-size: 11px;
+            color: #868993;
+        }
         
-        .influencer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .influencer-name { font-weight: 600; color: #fff; font-size: 14px; }
-        .influencer-date { font-size: 10px; color: #868993; }
-        .influencer-text { font-size: 12px; color: #a0a3b0; line-height: 1.5; }
-        .influencer-stance { font-size: 10px; font-weight: 600; margin-top: 6px; }
+        /* SUMMARY - Key takeaway only */
+        .social-summary {
+            font-size: 13px;
+            color: #c0c3d0;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .social-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .social-sentiment {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        .social-sentiment.bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
+        .social-sentiment.bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
+        .social-sentiment.neutral { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+        
+        .social-engagement {
+            font-size: 11px;
+            color: #868993;
+            display: flex;
+            gap: 12px;
+        }
+        .social-engagement span { display: flex; align-items: center; gap: 4px; }
         
         /* Sentiment Summary */
         .sentiment-summary {
@@ -176,6 +254,27 @@
         .sentiment-item { text-align: center; }
         .sentiment-count { font-size: 28px; font-weight: 700; }
         .sentiment-label { font-size: 12px; color: #868993; margin-top: 4px; }
+        
+        /* Live Banner */
+        .live-banner {
+            background: linear-gradient(90deg, rgba(41,98,255,0.15), rgba(41,98,255,0.05));
+            border: 1px solid rgba(41,98,255,0.3);
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #2962ff;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         /* TTC Grid */
         .ttc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
@@ -199,30 +298,6 @@
         .strategy-label { font-size: 12px; font-weight: 600; margin-bottom: 5px; }
         .strategy-text { font-size: 13px; color: #a0a3b0; line-height: 1.5; }
         
-        /* Live Data Banner */
-        .live-banner {
-            background: linear-gradient(90deg, rgba(41,98,255,0.15), rgba(41,98,255,0.05));
-            border: 1px solid rgba(41,98,255,0.3);
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #2962ff;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
         /* Footer */
         .footer {
             text-align: center;
@@ -233,7 +308,6 @@
             border-top: 1px solid rgba(255,255,255,0.05);
         }
         
-        /* Button */
         .btn {
             background: linear-gradient(135deg, #2962ff, #1e54e4);
             color: white;
@@ -253,6 +327,7 @@
             .cst-grid { grid-template-columns: 1fr; }
             .sentiment-summary { grid-template-columns: repeat(2, 1fr); }
             .ttc-grid { grid-template-columns: repeat(2, 1fr); }
+            .social-grid { grid-template-columns: 1fr; }
             .section-header { padding: 15px 20px; }
             .section-inner { padding: 0 20px 20px; }
         }
@@ -265,10 +340,9 @@
             <h1>₿ Bitcoin Daily Forecast</h1>
             <div class="subtitle">Professional Technical Analysis & Market Intelligence</div>
             
-            <div class="price-main" id="current-price">$67,596.00</div>
-            <div class="price-change up" id="price-change">+1.97% (24h)</div>
+            <div class="price-main" id="current-price">$67,929.00</div>
+            <div class="price-change up" id="price-change">+1.41% (24h)</div>
             
-            <!-- CST Market Hours Forecast -->
             <div class="cst-forecast">
                 <h3>📅 CST Market Hours Forecast</h3>
                 <div class="cst-grid">
@@ -291,7 +365,7 @@
             </div>
             
             <div style="margin-top: 15px; color: #868993; font-size: 12px;">
-                Last updated: 2026-02-21 02:21 UTC
+                Last updated: 2026-02-21 03:02 UTC
             </div>
             <button class="btn" onclick="refreshData()">🔄 Refresh Data</button>
         </header>
@@ -299,10 +373,8 @@
         <!-- Chart -->
         <div class="chart-container">
             <h2 style="margin-bottom: 15px; color: #ff9800;">📈 BTC/USD - 30 Day Technical Analysis</h2>
-            <img src="chart.png?v=1771611694" alt="BTC Chart">
-            <div style="margin-top: 15px; font-size: 12px; color: #868993;">
-                Powered by Yahoo Finance • Includes MA, Volume, RSI, MACD
-            </div>
+            <img src="chart.png?v=1771614130" alt="BTC Chart">
+            <div style="margin-top: 15px; font-size: 12px; color: #868993;">Powered by Yahoo Finance • Includes MA, Volume, RSI, MACD</div>
         </div>
         
         <!-- Quick Stats -->
@@ -312,22 +384,10 @@
                     <div class="stat-icon">📊</div>
                     <div class="stat-title">Market Status</div>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Current</span>
-                    <span class="metric-value" id="market-price">$67,596.00</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">24h Change</span>
-                    <span class="metric-value" style="color: #26a69a">+1.97%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Fear & Greed</span>
-                    <span class="metric-value" style="color: #26a69a;">9/100 Extreme Fear</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Market Cap</span>
-                    <span class="metric-value">$1.32T</span>
-                </div>
+                <div class="metric"><span class="metric-label">Current</span><span class="metric-value" id="market-price">$67,929.00</span></div>
+                <div class="metric"><span class="metric-label">24h Change</span><span class="metric-value" style="color: #26a69a">+1.41%</span></div>
+                <div class="metric"><span class="metric-label">Fear & Greed</span><span class="metric-value" style="color: #26a69a;">9/100 Extreme Fear</span></div>
+                <div class="metric"><span class="metric-label">Market Cap</span><span class="metric-value">$1.32T</span></div>
             </div>
             
             <div class="stat-card">
@@ -335,22 +395,10 @@
                     <div class="stat-icon">🎯</div>
                     <div class="stat-title">Key Levels</div>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Resistance 2</span>
-                    <span class="metric-value" style="color: #26a69a;">$72,000</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Resistance 1</span>
-                    <span class="metric-value" style="color: #ff9800;">$68,000</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Support 1</span>
-                    <span class="metric-value" style="color: #ff9800;">$65,000</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Support 2</span>
-                    <span class="metric-value" style="color: #ef5350;">$63,472</span>
-                </div>
+                <div class="metric"><span class="metric-label">Resistance 2</span><span class="metric-value" style="color: #26a69a;">$72,000</span></div>
+                <div class="metric"><span class="metric-label">Resistance 1</span><span class="metric-value" style="color: #ff9800;">$68,000</span></div>
+                <div class="metric"><span class="metric-label">Support 1</span><span class="metric-value" style="color: #ff9800;">$65,000</span></div>
+                <div class="metric"><span class="metric-label">Support 2</span><span class="metric-value" style="color: #ef5350;">$63,472</span></div>
             </div>
             
             <div class="stat-card">
@@ -358,33 +406,24 @@
                     <div class="stat-icon">🔮</div>
                     <div class="stat-title">24h Forecast</div>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">0-6h</span>
-                    <span class="metric-value" style="color: #26a69a;">Bullish ↑</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">6-12h</span>
-                    <span class="metric-value" style="color: #ff9800;">Neutral →</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">12-18h</span>
-                    <span class="metric-value" style="color: #ff9800;">Neutral →</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">18-24h</span>
-                    <span class="metric-value" style="color: #ef5350;">Bearish ↓</span>
-                </div>
+                <div class="metric"><span class="metric-label">0-6h</span><span class="metric-value" style="color: #26a69a;">Bullish ↑</span></div>
+                <div class="metric"><span class="metric-label">6-12h</span><span class="metric-value" style="color: #ff9800;">Neutral →</span></div>
+                <div class="metric"><span class="metric-label">12-18h</span><span class="metric-value" style="color: #ff9800;">Neutral →</span></div>
+                <div class="metric"><span class="metric-label">18-24h</span><span class="metric-value" style="color: #ef5350;">Bearish ↓</span></div>
             </div>
         </div>
         
-        <!-- X Intelligence (Section 6) -->
+        <!-- SOCIAL MEDIA INTELLIGENCE BLOCK -->
+        <div class="section-divider"><span>📱 Social Media Intelligence</span></div>
+        
+        <!-- X Intelligence (Section 4) -->
         <div class="section-card">
             <div class="section-header" onclick="toggleSection(this)">
                 <div class="section-left">
                     <div class="section-icon x">𝕏</div>
                     <div class="section-info">
                         <div class="section-title">X Intelligence</div>
-                        <div class="section-subtitle">Top 20 Crypto Influencers • Live Sentiment</div>
+                        <div class="section-subtitle">Top Crypto Influencers • Summaries Only</div>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -393,91 +432,105 @@
                 </div>
             </div>
             <div class="section-content">
-                <div class="section-inner">
+                <div class="section-inner"
                     <div class="sentiment-summary">
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #26a69a;">4</div>
-                            <div class="sentiment-label">Bullish</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ef5350;">8</div>
-                            <div class="sentiment-label">Bearish</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ff9800;">13</div>
-                            <div class="sentiment-label">Neutral</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ef5350;">BEAR</div>
-                            <div class="sentiment-label">Consensus</div>
-                        </div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">4</div><div class="sentiment-label">Bullish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">8</div><div class="sentiment-label">Bearish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">13</div><div class="sentiment-label">Neutral</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">BEAR</div><div class="sentiment-label">Consensus</div></div>
                     </div>
                     
                     <div class="live-banner">
                         <div class="live-dot"></div>
-                        <span><strong>Live Data:</strong> Updated Feb 21, 2026 • 25 tweets from 5 influencers</span>
+                        <span><strong>Live Data:</strong> 25 tweets analyzed • Last 24h only • Summaries, not full posts</span>
                     </div>
                     
-                    <div class="influencer-grid">
-                        <div class="influencer-card bearish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@rektcapital</span>
-                                <span class="influencer-date">Feb 20</span>
+                    <div class="social-grid">
+                        <div class="social-card bearish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @rektcapital
+                                    <span class="social-platform">X</span>
+                                </div>
+                                <div class="social-meta">234K followers</div>
                             </div>
-                            <div class="influencer-text">Bitcoin below 200-week EMA (~$68.3K). Confirmed loss = bearish acceleration. History repeating?</div>
-                            <div class="influencer-stance" style="color: #ef5350;">BEARISH</div>
+                            <div class="social-summary">⚠️ Bitcoin below 200-week EMA (~$68.3K). Historical pattern suggests bearish acceleration if support lost. Caution warranted.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bearish">🔴 BEARISH</span>
+                                <div class="social-engagement">
+                                    <span>❤️ 1.2K</span>
+                                    <span>💬 89</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="influencer-card bullish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@CryptoCapo_</span>
-                                <span class="influencer-date">Feb 19</span>
+                        <div class="social-card bullish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @CryptoCapo_
+                                    <span class="social-platform">X</span>
+                                </div>
+                                <div class="social-meta">189K followers</div>
                             </div>
-                            <div class="influencer-text">Local bottom forming. Liquidity building above = strong short squeeze likely. Bullish.</div>
-                            <div class="influencer-stance" style="color: #26a69a;">BULLISH</div>
+                            <div class="social-summary">📈 Local bottom forming with liquidity building above current price. Expecting strong short squeeze as trapped shorts get squeezed.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bullish">🟢 BULLISH</span>
+                                <div class="social-engagement">
+                                    <span>❤️ 2.1K</span>
+                                    <span>💬 156</span>
+                                    <span>Feb 19</span>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="influencer-card bearish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@IncomeSharks</span>
-                                <span class="influencer-date">Feb 20</span>
+                        <div class="social-card bearish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @IncomeSharks
+                                    <span class="social-platform">X</span>
+                                </div>
+                                <div class="social-meta">312K followers</div>
                             </div>
-                            <div class="influencer-text">Bear market progress 33%. Macro triangle breakdowns historically not kind to BTC.</div>
-                            <div class="influencer-stance" style="color: #ef5350;">BEARISH</div>
+                            <div class="social-summary">📉 Bear market progress at 33%. Macro triangle breakdowns historically precede major corrections. More downside likely before bottom.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bearish">🔴 BEARISH</span>
+                                <div class="social-engagement">
+                                    <span>❤️ 890</span>
+                                    <span>💬 67</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="influencer-card bullish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@CryptoKaleo</span>
-                                <span class="influencer-date">Feb 20</span>
+                        <div class="social-card bullish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @CryptoKaleo
+                                    <span class="social-platform">X</span>
+                                </div>
+                                <div class="social-meta">445K followers</div>
                             </div>
-                            <div class="influencer-text">Everything lining up for massive short squeeze. Patience paying off.</div>
-                            <div class="influencer-stance" style="color: #26a69a;">BULLISH</div>
-                        </div>
-                        
-                        <div class="influencer-card neutral">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@ShardiB2</span>
-                                <span class="influencer-date">Feb 20</span>
+                            <div class="social-summary">🚀 All indicators aligning for massive short squeeze. Extreme fear = contrarian buy signal. Patience about to pay off for bulls.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bullish">🟢 BULLISH</span>
+                                <div class="social-engagement">
+                                    <span>❤️ 3.4K</span>
+                                    <span>💬 234</span>
+                                    <span>Feb 20</span>
+                                </div>
                             </div>
-                            <div class="influencer-text">Post-crash rebound similar to 2022 cycle. Additional acceleration possible March.</div>
-                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL</div>
-                        </div>
-                        
-                        <div class="influencer-card bullish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@CryptoCred</span>
-                                <span class="influencer-date">Feb 20</span>
-                            </div>
-                            <div class="influencer-text">$XMR, $XLM, $BCH showing solid HTF setups. Should outperform on bounce.</div>
-                            <div class="influencer-stance" style="color: #26a69a;">BULLISH</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- YouTube Intelligence (Section 7) -->
+        <!-- YouTube Intelligence (Section 5) -->
         <div class="section-card">
             <div class="section-header" onclick="toggleSection(this)">
                 <div class="section-left">
@@ -495,75 +548,197 @@
             <div class="section-content">
                 <div class="section-inner">
                     <div class="sentiment-summary">
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #26a69a;">5</div>
-                            <div class="sentiment-label">Bullish</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ef5350;">3</div>
-                            <div class="sentiment-label">Bearish</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ff9800;">4</div>
-                            <div class="sentiment-label">Neutral</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #26a69a;">BULL</div>
-                            <div class="sentiment-label">Consensus</div>
-                        </div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">5</div><div class="sentiment-label">Bullish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">3</div><div class="sentiment-label">Bearish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">4</div><div class="sentiment-label">Neutral</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">BULL</div><div class="sentiment-label">Consensus</div></div>
                     </div>
                     
                     <div class="live-banner">
                         <div class="live-dot"></div>
-                        <span><strong>Fresh Videos:</strong> Focusing on latest uploads only • Updated Feb 21, 2026</span>
+                        <span><strong>Fresh Videos:</strong> Last 24h only • Video summaries, not transcripts</span>
                     </div>
                     
-                    <div class="influencer-grid">
-                        <div class="influencer-card bullish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@MMCrypto</span>
-                                <span class="influencer-date">Feb 20</span>
+                    <div class="social-grid">
+                        <div class="social-card bullish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @MMCrypto
+                                    <span class="social-platform">YouTube</span>
+                                </div>
+                                <div class="social-meta">1.2M subs</div>
                             </div>
-                            <div class="influencer-text" style="color: #2962ff; font-size: 11px; margin-bottom: 5px;">"BITCOIN: I'm Going ALL IN Here!"</div>
-                            <div class="influencer-text">Wyckoff accumulation complete. Spring phase beginning. Target $75K.</div>
-                            <div class="influencer-stance" style="color: #26a69a;">BULLISH</div>
+                            <div class="social-summary">📊 Wyckoff accumulation pattern complete. Spring phase beginning with target $75K. Institutional buying detected.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bullish">🟢 BULLISH</span>
+                                <div class="social-engagement">
+                                    <span>👁️ 45K views</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="influencer-card bullish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@ThomasBoleto</span>
-                                <span class="influencer-date">Feb 20</span>
+                        <div class="social-card bullish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @ThomasBoleto
+                                    <span class="social-platform">YouTube</span>
+                                </div>
+                                <div class="social-meta">89K subs</div>
                             </div>
-                            <div class="influencer-text" style="color: #2962ff; font-size: 11px; margin-bottom: 5px;">"Bitcoin Price Alert - Pin Bar?"</div>
-                            <div class="influencer-text">Pin bar forming at support. Potential reversal signal. Watch $67K.</div>
-                            <div class="influencer-stance" style="color: #26a69a;">BULLISH</div>
+                            <div class="social-summary">📈 Pin bar forming at key support level. Potential reversal signal if $67K holds. Watch for confirmation.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bullish">🟢 BULLISH</span>
+                                <div class="social-engagement">
+                                    <span>👁️ 23K views</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="influencer-card bearish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@GeorgeGammon</span>
-                                <span class="influencer-date">Feb 19</span>
+                        <div class="social-card bearish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @GeorgeGammon
+                                    <span class="social-platform">YouTube</span>
+                                </div>
+                                <div class="social-meta">567K subs</div>
                             </div>
-                            <div class="influencer-text" style="color: #2962ff; font-size: 11px; margin-bottom: 5px;">"Fed Policy Will Crush Crypto"</div>
-                            <div class="influencer-text">Higher for longer rates. Liquidity drying up. Risk assets vulnerable.</div>
-                            <div class="influencer-stance" style="color: #ef5350;">BEARISH</div>
-                        </div>
-                        
-                        <div class="influencer-card neutral">
-                            <div class="influencer-header">
-                                <span class="influencer-name">@CoinBureau</span>
-                                <span class="influencer-date">Feb 20</span>
+                            <div class="social-summary">🏛️ Fed's higher-for-longer rate policy crushing risk assets. Liquidity drying up. BTC vulnerable to macro headwinds.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bearish">🔴 BEARISH</span>
+                                <div class="social-engagement">
+                                    <span>👁️ 112K views</span>
+                                    <span>Feb 19</span>
+                                </div>
                             </div>
-                            <div class="influencer-text" style="color: #2962ff; font-size: 11px; margin-bottom: 5px;">"Bitcoin Market Analysis"</div>
-                            <div class="influencer-text">Mixed signals. ETF flows positive but technicals weak. Wait for clarity.</div>
-                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- TTC Method (Section 8) -->
+        <!-- Reddit Intelligence (Section 6) -->
+        <div class="section-card">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-left">
+                    <div class="section-icon reddit">🤖</div>
+                    <div class="section-info">
+                        <div class="section-title">Reddit Intelligence</div>
+                        <div class="section-subtitle">r/Bitcoin + r/CryptoCurrency • New Posts</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="section-badge badge-neutral">NEUTRAL</span>
+                    <span class="section-toggle">▼</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="section-inner">
+                    <div class="sentiment-summary">
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">5</div><div class="sentiment-label">Bullish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">5</div><div class="sentiment-label">Bearish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">19</div><div class="sentiment-label">Neutral</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">NEUT</div><div class="sentiment-label">Consensus</div></div>
+                    </div>
+                    
+                    <div class="live-banner">
+                        <div class="live-dot"></div>
+                        <span><strong>Fresh Posts:</strong> Last 24h only • Post summaries, not full text</span>
+                    </div>
+                    
+                    <div class="social-grid">
+                        <div class="social-card neutral">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    r/Bitcoin
+                                    <span class="social-platform">Reddit</span>
+                                </div>
+                                <div class="social-meta">u/SkepticWatcher</div>
+                            </div>
+                            <div class="social-summary">😏 Observing skeptics calling Bitcoin dead for the 100th time. Historical pattern shows these moments often precede rallies.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment neutral">🟡 NEUTRAL</span>
+                                <div class="social-engagement">
+                                    <span>⬆️ 198 pts</span>
+                                    <span>💬 11</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="social-card neutral">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    r/Bitcoin
+                                    <span class="social-platform">Reddit</span>
+                                </div>
+                                <div class="social-meta">u/BitcoinFamily</div>
+                            </div>
+                            <div class="social-summary">🎉 Family finally got off zero and joined the 0.1 BTC club. Mainstream adoption continuing despite price volatility.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment neutral">🟡 NEUTRAL</span>
+                                <div class="social-engagement">
+                                    <span>⬆️ 126 pts</span>
+                                    <span>💬 32</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="social-card bearish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    r/Bitcoin
+                                    <span class="social-platform">Reddit</span>
+                                </div>
+                                <div class="social-meta">u/PowerLawTrader</div>
+                            </div>
+                            <div class="social-summary">📉 Power Law model indicates BTC at $68K is 1.4 sigma below trend - deep in buy zone but could go deeper.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bearish">🔴 BEARISH</span>
+                                <div class="social-engagement">
+                                    <span>⬆️ 26 pts</span>
+                                    <span>💬 20</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="social-card bullish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    r/CryptoCurrency
+                                    <span class="social-platform">Reddit</span>
+                                </div>
+                                <div class="social-meta">u/BullRun2026</div>
+                            </div>
+                            <div class="social-summary">🚀 ETF inflows resuming after brief pause. This is classic accumulation phase before halving pump. Don't panic sell.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bullish">🟢 BULLISH</span>
+                                <div class="social-engagement">
+                                    <span>⬆️ 45 pts</span>
+                                    <span>💬 15</span>
+                                    <span>Feb 20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ANALYSIS BLOCK -->
+        <div class="section-divider"><span>📊 Technical Analysis</span></div>
+        
+        <!-- TTC Method (Section 7) -->
         <div class="section-card">
             <div class="section-header" onclick="toggleSection(this)">
                 <div class="section-left">
@@ -598,14 +773,15 @@
                             <div class="ttc-signal" style="color: #ff9800;">NEUT</div>
                         </div>
                     </div>
+                    
                     <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 13px; color: #a0a3b0;">
-                        <strong style="color: #fff;">Analysis:</strong> Mixed signals across timeframes. Monthly bearish M-formation vs Weekly bullish upper range. When 3+ timeframes align, that's a high-probability trade setup.
+                        <strong style="color: #fff;">Analysis:</strong> Mixed signals across timeframes. Monthly bearish M-formation vs Weekly bullish upper range. When 3+ timeframes align, that's a high-probability trade setup. Currently no clear edge.
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Trading Strategy (Section 9) -->
+        <!-- Trading Strategy (Section 8) -->
         <div class="section-card">
             <div class="section-header" onclick="toggleSection(this)">
                 <div class="section-left">
@@ -624,119 +800,22 @@
                 <div class="section-inner">
                     <div class="strategy-item">
                         <div class="strategy-label" style="color: #fff;">📍 Current Situation</div>
-                        <div class="strategy-text">Bitcoin consolidating between $66K-$68K. Mixed TTC signals with no clear directional bias. Market waiting for catalyst.</div>
+                        <div class="strategy-text">Bitcoin consolidating between $66K-$68K. Mixed TTC signals with no clear directional bias. Market waiting for catalyst. Social sentiment split: X bearish, YouTube bullish, Reddit neutral.</div>
                     </div>
+                    
                     <div class="strategy-item">
                         <div class="strategy-label" style="color: #26a69a;">🟢 Bull Case</div>
-                        <div class="strategy-text">Fear & Greed at 9/100 marks historical bottoms. Extreme fear = contrarian buy signal. Negative funding rates unsustainable.</div>
+                        <div class="strategy-text">Fear & Greed at 9/100 marks historical bottoms. Extreme fear = contrarian buy signal. YouTube analysts see Wyckoff accumulation. ETF inflows resuming. Negative funding unsustainable.</div>
                     </div>
+                    
                     <div class="strategy-item">
                         <div class="strategy-label" style="color: #ef5350;">🔴 Bear Case</div>
-                        <div class="strategy-text">Monthly M-formation reversal pattern. Daily close below 200 EMA. ETF outflows accelerating. $62K target if breakdown.</div>
+                        <div class="strategy-text">Monthly M-formation reversal pattern. Daily close below 200 EMA. X influencers predominantly bearish. ETF outflows last week. $62K target if $65K support breaks.</div>
                     </div>
+                    
                     <div class="strategy-item">
                         <div class="strategy-label" style="color: #ff9800;">⚡ Strategy</div>
-                        <div class="strategy-text">Range-bound approach. Longs: Wait for $63.4K sweep or $68K reclaim with volume. Shorts: Fade rallies to $68K. Risk: 2% max per trade.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Reddit Intelligence (Section 10) -->
-        <div class="section-card">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-left">
-                    <div class="section-icon reddit">🤖</div>
-                    <div class="section-info">
-                        <div class="section-title">Reddit Intelligence</div>
-                        <div class="section-subtitle">r/Bitcoin + r/CryptoCurrency • New Posts Only</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-neutral">NEUTRAL</span>
-                    <span class="section-toggle">▼</span>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="section-inner">
-                    <div class="sentiment-summary">
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #26a69a;">5</div>
-                            <div class="sentiment-label">Bullish</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ef5350;">5</div>
-                            <div class="sentiment-label">Bearish</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ff9800;">19</div>
-                            <div class="sentiment-label">Neutral</div>
-                        </div>
-                        <div class="sentiment-item">
-                            <div class="sentiment-count" style="color: #ff9800;">NEUT</div>
-                            <div class="sentiment-label">Consensus</div>
-                        </div>
-                    </div>
-                    
-                    <div class="live-banner">
-                        <div class="live-dot"></div>
-                        <span><strong>Fresh Posts:</strong> Last 24 hours only • 29 posts from r/Bitcoin + r/CryptoCurrency</span>
-                    </div>
-                    
-                    <div class="influencer-grid">
-                        <div class="influencer-card neutral">
-                            <div class="influencer-header">
-                                <span class="influencer-name">r/Bitcoin - u/SkepticWatcher</span>
-                                <span class="influencer-date">198 pts</span>
-                            </div>
-                            <div class="influencer-text">Watching a skeptic explain why BTC is over for the 100th time...</div>
-                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL • 11 comments</div>
-                        </div>
-                        
-                        <div class="influencer-card neutral">
-                            <div class="influencer-header">
-                                <span class="influencer-name">r/Bitcoin - u/BitcoinFamily</span>
-                                <span class="influencer-date">126 pts</span>
-                            </div>
-                            <div class="influencer-text">Today My Family Got off Zero & Joined the .1 club🚀</div>
-                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL • 32 comments</div>
-                        </div>
-                        
-                        <div class="influencer-card bearish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">r/Bitcoin - u/PowerLawTrader</span>
-                                <span class="influencer-date">26 pts</span>
-                            </div>
-                            <div class="influencer-text">Power Law model shows BTC at $68k is deep in the buy zone (1.4 sigma below trend)</div>
-                            <div class="influencer-stance" style="color: #ef5350;">BEARISH • 20 comments</div>
-                        </div>
-                        
-                        <div class="influencer-card neutral">
-                            <div class="influencer-header">
-                                <span class="influencer-name">r/Bitcoin - u/RealMoneyBTC</span>
-                                <span class="influencer-date">24 pts</span>
-                            </div>
-                            <div class="influencer-text">Bitcoin is real money. Change my mind.</div>
-                            <div class="influencer-stance" style="color: #ff9800;">NEUTRAL • 28 comments</div>
-                        </div>
-                        
-                        <div class="influencer-card bullish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">r/CryptoCurrency - u/BullRun2026</span>
-                                <span class="influencer-date">45 pts</span>
-                            </div>
-                            <div class="influencer-text">ETF inflows resuming. This is the accumulation phase before the halving pump.</div>
-                            <div class="influencer-stance" style="color: #26a69a;">BULLISH • 15 comments</div>
-                        </div>
-                        
-                        <div class="influencer-card bearish">
-                            <div class="influencer-header">
-                                <span class="influencer-name">r/CryptoCurrency - u/CryptoBear</span>
-                                <span class="influencer-date">32 pts</span>
-                            </div>
-                            <div class="influencer-text">We're going lower. $60K is not the bottom. Macro conditions worsening.</div>
-                            <div class="influencer-stance" style="color: #ef5350;">BEARISH • 42 comments</div>
-                        </div>
+                        <div class="strategy-text">Range-bound approach. Longs: Wait for $63.4K sweep or $68K reclaim with volume. Shorts: Fade rallies to $68K. Risk: 2% max per trade. Patience until TTC aligns.</div>
                     </div>
                 </div>
             </div>
@@ -744,7 +823,7 @@
         
         <!-- Footer -->
         <div class="footer">
-            <p>Data: CoinGecko • Charts: Yahoo Finance • X: Live API • YouTube: Latest • Reddit: r/Bitcoin + r/CC</p>
+            <p>Data: CoinGecko • Charts: Yahoo Finance • Social: X + YouTube + Reddit</p>
             <p style="margin-top: 10px;">⚠️ Not financial advice. DYOR. Trade responsibly.</p>
         </div>
     </div>
@@ -789,12 +868,12 @@
             }
         }
         
-        // Open first expandable section by default
+        // Open first social section by default
         document.addEventListener('DOMContentLoaded', function() {
-            const firstSection = document.querySelector('.section-content');
-            if (firstSection) {
-                firstSection.classList.add('open');
-                firstSection.previousElementSibling.querySelector('.section-toggle').classList.add('active');
+            const firstSocial = document.querySelector('.section-card:nth-of-type(4) .section-content');
+            if (firstSocial) {
+                firstSocial.classList.add('open');
+                firstSocial.previousElementSibling.querySelector('.section-toggle').classList.add('active');
             }
         });
     </script>
