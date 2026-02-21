@@ -2,1253 +2,232 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Daily Forecast v5.0 - Advanced Technical Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bitcoin Daily Forecast - Mobile Optimized Charts</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+            background: #0a0e1a;
             color: #fff;
             line-height: 1.6;
-            min-height: 100vh;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        /* Header */
         header {
             text-align: center;
-            padding: 30px 0;
+            padding: 20px 0;
             border-bottom: 2px solid #2a2e39;
-            margin-bottom: 30px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 16px;
+            margin-bottom: 20px;
         }
-        h1 { font-size: 36px; margin-bottom: 10px; background: linear-gradient(90deg, #f7931a, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .subtitle { color: #868993; font-size: 14px; margin-bottom: 20px; }
-        .price-main { font-size: 52px; font-weight: 700; margin: 20px 0; text-shadow: 0 2px 20px rgba(247,147,26,0.3); }
-        .price-change { font-size: 18px; padding: 8px 20px; border-radius: 20px; display: inline-block; font-weight: 600; }
-        .price-change.up { background: rgba(38, 166, 154, 0.2); color: #26a69a; border: 1px solid rgba(38, 166, 154, 0.3); }
-        .price-change.down { background: rgba(239, 83, 80, 0.2); color: #ef5350; border: 1px solid rgba(239, 83, 80, 0.3); }
+        h1 { font-size: 28px; background: linear-gradient(90deg, #f7931a, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* CST Forecast */
-        .cst-forecast {
-            background: linear-gradient(135deg, rgba(41,98,255,0.1) 0%, rgba(41,98,255,0.05) 100%);
-            border: 1px solid rgba(41,98,255,0.3);
+        /* Landscape Prompt */
+        .landscape-prompt {
+            display: none;
+            background: linear-gradient(135deg, #2962ff, #7c4dff);
+            color: white;
+            padding: 15px;
             border-radius: 12px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
+            margin-bottom: 20px;
+            text-align: center;
         }
-        .cst-forecast h3 { color: #2962ff; font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .cst-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .cst-item { text-align: center; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; }
-        .cst-time { font-size: 11px; color: #868993; margin-bottom: 5px; }
-        .cst-price { font-size: 22px; font-weight: 700; }
-        .cst-change { font-size: 10px; margin-top: 3px; }
+        .landscape-prompt .icon { font-size: 32px; margin-bottom: 8px; }
+        .landscape-prompt .text { font-size: 14px; font-weight: 600; }
+        .landscape-prompt .subtext { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        
+        @media (max-width: 768px) and (orientation: portrait) {
+            .landscape-prompt { display: block; }
+        }
         
         /* Chart Cards */
         .chart-card {
-            background: rgba(30, 34, 45, 0.8);
+            background: rgba(30, 34, 45, 0.6);
             border-radius: 16px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.05);
             overflow: hidden;
         }
-        
         .chart-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 20px;
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 15px 20px;
             cursor: pointer;
-            user-select: none;
-            transition: background 0.2s;
+            background: rgba(255,255,255,0.02);
         }
-        .chart-header:hover { background: rgba(255,255,255,0.05); }
-        
-        .chart-header-left { display: flex; align-items: center; gap: 12px; }
-        .chart-icon { 
-            width: 40px; 
-            height: 40px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 10px;
-            font-size: 20px;
-        }
-        .chart-icon.price { background: linear-gradient(135deg, #f7931a, #ff9800); }
-        .chart-icon.trend { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-        .chart-icon.momentum { background: linear-gradient(135deg, #2196f3, #1976d2); }
-        .chart-icon.volume { background: linear-gradient(135deg, #4caf50, #388e3c); }
-        .chart-icon.forecast { background: linear-gradient(135deg, #e91e63, #c2185b); }
-        
-        .chart-title-wrap { display: flex; flex-direction: column; }
-        .chart-title { font-size: 16px; font-weight: 600; color: #fff; }
-        .chart-subtitle { font-size: 12px; color: #868993; margin-top: 2px; }
-        
-        .chart-toggle { font-size: 18px; color: #868993; transition: transform 0.3s; }
-        .chart-toggle.active { transform: rotate(180deg); }
-        
+        .chart-title { font-size: 16px; font-weight: 600; }
+        .chart-subtitle { font-size: 12px; color: #868993; }
         .chart-body {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease-out;
         }
-        .chart-body.open { max-height: 500px; }
+        .chart-body.open { max-height: 600px; }
         
+        /* Chart Container - Full Width */
         .chart-wrapper {
-            height: 400px;
-            position: relative;
-            background: #0d1117;
+            width: 100%;
+            height: 500px;
+            border: none;
+            display: block;
         }
-        
-        .chart-legend {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(13, 17, 23, 0.95);
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            font-size: 11px;
-            z-index: 100;
-            backdrop-filter: blur(4px);
-        }
-        .chart-legend-title { font-weight: 600; margin-bottom: 6px; font-size: 12px; }
-        .chart-legend-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 12px; }
-        .chart-legend-item { display: flex; align-items: center; gap: 6px; color: #868993; }
-        .chart-legend-color { width: 8px; height: 8px; border-radius: 2px; }
         
         @media (max-width: 768px) {
-            .chart-legend { position: relative; top: auto; left: auto; margin: 10px; display: inline-block; }
-            .chart-legend-grid { grid-template-columns: repeat(2, 1fr); }
-            .chart-wrapper { height: 300px; }
+            .chart-wrapper { height: 350px; }
             .chart-body.open { max-height: 400px; }
         }
         
-        /* Quick Stats */
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .stat-card {
-            background: rgba(30, 34, 45, 0.6);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-        .stat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .stat-icon { font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .stat-title { font-size: 16px; font-weight: 600; color: #fff; }
-        .metric { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
-        .metric:last-child { border-bottom: none; }
-        .metric-label { color: #868993; }
-        .metric-value { font-weight: 600; }
-        
-        /* Section Divider */
-        .section-divider {
-            text-align: center;
-            margin: 40px 0 30px;
-            position: relative;
-        }
-        .section-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        }
-        .section-divider span {
-            background: #0a0e1a;
-            padding: 0 20px;
-            color: #868993;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
+        @media (max-width: 768px) and (orientation: landscape) {
+            .chart-wrapper { height: 280px; }
+            .landscape-prompt { display: none !important; }
         }
         
-        /* Expandable Sections */
-        .section-card {
-            background: rgba(30, 34, 45, 0.6);
-            border-radius: 16px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-            overflow: hidden;
-        }
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 25px;
-            cursor: pointer;
-            transition: background 0.2s;
-            user-select: none;
-        }
-        .section-header:hover { background: rgba(255,255,255,0.03); }
-        .section-left { display: flex; align-items: center; gap: 15px; }
-        .section-icon { 
-            width: 48px; 
-            height: 48px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 12px;
-            font-size: 24px;
-        }
-        .section-icon.x { background: linear-gradient(135deg, #1da1f2, #0d8bd9); }
-        .section-icon.youtube { background: linear-gradient(135deg, #ff0000, #cc0000); }
-        .section-icon.reddit { background: linear-gradient(135deg, #ff4500, #cc3700); }
-        .section-icon.ttc { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-        .section-icon.strategy { background: linear-gradient(135deg, #4caf50, #388e3c); }
-        .section-info { display: flex; flex-direction: column; }
-        .section-title { font-size: 18px; font-weight: 600; color: #fff; }
-        .section-subtitle { font-size: 12px; color: #868993; margin-top: 2px; }
-        .section-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .badge-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
-        .badge-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
-        .badge-neutral { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
-        .section-toggle { font-size: 20px; color: #868993; transition: transform 0.3s; }
-        .section-toggle.active { transform: rotate(180deg); }
-        .section-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        .section-content.open { max-height: 2000px; }
-        .section-inner { padding: 0 25px 25px; }
-        
-        /* Social Media Cards */
-        .social-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 12px;
-        }
-        
-        .social-card {
-            padding: 16px;
-            border-radius: 12px;
-            border-left: 4px solid;
-            transition: transform 0.2s;
-        }
-        .social-card:hover { transform: translateX(4px); }
-        .social-card.bullish { background: rgba(38, 166, 154, 0.08); border-color: #26a69a; }
-        .social-card.bearish { background: rgba(239, 83, 80, 0.08); border-color: #ef5350; }
-        .social-card.neutral { background: rgba(255, 152, 0, 0.08); border-color: #ff9800; }
-        
-        .social-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .social-source {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            color: #fff;
-            font-size: 14px;
-        }
-        .social-platform {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            color: #a0a3b0;
-        }
-        .social-meta { font-size: 11px; color: #868993; }
-        
-        .social-summary {
-            font-size: 13px;
-            color: #c0c3d0;
-            line-height: 1.6;
-            margin-bottom: 12px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            border-left: 2px solid rgba(255,255,255,0.1);
-        }
-        
-        .social-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .social-sentiment {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 12px;
-        }
-        .social-sentiment.bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
-        .social-sentiment.bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
-        .social-sentiment.neutral { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
-        
-        .social-engagement {
-            font-size: 11px;
-            color: #868993;
-            display: flex;
-            gap: 12px;
-        }
-        .social-engagement span { display: flex; align-items: center; gap: 4px; }
-        
-        /* Sentiment Summary */
-        .sentiment-summary {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-        }
-        .sentiment-item { text-align: center; }
-        .sentiment-count { font-size: 28px; font-weight: 700; }
-        .sentiment-label { font-size: 12px; color: #868993; margin-top: 4px; }
-        
-        /* Live Banner */
-        .live-banner {
-            background: linear-gradient(90deg, rgba(41,98,255,0.15), rgba(41,98,255,0.05));
-            border: 1px solid rgba(41,98,255,0.3);
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #2962ff;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
-        /* TTC Grid */
-        .ttc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .ttc-item {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .ttc-timeframe { font-size: 12px; color: #868993; margin-bottom: 8px; }
-        .ttc-signal { font-size: 20px; font-weight: 700; }
-        
-        /* Strategy Content */
-        .strategy-item {
-            padding: 15px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .strategy-label { font-size: 12px; font-weight: 600; margin-bottom: 5px; }
-        .strategy-text { font-size: 13px; color: #a0a3b0; line-height: 1.5; }
-        
-        /* Confluence Panel */
+        /* Confluence Score */
         .confluence-panel {
-            background: rgba(30, 34, 45, 0.8);
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(156, 39, 176, 0.05));
+            border: 1px solid rgba(156, 39, 176, 0.3);
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        
-        .confluence-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .confluence-score-wrap {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .confluence-score-box {
             text-align: center;
-            padding: 20px 30px;
-            background: rgba(239, 83, 80, 0.1);
-            border: 2px solid rgba(239, 83, 80, 0.3);
-            border-radius: 12px;
         }
-        
-        .confluence-score-value {
-            font-size: 42px;
-            font-weight: 800;
-            color: #ef5350;
-            line-height: 1;
-        }
-        
-        .confluence-score-label {
-            font-size: 12px;
-            color: #868993;
-            margin-top: 5px;
-        }
-        
-        .confluence-signal {
-            padding: 10px 24px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .signal-sell {
-            background: rgba(239, 83, 80, 0.2);
-            color: #ef5350;
-            border: 1px solid rgba(239, 83, 80, 0.4);
-        }
-        
-        .signal-buy {
-            background: rgba(38, 166, 154, 0.2);
-            color: #26a69a;
-            border: 1px solid rgba(38, 166, 154, 0.4);
-        }
-        
-        .signal-neutral {
-            background: rgba(255, 152, 0, 0.2);
-            color: #ff9800;
-            border: 1px solid rgba(255, 152, 0, 0.4);
-        }
-        
-        .score-bar-bg {
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .score-bar-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        
-        /* Category Breakdown Table */
-        .category-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        
-        .category-table th,
-        .category-table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        .category-table th {
-            color: #868993;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-        
-        .category-table tr:hover { background: rgba(255,255,255,0.02); }
-        
-        .category-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .category-indicator-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        
-        .status-bullish { color: #26a69a; }
-        .status-bearish { color: #ef5350; }
-        .status-neutral { color: #ff9800; }
-        
-        .weight-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            background: rgba(255,255,255,0.1);
-        }
-        
-        /* Footer */
-        .footer {
-            text-align: center;
-            color: #868993;
-            font-size: 12px;
-            margin-top: 40px;
-            padding: 30px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #2962ff, #1e54e4);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 15px;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(41,98,255,0.4); }
-        
-        @media (max-width: 768px) {
-            .price-main { font-size: 40px; }
-            .cst-grid { grid-template-columns: 1fr; }
-            .sentiment-summary { grid-template-columns: repeat(2, 1fr); }
-            .ttc-grid { grid-template-columns: repeat(2, 1fr); }
-            .social-grid { grid-template-columns: 1fr; }
-            .section-header { padding: 15px 20px; }
-            .section-inner { padding: 0 20px 20px; }
-            .chart-header { padding: 14px 16px; }
-            .confluence-header { flex-direction: column; align-items: flex-start; }
-            .confluence-score-wrap { width: 100%; justify-content: space-between; }
-            .category-table { font-size: 12px; }
-            .category-table th, .category-table td { padding: 10px 12px; }
+        .confluence-score { font-size: 48px; font-weight: 800; color: #ffc107; }
+        .confluence-signal { 
+            display: inline-block; 
+            padding: 8px 24px; 
+            border-radius: 20px; 
+            font-weight: 700; 
+            background: rgba(255, 193, 7, 0.2); 
+            color: #ffc107;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header>
-            <h1>Bitcoin Daily Forecast</h1>
-            <div class="subtitle">Professional Technical Analysis & Market Intelligence</div>
-            
-            <div class="price-main" id="current-price">$67,929.00</div>
-            <div class="price-change up" id="price-change">+1.41% (24h)</div>
-            
-            <div class="cst-forecast">
-                <h3>CST Market Hours Forecast</h3>
-                <div class="cst-grid">
-                    <div class="cst-item">
-                        <div class="cst-time">Open 8:00 AM</div>
-                        <div class="cst-price" style="color: #26a69a;">$67,200</div>
-                        <div class="cst-change" style="color: #26a69a;">+0.5%</div>
-                    </div>
-                    <div class="cst-item">
-                        <div class="cst-time">Mid 12:00 PM</div>
-                        <div class="cst-price" style="color: #ff9800;">$67,800</div>
-                        <div class="cst-change" style="color: #ff9800;">+1.4%</div>
-                    </div>
-                    <div class="cst-item">
-                        <div class="cst-time">Close 4:00 PM</div>
-                        <div class="cst-price" style="color: #ef5350;">$67,400</div>
-                        <div class="cst-change" style="color: #ef5350;">+0.8%</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 15px; color: #868993; font-size: 12px;">
-                Last updated: 2026-02-21 03:02 UTC
-            </div>
-            <button class="btn" onclick="refreshData()">Refresh Data</button>
+            <h1>📊 Bitcoin Daily Forecast</h1>
+            <p style="color: #868993; font-size: 14px;">Interactive Charts • Mobile Optimized</p>
         </header>
         
-        <!-- 5 Focused Charts Section -->
-        <div class="section-divider"><span>Advanced Technical Charts</span></div>
+        <!-- Landscape Prompt -->
+        <div class="landscape-prompt">
+            <div class="icon">📱↔️</div>
+            <div class="text">Rotate Your Phone</div>
+            <div class="subtext">Charts are best viewed in landscape mode</div>
+        </div>
+        
+        <!-- Confluence Score -->
+        <div class="confluence-panel">
+            <div class="confluence-score">43/100</div>
+            <div style="font-size: 14px; color: #868993; margin-top: 5px;">Confluence Score</div>
+            <div class="confluence-signal">NEUTRAL</div>
+        </div>
         
         <!-- Chart 1: Price Action -->
         <div class="chart-card">
             <div class="chart-header" onclick="toggleChart(this)">
-                <div class="chart-header-left">
-                    <div class="chart-icon price">1</div>
-                    <div class="chart-title-wrap">
-                        <div class="chart-title">Price Action</div>
-                        <div class="chart-subtitle">Candlesticks • EMA 9/21/50/200 • VWAP • Support/Resistance</div>
-                    </div>
+                <div>
+                    <div class="chart-title">📈 Price Action</div>
+                    <div class="chart-subtitle">Candlesticks • EMAs • VWAP • Volume</div>
                 </div>
-                <span class="chart-toggle">▼</span>
+                <span style="font-size: 20px;">▼</span>
             </div>
             <div class="chart-body open">
-                <div class="chart-legend">
-                    <div class="chart-legend-title">Indicators</div>
-                    <div class="chart-legend-grid">
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #00bcd4;"></span>EMA 9</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ff9800;"></span>EMA 21</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #e91e63;"></span>EMA 50</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #9c27b0;"></span>EMA 200</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ffeb3b;"></span>VWAP</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #4caf50;"></span>Support</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ff5252;"></span>Resistance</div>
-                    </div>
-                </div>
-                <iframe src="chart-price.html" class="chart-wrapper" id="chart-price" frameborder="0" scrolling="no"></iframe>
+                <iframe src="chart-price.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                        allow="fullscreen" loading="lazy"
+                        title="BTC Price Action Chart"
+                        sandbox="allow-scripts allow-same-origin">
+                </iframe>
             </div>
         </div>
         
         <!-- Chart 2: Trend Indicators -->
         <div class="chart-card">
             <div class="chart-header" onclick="toggleChart(this)">
-                <div class="chart-header-left">
-                    <div class="chart-icon trend">2</div>
-                    <div class="chart-title-wrap">
-                        <div class="chart-title">Trend Indicators</div>
-                        <div class="chart-subtitle">Ichimoku Cloud • SuperTrend • Bollinger Bands</div>
-                    </div>
+                <div>
+                    <div class="chart-title">📉 Trend Indicators</div>
+                    <div class="chart-subtitle">Ichimoku Cloud • SuperTrend • Bollinger Bands</div>
                 </div>
-                <span class="chart-toggle">▼</span>
+                <span style="font-size: 20px;">▼</span>
             </div>
             <div class="chart-body">
-                <div class="chart-legend">
-                    <div class="chart-legend-title">Indicators</div>
-                    <div class="chart-legend-grid">
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ff5252;"></span>Tenkan</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #448aff;"></span>Kijun</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #00e676;"></span>SuperTrend</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ff5252;"></span>BB Upper</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #4caf50;"></span>BB Lower</div>
-                    </div>
-                </div>
-                <iframe src="chart-trend.html" class="chart-wrapper" id="chart-trend" frameborder="0" scrolling="no"></iframe>
+                <iframe src="chart-trend.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                        allow="fullscreen" loading="lazy"
+                        title="BTC Trend Indicators Chart">
+                </iframe>
             </div>
         </div>
         
         <!-- Chart 3: Momentum -->
         <div class="chart-card">
             <div class="chart-header" onclick="toggleChart(this)">
-                <div class="chart-header-left">
-                    <div class="chart-icon momentum">3</div>
-                    <div class="chart-title-wrap">
-                        <div class="chart-title">Momentum</div>
-                        <div class="chart-subtitle">RSI • StochRSI • MACD • MFI</div>
-                    </div>
+                <div>
+                    <div class="chart-title">⚡ Momentum</div>
+                    <div class="chart-subtitle">RSI • StochRSI • MACD • MFI</div>
                 </div>
-                <span class="chart-toggle">▼</span>
+                <span style="font-size: 20px;">▼</span>
             </div>
             <div class="chart-body">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; height: 100%;">
-                    <div style="position: relative; border-right: 1px solid rgba(255,255,255,0.1);">
-                        <div class="chart-legend" style="top: 5px; left: 5px; padding: 6px 10px;">
-                            <div class="chart-legend-title" style="font-size: 10px;">RSI(14)</div>
-                        </div>
-                        <iframe src="chart-momentum.html" style="width: 100%; height: 100%; border: none;" frameborder="0" scrolling="no"></iframe>
-                    </div>
-                    <div style="position: relative;">
-                        <div class="chart-legend" style="top: 5px; left: 5px; padding: 6px 10px;">
-                            <div class="chart-legend-title" style="font-size: 10px;">MACD</div>
-                        </div>
-                        <iframe src="chart-momentum.html" style="width: 100%; height: 100%; border: none;" frameborder="0" scrolling="no"></iframe>
-                    </div>
-                </div>
+                <iframe src="chart-momentum.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                        allow="fullscreen" loading="lazy"
+                        title="BTC Momentum Chart">
+                </iframe>
             </div>
         </div>
         
         <!-- Chart 4: Volume & On-Chain -->
         <div class="chart-card">
             <div class="chart-header" onclick="toggleChart(this)">
-                <div class="chart-header-left">
-                    <div class="chart-icon volume">4</div>
-                    <div class="chart-title-wrap">
-                        <div class="chart-title">Volume & On-Chain</div>
-                        <div class="chart-subtitle">Volume Bars • OBV • ATR Volatility</div>
-                    </div>
+                <div>
+                    <div class="chart-title">📊 Volume & On-Chain</div>
+                    <div class="chart-subtitle">Volume • OBV • ATR • Funding</div>
                 </div>
-                <span class="chart-toggle">▼</span>
+                <span style="font-size: 20px;">▼</span>
             </div>
             <div class="chart-body">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; height: 100%;">
-                    <div style="position: relative; border-right: 1px solid rgba(255,255,255,0.1);">
-                        <div class="chart-legend" style="top: 5px; left: 5px; padding: 6px 10px;">
-                            <div class="chart-legend-title" style="font-size: 10px;">Volume</div>
-                        </div>
-                        <iframe src="chart-onchain.html" style="width: 100%; height: 100%; border: none;" frameborder="0" scrolling="no"></iframe>
-                    </div>
-                    <div style="position: relative;">
-                        <div class="chart-legend" style="top: 5px; left: 5px; padding: 6px 10px;">
-                            <div class="chart-legend-title" style="font-size: 10px;">ATR(14)</div>
-                        </div>
-                        <iframe src="chart-onchain.html" style="width: 100%; height: 100%; border: none;" frameborder="0" scrolling="no"></iframe>
-                    </div>
-                </div>
+                <iframe src="chart-onchain.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                        allow="fullscreen" loading="lazy"
+                        title="BTC Volume and On-Chain Chart">
+                </iframe>
             </div>
         </div>
         
-        <!-- Chart 5: Forecast & Signals -->
+        <!-- Chart 5: Forecast -->
         <div class="chart-card">
             <div class="chart-header" onclick="toggleChart(this)">
-                <div class="chart-header-left">
-                    <div class="chart-icon forecast">5</div>
-                    <div class="chart-title-wrap">
-                        <div class="chart-title">Forecast & Signals</div>
-                        <div class="chart-subtitle">Regression Channel • Fibonacci • Pivot Points</div>
-                    </div>
+                <div>
+                    <div class="chart-title">🎯 Forecast & Signals</div>
+                    <div class="chart-subtitle">Regression Channel • Fibonacci • Pivot Points</div>
                 </div>
-                <span class="chart-toggle">▼</span>
+                <span style="font-size: 20px;">▼</span>
             </div>
             <div class="chart-body">
-                <div class="chart-legend">
-                    <div class="chart-legend-title">Indicators</div>
-                    <div class="chart-legend-grid">
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #9c27b0;"></span>Reg Line</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: rgba(156,39,176,0.5);"></span>±1σ</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #00bcd4;"></span>Fib 0.618</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ff9800;"></span>Fib 1.0</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ffd700;"></span>Pivot</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #4caf50;"></span>Support</div>
-                        <div class="chart-legend-item"><span class="chart-legend-color" style="background: #ff6b6b;"></span>Resistance</div>
-                    </div>
-                </div>
-                <iframe src="chart-forecast.html" class="chart-wrapper" id="chart-forecast" frameborder="0" scrolling="no"></iframe>
+                <iframe src="chart-forecast.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                        allow="fullscreen" loading="lazy"
+                        title="BTC Forecast Chart">
+                </iframe>
             </div>
         </div>
         
-        <!-- Confluence Score Panel -->
-        <div class="confluence-panel">
-            <div class="confluence-header">
-                <div class="confluence-score-wrap">
-                    <div class="confluence-score-box">
-                        <div class="confluence-score-value">36/100</div>
-                        <div class="confluence-score-label">Confluence Score</div>
-                    </div>
-                    <div>
-                        <div class="confluence-signal signal-sell">SELL</div>
-                        <div style="font-size: 12px; color: #868993; margin-top: 8px;">Based on 15+ indicators</div>
-                    </div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 13px; color: #868993; margin-bottom: 8px;">Score Breakdown</div>
-                    <div style="display: flex; gap: 15px; font-size: 14px;">
-                        <div><span style="color: #ef5350; font-weight: 600;">Trend: 27</span></div>
-                        <div><span style="color: #ff9800; font-weight: 600;">Momentum: 48</span></div>
-                        <div><span style="color: #ef5350; font-weight: 600;">Volume: 35</span></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="score-bar-bg">
-                <div class="score-bar-fill" style="width: 36%; background: linear-gradient(90deg, #ef5350, #ff9800);"></div>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 12px;">8 Signal Category Breakdown</div>
-                <table class="category-table">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Signal</th>
-                            <th>Status</th>
-                            <th>Weight</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(0,188,212,0.2);">📈</div>
-                                    EMA Alignment
-                                </div>
-                            </td>
-                            <td>EMA 9/21/50/200</td>
-                            <td class="status-bearish">Bearish</td>
-                            <td><span class="weight-badge">High</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(255,152,0,0.2);">⚡</div>
-                                    EMA Crossover
-                                </div>
-                            </td>
-                            <td>Golden/Death Cross</td>
-                            <td class="status-neutral">Neutral</td>
-                            <td><span class="weight-badge">Medium</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(0,230,118,0.2);">🌊</div>
-                                    SuperTrend
-                                </div>
-                            </td>
-                            <td>Trend Direction</td>
-                            <td class="status-bearish">Bearish</td>
-                            <td><span class="weight-badge">High</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(156,39,176,0.2);">☁️</div>
-                                    Ichimoku Cloud
-                                </div>
-                            </td>
-                            <td>Cloud Position</td>
-                            <td class="status-bearish">Below Cloud</td>
-                            <td><span class="weight-badge">Medium</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(33,150,243,0.2);">📊</div>
-                                    RSI(14)
-                                </div>
-                            </td>
-                            <td>Momentum</td>
-                            <td class="status-neutral">Neutral</td>
-                            <td><span class="weight-badge">Medium</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(255,87,34,0.2);">🔄</div>
-                                    MACD
-                                </div>
-                            </td>
-                            <td>Histogram/Signal</td>
-                            <td class="status-neutral">Neutral-Bull</td>
-                            <td><span class="weight-badge">Medium</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(76,175,80,0.2);">📉</div>
-                                    StochRSI
-                                </div>
-                            </td>
-                            <td>Oscillator</td>
-                            <td class="status-bearish">Bearish</td>
-                            <td><span class="weight-badge">Low</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="category-indicator">
-                                    <div class="category-indicator-icon" style="background: rgba(233,30,99,0.2);">💰</div>
-                                    MFI(14)
-                                </div>
-                            </td>
-                            <td>Money Flow</td>
-                            <td class="status-bearish">Bearish</td>
-                            <td><span class="weight-badge">Medium</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="live-banner">
-                <div class="live-dot"></div>
-                <span><strong>Dynamic Weights:</strong> Self-learning AI adjusts indicator weights based on market regime • Current: RANGING</span>
-            </div>
-        </div>
-        
-        <!-- Quick Stats -->
-        <div class="quick-stats">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-title">Market Status</div>
-                </div>
-                <div class="metric"><span class="metric-label">Current</span><span class="metric-value" id="market-price">$67,929.00</span></div>
-                <div class="metric"><span class="metric-label">24h Change</span><span class="metric-value" style="color: #26a69a">+1.41%</span></div>
-                <div class="metric"><span class="metric-label">Fear & Greed</span><span class="metric-value" style="color: #26a69a;">9/100 Extreme Fear</span></div>
-                <div class="metric"><span class="metric-label">Market Cap</span><span class="metric-value">$1.32T</span></div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">🎯</div>
-                    <div class="stat-title">Key Levels</div>
-                </div>
-                <div class="metric"><span class="metric-label">Resistance 2</span><span class="metric-value" style="color: #26a69a;">$72,000</span></div>
-                <div class="metric"><span class="metric-label">Resistance 1</span><span class="metric-value" style="color: #ff9800;">$68,000</span></div>
-                <div class="metric"><span class="metric-label">Support 1</span><span class="metric-value" style="color: #ff9800;">$65,000</span></div>
-                <div class="metric"><span class="metric-label">Support 2</span><span class="metric-value" style="color: #ef5350;">$63,472</span></div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">🔮</div>
-                    <div class="stat-title">24h Forecast</div>
-                </div>
-                <div class="metric"><span class="metric-label">0-6h</span><span class="metric-value" style="color: #26a69a;">Bullish ↑</span></div>
-                <div class="metric"><span class="metric-label">6-12h</span><span class="metric-value" style="color: #ff9800;">Neutral →</span></div>
-                <div class="metric"><span class="metric-label">12-18h</span><span class="metric-value" style="color: #ff9800;">Neutral →</span></div>
-                <div class="metric"><span class="metric-label">18-24h</span><span class="metric-value" style="color: #ef5350;">Bearish ↓</span></div>
-            </div>
-        </div>
-        
-        <!-- SOCIAL MEDIA INTELLIGENCE BLOCK -->
-        <div class="section-divider"><span>Social Media Intelligence</span></div>
-        
-        <!-- X Intelligence -->
-        <div class="section-card">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-left">
-                    <div class="section-icon x">X</div>
-                    <div class="section-info">
-                        <div class="section-title">X Intelligence</div>
-                        <div class="section-subtitle">Top Crypto Influencers • Summaries Only</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-bearish">BEARISH</span>
-                    <span class="section-toggle">▼</span>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="section-inner">
-                    <div class="sentiment-summary">
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">4</div><div class="sentiment-label">Bullish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">8</div><div class="sentiment-label">Bearish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">13</div><div class="sentiment-label">Neutral</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">BEAR</div><div class="sentiment-label">Consensus</div></div>
-                    </div>
-                    
-                    <div class="live-banner">
-                        <div class="live-dot"></div>
-                        <span><strong>Live Data:</strong> 25 tweets analyzed • Last 24h only • Summaries, not full posts</span>
-                    </div>
-                    
-                    <div class="social-grid">
-                        <div class="social-card bearish">
-                            <div class="social-header">
-                                <div class="social-source">
-                                    @rektcapital
-                                    <span class="social-platform">X</span>
-                                </div>
-                                <div class="social-meta">234K followers</div>
-                            </div>
-                            <div class="social-summary">Bitcoin below 200-week EMA (~$68.3K). Historical pattern suggests bearish acceleration if support lost. Caution warranted.</div>
-                            <div class="social-footer">
-                                <span class="social-sentiment bearish">BEARISH</span>
-                                <div class="social-engagement">
-                                    <span>1.2K likes</span>
-                                    <span>89 replies</span>
-                                    <span>Feb 20</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="social-card bullish">
-                            <div class="social-header">
-                                <div class="social-source">
-                                    @CryptoCapo_
-                                    <span class="social-platform">X</span>
-                                </div>
-                                <div class="social-meta">189K followers</div>
-                            </div>
-                            <div class="social-summary">Local bottom forming with liquidity building above current price. Expecting strong short squeeze as trapped shorts get squeezed.</div>
-                            <div class="social-footer">
-                                <span class="social-sentiment bullish">BULLISH</span>
-                                <div class="social-engagement">
-                                    <span>2.1K likes</span>
-                                    <span>156 replies</span>
-                                    <span>Feb 19</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- YouTube Intelligence -->
-        <div class="section-card">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-left">
-                    <div class="section-icon youtube">▶</div>
-                    <div class="section-info">
-                        <div class="section-title">YouTube Intelligence</div>
-                        <div class="section-subtitle">Top Crypto Analysts • Latest Videos</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-bullish">BULLISH</span>
-                    <span class="section-toggle">▼</span>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="section-inner">
-                    <div class="sentiment-summary">
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">5</div><div class="sentiment-label">Bullish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">3</div><div class="sentiment-label">Bearish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">4</div><div class="sentiment-label">Neutral</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">BULL</div><div class="sentiment-label">Consensus</div></div>
-                    </div>
-                    
-                    <div class="live-banner">
-                        <div class="live-dot"></div>
-                        <span><strong>Fresh Videos:</strong> Last 24h only • Video summaries, not transcripts</span>
-                    </div>
-                    
-                    <div class="social-grid">
-                        <div class="social-card bullish">
-                            <div class="social-header">
-                                <div class="social-source">
-                                    @MMCrypto
-                                    <span class="social-platform">YouTube</span>
-                                </div>
-                                <div class="social-meta">1.2M subs</div>
-                            </div>
-                            <div class="social-summary">Wyckoff accumulation pattern complete. Spring phase beginning with target $75K. Institutional buying detected.</div>
-                            <div class="social-footer">
-                                <span class="social-sentiment bullish">BULLISH</span>
-                                <div class="social-engagement">
-                                    <span>45K views</span>
-                                    <span>Feb 20</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Reddit Intelligence -->
-        <div class="section-card">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-left">
-                    <div class="section-icon reddit">R</div>
-                    <div class="section-info">
-                        <div class="section-title">Reddit Intelligence</div>
-                        <div class="section-subtitle">r/Bitcoin + r/CryptoCurrency • New Posts</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-neutral">NEUTRAL</span>
-                    <span class="section-toggle">▼</span>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="section-inner">
-                    <div class="sentiment-summary">
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">5</div><div class="sentiment-label">Bullish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">5</div><div class="sentiment-label">Bearish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">19</div><div class="sentiment-label">Neutral</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">NEUT</div><div class="sentiment-label">Consensus</div></div>
-                    </div>
-                    
-                    <div class="live-banner">
-                        <div class="live-dot"></div>
-                        <span><strong>Fresh Posts:</strong> Last 24h only • Post summaries, not full text</span>
-                    </div>
-                    
-                    <div class="social-grid">
-                        <div class="social-card neutral">
-                            <div class="social-header">
-                                <div class="social-source">
-                                    r/Bitcoin
-                                    <span class="social-platform">Reddit</span>
-                                </div>
-                                <div class="social-meta">u/SkepticWatcher</div>
-                            </div>
-                            <div class="social-summary">Observing skeptics calling Bitcoin dead for the 100th time. Historical pattern shows these moments often precede rallies.</div>
-                            <div class="social-footer">
-                                <span class="social-sentiment neutral">NEUTRAL</span>
-                                <div class="social-engagement">
-                                    <span>198 pts</span>
-                                    <span>11 comments</span>
-                                    <span>Feb 20</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- ANALYSIS BLOCK -->
-        <div class="section-divider"><span>Technical Analysis</span></div>
-        
-        <!-- TTC Method -->
-        <div class="section-card">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-left">
-                    <div class="section-icon ttc">📐</div>
-                    <div class="section-info">
-                        <div class="section-title">TTC Method Analysis</div>
-                        <div class="section-subtitle">Multi-Timeframe Trend Confirmation</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-bearish">MIXED</span>
-                    <span class="section-toggle">▼</span>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="section-inner">
-                    <div class="ttc-grid">
-                        <div class="ttc-item">
-                            <div class="ttc-timeframe">Monthly</div>
-                            <div class="ttc-signal" style="color: #ef5350;">BEAR</div>
-                        </div>
-                        <div class="ttc-item">
-                            <div class="ttc-timeframe">Weekly</div>
-                            <div class="ttc-signal" style="color: #26a69a;">BULL</div>
-                        </div>
-                        <div class="ttc-item">
-                            <div class="ttc-timeframe">Daily</div>
-                            <div class="ttc-signal" style="color: #ef5350;">BEAR</div>
-                        </div>
-                        <div class="ttc-item">
-                            <div class="ttc-timeframe">4H</div>
-                            <div class="ttc-signal" style="color: #ff9800;">NEUT</div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 13px; color: #a0a3b0;">
-                        <strong style="color: #fff;">Analysis:</strong> Mixed signals across timeframes. Monthly bearish M-formation vs Weekly bullish upper range. When 3+ timeframes align, that's a high-probability trade setup. Currently no clear edge.
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Trading Strategy -->
-        <div class="section-card">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-left">
-                    <div class="section-icon strategy">💡</div>
-                    <div class="section-info">
-                        <div class="section-title">Trading Strategy</div>
-                        <div class="section-subtitle">Actionable Insights & Risk Management</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-neutral">WAIT</span>
-                    <span class="section-toggle">▼</span>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="section-inner">
-                    <div class="strategy-item">
-                        <div class="strategy-label" style="color: #fff;">Current Situation</div>
-                        <div class="strategy-text">Bitcoin consolidating between $66K-$68K. Mixed TTC signals with no clear directional bias. Market waiting for catalyst.</div>
-                    </div>
-                    
-                    <div class="strategy-item">
-                        <div class="strategy-label" style="color: #26a69a;">Bull Case</div>
-                        <div class="strategy-text">Fear & Greed at 9/100 marks historical bottoms. Extreme fear = contrarian buy signal. ETF inflows resuming.</div>
-                    </div>
-                    
-                    <div class="strategy-item">
-                        <div class="strategy-label" style="color: #ef5350;">Bear Case</div>
-                        <div class="strategy-text">Monthly M-formation reversal pattern. Daily close below 200 EMA. X influencers predominantly bearish.</div>
-                    </div>
-                    
-                    <div class="strategy-item">
-                        <div class="strategy-label" style="color: #ff9800;">Strategy</div>
-                        <div class="strategy-text">Range-bound approach. Longs: Wait for $63.4K sweep or $68K reclaim with volume. Shorts: Fade rallies to $68K. Risk: 2% max per trade.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p>Data: CoinGecko • Charts: Yahoo Finance • Social: X + YouTube + Reddit</p>
-            <p style="margin-top: 10px;">Not financial advice. DYOR. Trade responsibly.</p>
-        </div>
-    </div>
-    
-    <script>
-        // Toggle sections
-        function toggleSection(header) {
-            const content = header.nextElementSibling;
-            const toggle = header.querySelector('.section-toggle');
-            
-            if (content.classList.contains('open')) {
-                content.classList.remove('open');
-                toggle.classList.remove('active');
-            } else {
-                content.classList.add('open');
-                toggle.classList.add('active');
+        <script>
+            function toggleChart(header) {
+                const body = header.nextElementSibling;
+                const arrow = header.querySelector('span');
+                body.classList.toggle('open');
+                arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
             }
-        }
-        
-        // Toggle charts
-        function toggleChart(header) {
-            const body = header.nextElementSibling;
-            const toggle = header.querySelector('.chart-toggle');
             
-            if (body.classList.contains('open')) {
-                body.classList.remove('open');
-                toggle.classList.remove('active');
-            } else {
-                body.classList.add('open');
-                toggle.classList.add('active');
-                // Initialize chart if needed
-                const wrapper = body.querySelector('.chart-wrapper');
-                if (wrapper && !wrapper.hasAttribute('data-initialized')) {
-                    initChart(wrapper.id);
-                    wrapper.setAttribute('data-initialized', 'true');
+            // Auto-expand first chart
+            document.addEventListener('DOMContentLoaded', function() {
+                const firstHeader = document.querySelector('.chart-header');
+                if (firstHeader) {
+                    firstHeader.click();
                 }
-            }
-        }
-        
-        async function refreshData() {
-            const btn = document.querySelector('.btn');
-            btn.disabled = true;
-            btn.textContent = 'Loading...';
-            
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
-                const data = await response.json();
-                const price = data.bitcoin.usd;
-                const change = data.bitcoin.usd_24h_change || 0;
-                
-                document.getElementById('current-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2});
-                document.getElementById('market-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2});
-                
-                const changeEl = document.getElementById('price-change');
-                changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '% (24h)';
-                changeEl.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
-                
-                location.reload();
-            } catch (err) {
-                alert('Refresh failed: ' + err.message);
-                btn.disabled = false;
-                btn.textContent = 'Refresh Data';
-            }
-        }
-        
-        // Chart initialization placeholder
-        function initChart(chartId) {
-            // Charts will be initialized here with actual data
-            console.log('Initializing chart:', chartId);
-        }
-        
-        // Initialize first chart on load
-        document.addEventListener('DOMContentLoaded', function() {
-            const firstChart = document.getElementById('chart-price');
-            if (firstChart) {
-                firstChart.setAttribute('data-initialized', 'true');
-            }
-        });
-    </script>
+            });
+        </script>
+    </div>
 </body>
 </html>
