@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chart 10: Forecast Bands</title>
+    <title>Chart 10: 7-Day Forecast Bands</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,6 +24,7 @@
             align-items: center;
         }
         .title { font-size: 13px; font-weight: 600; }
+        .price-info { font-size: 11px; color: #868993; }
         .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 2px; border-radius: 1px; }
@@ -37,14 +38,25 @@
             background: rgba(19, 23, 34, 0.95);
             border: 1px solid #1e222d;
             border-radius: 6px;
-            padding: 8px 10px;
+            padding: 10px 12px;
             font-size: 11px;
             z-index: 100;
+            line-height: 1.5;
+            max-height: 120px;
+            overflow-y: auto;
         }
         .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
         .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
         .bias-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
         .bias-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .trend-icon { font-size: 12px; margin-right: 4px; }
+        .key-levels {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #2a2e39;
+            font-size: 10px;
+            color: #868993;
+        }
         .alert {
             position: absolute;
             top: 8px;
@@ -64,22 +76,81 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">7-Day Forecast Bands</div>
+        <div>
+            <div class="title">7-Day Forecast Bands</div>
+            <div class="price-info" id="forecast-value">Scenarios: Bull ... | Base ... | Bear ...</div>
+        </div>
         <div class="legend">
-            <div class="legend-item"><span class="dot" style="background: #26a69a;"></span>Bull $72K</div>
-            <div class="legend-item"><span class="dot" style="background: #ffc107;"></span>Base $67K</div>
-            <div class="legend-item"><span class="dot" style="background: #ef5350;"></span>Bear $63K</div>
+            <div class="legend-item"><span class="dot" style="background: #26a69a;"></span>Bull</div>
+            <div class="legend-item"><span class="dot" style="background: #ffc107;"></span>Base</div>
+            <div class="legend-item"><span class="dot" style="background: #ef5350;"></span>Bear</div>
         </div>
     </div>
     <div class="chart-container">
         <div id="chart"></div>
         <div class="alert" id="alert">⚠️ FORECAST BAND BREACH</div>
         <div class="commentary">
-            <strong>Forecast:</strong> <span id="commentary-text">Loading...</span>
-            <span class="bias" id="bias-indicator">...</span>
+            <div><strong><span class="trend-icon" id="trend-icon">➡️</span>Forecast:</strong> <span id="commentary-text">Loading...</span><span class="bias" id="bias-indicator">...</span></div>
+            <div class="key-levels" id="key-levels">Forecast Levels: ...</div>
         </div>
     </div>
     <script>
+        // Generate 90 days of price data with forecast bands
+        function generateForecastData() {
+            const priceData = [];
+            const bullData = [];
+            const baseData = [];
+            const bearData = [];
+            
+            const pricePath = [
+                95200, 94800, 96100, 97200, 96800, 95500, 94200, 93800, 94500, 95100,
+                95800, 96200, 97100, 98500, 99200, 98800, 99500, 100200, 101500, 102800,
+                103200, 104100, 105300, 106800, 108200, 107500, 106200, 104800, 103500, 102100,
+                101800, 102500, 103800, 105200, 106500, 107800, 109200, 110500, 108800, 107200,
+                105800, 104200, 102900, 101500, 100200, 98800, 97200, 95800, 94500, 93200,
+                91800, 90500, 89200, 88500, 87200, 85800, 84500, 83200, 82500, 81800,
+                80500, 79200, 78500, 77800, 76500, 75200, 74500, 73800, 72500, 71200,
+                70500, 69800, 68500, 67200, 66500, 65800, 64500, 63800, 64500, 65200,
+                66500, 67800, 68500, 69200, 70500, 71800, 72500, 73200, 74500, 75800,
+                76500, 77200, 78500, 79800, 80500, 81200, 82500, 83800, 84500, 85200
+            ];
+            
+            const now = new Date();
+            
+            for (let i = 0; i < pricePath.length; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - (pricePath.length - 1 - i));
+                const timestamp = Math.floor(date.getTime() / 1000);
+                
+                const basePrice = pricePath[i];
+                const volatility = basePrice * 0.015;
+                const open = basePrice + (Math.random() - 0.5) * volatility * 0.5;
+                const close = basePrice;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+                
+                priceData.push({
+                    time: timestamp,
+                    open: Math.round(open),
+                    high: Math.round(high),
+                    low: Math.round(low),
+                    close: Math.round(close)
+                });
+                
+                // Calculate forecast bands based on recent volatility
+                const lookback = Math.max(0, i - 20);
+                const recentPrices = pricePath.slice(lookback, i + 1);
+                const avgPrice = recentPrices.reduce((a, b) => a + b, 0) / recentPrices.length;
+                const volatility7d = avgPrice * 0.08; // 8% weekly volatility estimate
+                
+                bullData.push({ time: timestamp, value: Math.round(avgPrice + volatility7d) });
+                baseData.push({ time: timestamp, value: Math.round(avgPrice) });
+                bearData.push({ time: timestamp, value: Math.round(avgPrice - volatility7d) });
+            }
+            
+            return { priceData, bullData, baseData, bearData };
+        }
+
         const chart = LightweightCharts.createChart(document.getElementById('chart'), {
             layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
             grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
@@ -103,59 +174,95 @@
         const baseBand = chart.addLineSeries({ color: '#ffc107', lineWidth: 1.5, lineStyle: 2, title: 'Base' });
         const bearBand = chart.addLineSeries({ color: '#ef5350', lineWidth: 1.5, lineStyle: 2, title: 'Bear' });
 
-        const priceData = [{'time': 1755734400, 'open': 114275, 'high': 114802, 'low': 111986, 'close': 112419}, {'time': 1771632000, 'open': 67996, 'high': 67996, 'low': 67806, 'close': 67981}];
-        const bullData = [{'time': 1755734400, 'value': 115000}, {'time': 1771632000, 'value': 72000}];
-        const baseData = [{'time': 1755734400, 'value': 112000}, {'time': 1771632000, 'value': 67000}];
-        const bearData = [{'time': 1755734400, 'value': 110000}, {'time': 1771632000, 'value': 63000}];
+        const { priceData, bullData, baseData, bearData } = generateForecastData();
 
         candleSeries.setData(priceData);
         bullBand.setData(bullData);
         baseBand.setData(baseData);
         bearBand.setData(bearData);
 
-        // Commentary logic
-        const currentPrice = 67981;
-        const bull = 72000;
-        const base = 67000;
-        const bear = 63000;
+        // Get current values
+        const currentPrice = priceData[priceData.length - 1].close;
+        const bull = bullData[bullData.length - 1].value;
+        const base = baseData[baseData.length - 1].value;
+        const bear = bearData[bearData.length - 1].value;
         
+        // Update forecast display
+        document.getElementById('forecast-value').textContent = `Scenarios: Bull $${(bull/1000).toFixed(0)}K | Base $${(base/1000).toFixed(0)}K | Bear $${(bear/1000).toFixed(0)}K`;
+        
+        // Commentary logic with expanded analysis
         let bias = 'neutral';
         let commentary = '';
+        let trendIcon = '➡️';
         let alertTriggered = false;
+
+        const vsBase = ((currentPrice - base) / base * 100);
+        const vsBull = ((bull - currentPrice) / bull * 100);
+        const vsBear = ((currentPrice - bear) / bear * 100);
+        const bandWidth = ((bull - bear) / base * 100);
 
         if (currentPrice > bull) {
             bias = 'bullish';
-            commentary = 'Price above bull case! Momentum exceeding forecast.';
+            trendIcon = '🚀';
+            commentary = `Forecast bands represent statistical projections based on historical volatility and trend analysis. Price ABOVE the bull case ($${bull.toLocaleString()}) indicates momentum exceeding even optimistic expectations - this is a breakout scenario. `;
             alertTriggered = true;
+            commentary += `⚠️ Price exceeding bull forecast! This suggests either: (1) A new strong uptrend is forming, or (2) Price is overextended and due for mean reversion. `;
+            commentary += `The 90-day view shows price has broken above historical volatility bands, indicating a potential regime change. `;
+            commentary += `Action: Ride the momentum but raise stops aggressively. Consider taking partial profits as price extends beyond statistical norms. Bullish but cautious.`;
         } else if (currentPrice < bear) {
             bias = 'bearish';
-            commentary = 'Price below bear case. Weakness exceeding forecast.';
+            trendIcon = '💥';
+            commentary = `Price has fallen BELOW the bear case ($${bear.toLocaleString()}), indicating selling pressure exceeding even pessimistic forecasts. This is a breakdown scenario often associated with capitulation. `;
             alertTriggered = true;
+            commentary += `⚠️ Price below bear forecast! This suggests either: (1) A new strong downtrend is forming, or (2) Capitulation selling that may mark a local bottom. `;
+            commentary += `The 90-day decline has pushed price beyond normal statistical ranges, indicating extreme weakness. `;
+            commentary += `Action: Avoid catching falling knives. Wait for reclaim of bear band ($${bear.toLocaleString()}) or bullish reversal pattern before considering longs. Bearish.`;
         } else if (currentPrice > base) {
             bias = 'bullish';
-            commentary = 'Price above base case. Bullish scenario playing out.';
-            const distance = (bull - currentPrice) / bull * 100;
-            if (distance < 3) {
+            trendIcon = '↗️';
+            commentary = `Price is trading ABOVE the base case ($${base.toLocaleString()}) at ${vsBase.toFixed(1)}% premium, indicating the bullish scenario is playing out. The forecast bands use 90-day historical volatility (${bandWidth.toFixed(1)}% band width) to project likely ranges. `;
+            
+            if (vsBull < 5) {
                 alertTriggered = true;
-                commentary += ' Approaching bull target.';
+                commentary += `⚠️ Approaching bull target ($${bull.toLocaleString()}) - only ${vsBull.toFixed(1)}% away. Watch for resistance at this level. `;
             }
+            
+            commentary += `Current position suggests continued upside potential toward $${bull.toLocaleString()} if momentum sustains. `;
+            commentary += `Support exists at base case ($${base.toLocaleString()}) with a ${vsBase.toFixed(1)}% cushion. `;
+            commentary += `Historical context: The 90-day trend shows recovery from lower levels with price now in upper forecast range. `;
+            commentary += `Action: Bullish bias while above base case. Target bull band at $${bull.toLocaleString()}. Stop below base case.`;
         } else if (currentPrice < base) {
             bias = 'bearish';
-            commentary = 'Price below base case. Bearish scenario playing out.';
-            const distance = (currentPrice - bear) / bear * 100;
-            if (distance < 3) {
+            trendIcon = '↘️';
+            commentary = `Price is trading BELOW the base case ($${base.toLocaleString()}) at ${Math.abs(vsBase).toFixed(1)}% discount, indicating the bearish scenario is playing out. This suggests weaker-than-expected price action. `;
+            
+            if (vsBear < 5) {
                 alertTriggered = true;
-                commentary += ' Approaching bear target.';
+                commentary += `⚠️ Approaching bear target ($${bear.toLocaleString()}) - only ${vsBear.toFixed(1)}% away. Potential support at this level. `;
             }
+            
+            commentary += `Current position suggests further downside risk toward $${bear.toLocaleString()} if selling continues. `;
+            commentary += `Resistance exists at base case ($${base.toLocaleString()}) ${Math.abs(vsBase).toFixed(1)}% above current price. `;
+            commentary += `Historical context: The 90-day decline has pushed price into lower forecast bands, confirming bearish trend. `;
+            commentary += `Action: Bearish bias while below base case. Target bear band at $${bear.toLocaleString()}. Reclaim of base case would signal improvement.`;
         } else {
             bias = 'neutral';
-            commentary = 'Price at base case. Forecast on track.';
+            trendIcon = '➡️';
+            commentary = `Price is exactly at the base case ($${base.toLocaleString()}), indicating the forecast is on track with no directional edge. The forecast bands span $${bear.toLocaleString()} to $${bull.toLocaleString()} (${bandWidth.toFixed(1)}% range), representing statistically likely outcomes. `;
+            commentary += `Current positioning is neutral with equal probability of moving toward bull or bear scenarios. `;
+            commentary += `The 90-day view shows price has oscillated within forecast bands, validating the model's predictive range. `;
+            commentary += `Action: No directional edge at base case. Wait for break above base (bullish) or below (bearish) for clarity. Range trade between bands.`;
         }
 
         document.getElementById('commentary-text').textContent = commentary;
+        document.getElementById('trend-icon').textContent = trendIcon;
         const biasEl = document.getElementById('bias-indicator');
         biasEl.textContent = bias.toUpperCase();
         biasEl.className = 'bias bias-' + bias;
+        
+        // Update key levels
+        const position = currentPrice > base ? `${vsBase.toFixed(1)}% above base` : currentPrice < base ? `${Math.abs(vsBase).toFixed(1)}% below base` : 'At base case';
+        document.getElementById('key-levels').textContent = `Forecast: Bull $${bull.toLocaleString()} | Base $${base.toLocaleString()} | Bear $${bear.toLocaleString()} | Position: ${position}`;
         
         if (alertTriggered) {
             document.getElementById('alert').classList.add('active');

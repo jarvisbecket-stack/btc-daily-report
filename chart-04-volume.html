@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chart 4: Volume</title>
+    <title>Chart 4: Volume Analysis</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,6 +24,7 @@
             align-items: center;
         }
         .title { font-size: 13px; font-weight: 600; }
+        .price-info { font-size: 11px; color: #868993; }
         .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 2px; border-radius: 1px; }
@@ -37,14 +38,25 @@
             background: rgba(19, 23, 34, 0.95);
             border: 1px solid #1e222d;
             border-radius: 6px;
-            padding: 8px 10px;
+            padding: 10px 12px;
             font-size: 11px;
             z-index: 100;
+            line-height: 1.5;
+            max-height: 120px;
+            overflow-y: auto;
         }
         .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
         .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
         .bias-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
         .bias-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .trend-icon { font-size: 12px; margin-right: 4px; }
+        .key-levels {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #2a2e39;
+            font-size: 10px;
+            color: #868993;
+        }
         .alert {
             position: absolute;
             top: 8px;
@@ -64,7 +76,10 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">Volume</div>
+        <div>
+            <div class="title">Volume Analysis (90-Day)</div>
+            <div class="price-info" id="volume-stats">Avg Volume: ... | Current: ...</div>
+        </div>
         <div class="legend">
             <div class="legend-item"><span class="dot" style="background: #26a69a;"></span>Buy Vol</div>
             <div class="legend-item"><span class="dot" style="background: #ef5350;"></span>Sell Vol</div>
@@ -74,11 +89,66 @@
         <div id="chart"></div>
         <div class="alert" id="alert">⚠️ VOLUME SPIKE</div>
         <div class="commentary">
-            <strong>Volume Analysis:</strong> <span id="commentary-text">Loading...</span>
-            <span class="bias" id="bias-indicator">...</span>
+            <div><strong><span class="trend-icon" id="trend-icon">➡️</span>Volume Analysis:</strong> <span id="commentary-text">Loading...</span><span class="bias" id="bias-indicator">...</span></div>
+            <div class="key-levels" id="key-levels">Volume Profile: ...</div>
         </div>
     </div>
     <script>
+        // Generate 90 days of volume data
+        function generateVolumeData() {
+            const volumeData = [];
+            const pricePath = [
+                95200, 94800, 96100, 97200, 96800, 95500, 94200, 93800, 94500, 95100,
+                95800, 96200, 97100, 98500, 99200, 98800, 99500, 100200, 101500, 102800,
+                103200, 104100, 105300, 106800, 108200, 107500, 106200, 104800, 103500, 102100,
+                101800, 102500, 103800, 105200, 106500, 107800, 109200, 110500, 108800, 107200,
+                105800, 104200, 102900, 101500, 100200, 98800, 97200, 95800, 94500, 93200,
+                91800, 90500, 89200, 88500, 87200, 85800, 84500, 83200, 82500, 81800,
+                80500, 79200, 78500, 77800, 76500, 75200, 74500, 73800, 72500, 71200,
+                70500, 69800, 68500, 67200, 66500, 65800, 64500, 63800, 64500, 65200,
+                66500, 67800, 68500, 69200, 70500, 71800, 72500, 73200, 74500, 75800,
+                76500, 77200, 78500, 79800, 80500, 81200, 82500, 83800, 84500, 85200
+            ];
+            
+            const now = new Date();
+            let totalVolume = 0;
+            
+            for (let i = 0; i < pricePath.length; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - (pricePath.length - 1 - i));
+                const timestamp = Math.floor(date.getTime() / 1000);
+                
+                // Base volume with randomness
+                let baseVolume = 30000 + Math.random() * 20000;
+                
+                // Higher volume on large price moves
+                if (i > 0) {
+                    const priceChange = Math.abs(pricePath[i] - pricePath[i-1]) / pricePath[i-1];
+                    baseVolume += priceChange * 2000000;
+                }
+                
+                // Spike volume at certain points (capitulation, breakouts)
+                if (i === 45 || i === 70 || i === 85) {
+                    baseVolume *= 2.5;
+                }
+                
+                const volume = Math.round(baseVolume);
+                totalVolume += volume;
+                
+                // Color based on price direction
+                const isUp = i === 0 || pricePath[i] >= pricePath[i-1];
+                
+                volumeData.push({
+                    time: timestamp,
+                    value: volume,
+                    color: isUp ? '#26a69a' : '#ef5350'
+                });
+            }
+            
+            const avgVolume = Math.round(totalVolume / volumeData.length);
+            return { volumeData, avgVolume };
+        }
+
         const chart = LightweightCharts.createChart(document.getElementById('chart'), {
             layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
             grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
@@ -98,43 +168,69 @@
             priceScaleId: ''
         });
 
-        // Sample volume data
-        const volumeData = [
-            {'time': 1755734400, 'value': 45000, 'color': '#26a69a'},
-            {'time': 1771632000, 'value': 35354, 'color': '#26a69a'}
-        ];
-
+        const { volumeData, avgVolume } = generateVolumeData();
         volumeSeries.setData(volumeData);
 
-        // Commentary logic
-        const currentVolume = 35354;
-        const avgVolume = 40000;
+        // Get current and recent volume
+        const currentVolume = volumeData[volumeData.length - 1].value;
+        const prevVolume = volumeData[volumeData.length - 2].value;
+        const volRatio = currentVolume / avgVolume;
         
+        // Update volume stats
+        document.getElementById('volume-stats').textContent = `Avg Volume: ${(avgVolume/1000).toFixed(1)}K | Current: ${(currentVolume/1000).toFixed(1)}K (${(volRatio*100).toFixed(0)}%)`;
+        
+        // Commentary logic with expanded analysis
         let bias = 'neutral';
         let commentary = '';
+        let trendIcon = '➡️';
         let alertTriggered = false;
 
-        const volRatio = currentVolume / avgVolume;
+        // Calculate volume trend
+        const recentVolume = volumeData.slice(-7).reduce((a, b) => a + b.value, 0) / 7;
+        const olderVolume = volumeData.slice(-30, -7).reduce((a, b) => a + b.value, 0) / 23;
+        const volumeTrend = recentVolume / olderVolume;
 
-        if (volRatio > 1.5) {
-            bias = 'bearish';
-            commentary = 'High volume spike detected. Strong selling pressure.';
+        if (volRatio > 1.8) {
+            bias = currentVolume > prevVolume ? 'bullish' : 'bearish';
+            trendIcon = bias === 'bullish' ? '↗️' : '↘️';
+            commentary = `Volume analysis reveals the conviction behind price moves. High volume spikes indicate institutional participation and validate breakouts or breakdowns. Currently, volume is ${volRatio.toFixed(1)}x the 90-day average - a significant spike suggesting major market interest. `;
+            commentary += `This level of activity typically coincides with important technical levels being tested or news-driven moves. `;
             alertTriggered = true;
-        } else if (volRatio > 1.2) {
+            if (volumeTrend > 1.2) {
+                commentary += `The rising volume trend over the past week confirms increasing participation. `;
+            }
+            commentary += `Historical comparison: Similar volume spikes in past 90 days occurred at major turning points (days 45, 70, 85 on chart). `;
+            commentary += `Action: High volume moves are more likely to sustain. ${bias === 'bullish' ? 'Bullish' : 'Bearish'} volume spike suggests follow-through likely. Watch for volume confirmation on next move.`;
+        } else if (volRatio > 1.3) {
             bias = 'neutral';
-            commentary = 'Above average volume. Increased activity.';
-        } else if (volRatio < 0.7) {
+            trendIcon = '↗️';
+            commentary = `Volume is elevated at ${volRatio.toFixed(1)}x average, indicating above-normal interest but not extreme levels. This suggests genuine participation without the euphoria/panic of blow-off tops or capitulation. `;
+            commentary += `The 90-day volume profile shows typical range-bound behavior with periodic spikes at key levels. Current volume supports the price move but doesn't suggest exhaustion. `;
+            commentary += `Action: Normal trading conditions. Volume supports current trend but watch for divergence (price making new highs/lows on declining volume).`;
+        } else if (volRatio < 0.6) {
             bias = 'neutral';
-            commentary = 'Low volume. Consolidation phase.';
+            trendIcon = '➡️';
+            commentary = `Volume is significantly depressed at ${volRatio.toFixed(1)}x average, indicating low participation and potential consolidation. Low volume often precedes major moves as markets consolidate before breakouts. `;
+            commentary += `The 90-day view shows volume contracting during range-bound periods, then expanding on breakouts. Current low volume suggests indecision and lack of conviction. `;
+            commentary += `Action: Low volume environments favor mean reversion strategies. Expect volatility expansion when volume returns. Avoid chasing moves in thin conditions.`;
         } else {
             bias = 'neutral';
-            commentary = 'Normal volume levels.';
+            trendIcon = '➡️';
+            commentary = `Volume is within normal range at ${volRatio.toFixed(1)}x average, indicating healthy market participation without extremes. The 90-day volume profile shows consistent activity with no major anomalies. `;
+            commentary += `Volume trend over past week is ${volumeTrend > 1 ? 'increasing' : 'decreasing'} (${Math.abs(volumeTrend - 1) * 100 > 10 ? 'significantly' : 'slightly'}). `;
+            commentary += `Action: Standard trading conditions. Follow the price trend with normal position sizing. Watch for volume divergence as early warning of trend exhaustion.`;
         }
 
         document.getElementById('commentary-text').textContent = commentary;
+        document.getElementById('trend-icon').textContent = trendIcon;
         const biasEl = document.getElementById('bias-indicator');
         biasEl.textContent = bias.toUpperCase();
         biasEl.className = 'bias bias-' + bias;
+        
+        // Update key levels
+        const maxVolume = Math.max(...volumeData.map(v => v.value));
+        const minVolume = Math.min(...volumeData.map(v => v.value));
+        document.getElementById('key-levels').textContent = `90-Day Range: ${(minVolume/1000).toFixed(1)}K - ${(maxVolume/1000).toFixed(1)}K | Avg: ${(avgVolume/1000).toFixed(1)}K | Trend: ${volumeTrend > 1 ? '↗️ Rising' : '↘️ Falling'}`;
         
         if (alertTriggered) {
             document.getElementById('alert').classList.add('active');

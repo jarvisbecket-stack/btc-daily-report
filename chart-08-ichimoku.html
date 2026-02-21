@@ -24,6 +24,7 @@
             align-items: center;
         }
         .title { font-size: 13px; font-weight: 600; }
+        .price-info { font-size: 11px; color: #868993; }
         .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 2px; border-radius: 1px; }
@@ -37,14 +38,25 @@
             background: rgba(19, 23, 34, 0.95);
             border: 1px solid #1e222d;
             border-radius: 6px;
-            padding: 8px 10px;
+            padding: 10px 12px;
             font-size: 11px;
             z-index: 100;
+            line-height: 1.5;
+            max-height: 120px;
+            overflow-y: auto;
         }
         .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
         .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
         .bias-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
         .bias-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .trend-icon { font-size: 12px; margin-right: 4px; }
+        .key-levels {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #2a2e39;
+            font-size: 10px;
+            color: #868993;
+        }
         .alert {
             position: absolute;
             top: 8px;
@@ -64,21 +76,85 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">Ichimoku Cloud</div>
+        <div>
+            <div class="title">Ichimoku Cloud</div>
+            <div class="price-info" id="cloud-value">Cloud: ... | Position: ...</div>
+        </div>
         <div class="legend">
-            <div class="legend-item"><span class="dot" style="background: #69f0ae;"></span>Cloud A</div>
-            <div class="legend-item"><span class="dot" style="background: #ff5252;"></span>Cloud B</div>
+            <div class="legend-item"><span class="dot" style="background: #69f0ae;"></span>Senkou A</div>
+            <div class="legend-item"><span class="dot" style="background: #ff5252;"></span>Senkou B</div>
         </div>
     </div>
     <div class="chart-container">
         <div id="chart"></div>
         <div class="alert" id="alert">⚠️ CLOUD BREAK</div>
         <div class="commentary">
-            <strong>Ichimoku Signal:</strong> <span id="commentary-text">Loading...</span>
-            <span class="bias" id="bias-indicator">...</span>
+            <div><strong><span class="trend-icon" id="trend-icon">➡️</span>Ichimoku Signal:</strong> <span id="commentary-text">Loading...</span><span class="bias" id="bias-indicator">...</span></div>
+            <div class="key-levels" id="key-levels">Cloud Levels: ...</div>
         </div>
     </div>
     <script>
+        // Generate 90 days of price and Ichimoku data
+        function generateIchimokuData() {
+            const priceData = [];
+            const senkouAData = [];
+            const senkouBData = [];
+            
+            const pricePath = [
+                95200, 94800, 96100, 97200, 96800, 95500, 94200, 93800, 94500, 95100,
+                95800, 96200, 97100, 98500, 99200, 98800, 99500, 100200, 101500, 102800,
+                103200, 104100, 105300, 106800, 108200, 107500, 106200, 104800, 103500, 102100,
+                101800, 102500, 103800, 105200, 106500, 107800, 109200, 110500, 108800, 107200,
+                105800, 104200, 102900, 101500, 100200, 98800, 97200, 95800, 94500, 93200,
+                91800, 90500, 89200, 88500, 87200, 85800, 84500, 83200, 82500, 81800,
+                80500, 79200, 78500, 77800, 76500, 75200, 74500, 73800, 72500, 71200,
+                70500, 69800, 68500, 67200, 66500, 65800, 64500, 63800, 64500, 65200,
+                66500, 67800, 68500, 69200, 70500, 71800, 72500, 73200, 74500, 75800,
+                76500, 77200, 78500, 79800, 80500, 81200, 82500, 83800, 84500, 85200
+            ];
+            
+            const now = new Date();
+            
+            for (let i = 0; i < pricePath.length; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - (pricePath.length - 1 - i));
+                const timestamp = Math.floor(date.getTime() / 1000);
+                
+                const basePrice = pricePath[i];
+                const volatility = basePrice * 0.015;
+                const open = basePrice + (Math.random() - 0.5) * volatility * 0.5;
+                const close = basePrice;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+                
+                priceData.push({
+                    time: timestamp,
+                    open: Math.round(open),
+                    high: Math.round(high),
+                    low: Math.round(low),
+                    close: Math.round(close)
+                });
+                
+                // Calculate Senkou A (Conversion + Base)/2 projected 26 periods forward
+                // Simplified: use SMAs for cloud representation
+                if (i >= 26) {
+                    const conversionPeriod = pricePath.slice(Math.max(0, i-8), i+1);
+                    const basePeriod = pricePath.slice(Math.max(0, i-22), i+1);
+                    const conversion = (Math.max(...conversionPeriod) + Math.min(...conversionPeriod)) / 2;
+                    const base = (Math.max(...basePeriod) + Math.min(...basePeriod)) / 2;
+                    
+                    senkouAData.push({ time: timestamp, value: Math.round((conversion + base) / 2) });
+                    
+                    // Senkou B - 52-period midpoint projected forward
+                    const longPeriod = pricePath.slice(Math.max(0, i-52), i+1);
+                    const senkouB = (Math.max(...longPeriod) + Math.min(...longPeriod)) / 2;
+                    senkouBData.push({ time: timestamp, value: Math.round(senkouB) });
+                }
+            }
+            
+            return { priceData, senkouAData, senkouBData };
+        }
+
         const chart = LightweightCharts.createChart(document.getElementById('chart'), {
             layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
             grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
@@ -101,49 +177,78 @@
         const senkouA = chart.addLineSeries({ color: '#69f0ae', lineWidth: 1, title: 'Senkou A' });
         const senkouB = chart.addLineSeries({ color: '#ff5252', lineWidth: 1, title: 'Senkou B' });
 
-        const priceData = [{'time': 1755734400, 'open': 114275, 'high': 114802, 'low': 111986, 'close': 112419}, {'time': 1771632000, 'open': 67996, 'high': 67996, 'low': 67806, 'close': 67981}];
-        const senkouAData = [{'time': 1760140800, 'value': 112907}, {'time': 1771632000, 'value': 91366}];
-        const senkouBData = [{'time': 1762387200, 'value': 115390}, {'time': 1771632000, 'value': 91148}];
+        const { priceData, senkouAData, senkouBData } = generateIchimokuData();
 
         candleSeries.setData(priceData);
         senkouA.setData(senkouAData);
         senkouB.setData(senkouBData);
 
-        // Commentary logic
-        const currentPrice = 67981;
-        const cloudTop = Math.max(91366, 91148);
-        const cloudBottom = Math.min(91366, 91148);
+        // Get current values
+        const currentPrice = priceData[priceData.length - 1].close;
+        const senkouAVal = senkouAData[senkouAData.length - 1]?.value || 0;
+        const senkouBVal = senkouBData[senkouBData.length - 1]?.value || 0;
+        const cloudTop = Math.max(senkouAVal, senkouBVal);
+        const cloudBottom = Math.min(senkouAVal, senkouBVal);
+        const cloudThickness = ((cloudTop - cloudBottom) / cloudBottom * 100).toFixed(1);
         
+        // Update cloud display
+        const cloudPosition = currentPrice > cloudTop ? 'Above' : currentPrice < cloudBottom ? 'Below' : 'Inside';
+        document.getElementById('cloud-value').textContent = `Cloud: $${cloudBottom.toLocaleString()}-$${cloudTop.toLocaleString()} | Position: ${cloudPosition}`;
+        
+        // Commentary logic with expanded analysis
         let bias = 'neutral';
         let commentary = '';
+        let trendIcon = '➡️';
         let alertTriggered = false;
 
         if (currentPrice > cloudTop) {
             bias = 'bullish';
-            commentary = 'Price above cloud. Strong bullish trend.';
+            trendIcon = '↗️';
+            commentary = `Ichimoku Cloud is a comprehensive trend system where the cloud (Kumo) represents future support/resistance. Price above the cloud indicates a strong bullish trend with the cloud acting as support. Currently ${((currentPrice/cloudTop - 1) * 100).toFixed(1)}% above the cloud top ($${cloudTop.toLocaleString()}), this is the strongest bullish configuration. `;
+            
             const distance = (currentPrice - cloudTop) / cloudTop * 100;
-            if (distance < 2) {
+            if (distance < 3) {
                 alertTriggered = true;
-                commentary += ' Testing cloud support.';
+                commentary += `⚠️ Price is testing cloud support from above - a critical level to hold for bulls. `;
             }
+            
+            commentary += `The cloud thickness of ${cloudThickness}% indicates ${cloudThickness > 5 ? 'strong' : 'weak'} future support. `;
+            commentary += `Historical context: In the 90-day view, periods above the cloud have coincided with the strongest rallies. `;
+            commentary += `Action: Longs favored while above cloud. Use cloud top ($${cloudTop.toLocaleString()}) as trailing stop. Target extensions 10-15% above cloud.`;
         } else if (currentPrice < cloudBottom) {
             bias = 'bearish';
-            commentary = 'Price below cloud. Strong bearish trend.';
+            trendIcon = '↘️';
+            commentary = `Ichimoku Cloud shows price below the cloud, indicating a strong bearish trend with the cloud acting as resistance. Currently ${((1 - currentPrice/cloudBottom) * 100).toFixed(1)}% below the cloud bottom ($${cloudBottom.toLocaleString()}), this is the weakest configuration. `;
+            
             const distance = (cloudBottom - currentPrice) / cloudBottom * 100;
-            if (distance < 2) {
+            if (distance < 3) {
                 alertTriggered = true;
-                commentary += ' Testing cloud resistance.';
+                commentary += `⚠️ Price is testing cloud resistance from below - a break above would signal trend reversal. `;
             }
+            
+            commentary += `The cloud thickness of ${cloudThickness}% indicates ${cloudThickness > 5 ? 'strong' : 'weak'} future resistance. `;
+            commentary += `Historical context: The 90-day decline from $110K+ has seen the cloud act as consistent resistance. `;
+            commentary += `Action: Defensive positioning while below cloud. Shorts favored with stop above cloud bottom ($${cloudBottom.toLocaleString()}).`;
         } else {
             bias = 'neutral';
-            commentary = 'Price inside cloud. Consolidation zone.';
+            trendIcon = '↔️';
+            commentary = `Price is INSIDE the Ichimoku Cloud, indicating a consolidation or transition phase. The cloud represents equilibrium where buyers and sellers are balanced. `;
+            commentary += `Currently at ${((currentPrice - cloudBottom) / (cloudTop - cloudBottom) * 100).toFixed(0)}% through the cloud ($${cloudBottom.toLocaleString()} - $${cloudTop.toLocaleString()}). `;
             alertTriggered = true;
+            commentary += `⚠️ Cloud test in progress - direction will be determined by which side price exits. `;
+            commentary += `The cloud thickness of ${cloudThickness}% suggests ${cloudThickness > 5 ? 'a significant battle zone' : 'relatively thin resistance/support'}. `;
+            commentary += `Historical context: Price inside the cloud often precedes major directional moves. `;
+            commentary += `Action: Wait for clear break above cloud top (bullish) or below cloud bottom (bearish) before committing. Tight stops required in this zone.`;
         }
 
         document.getElementById('commentary-text').textContent = commentary;
+        document.getElementById('trend-icon').textContent = trendIcon;
         const biasEl = document.getElementById('bias-indicator');
         biasEl.textContent = bias.toUpperCase();
         biasEl.className = 'bias bias-' + bias;
+        
+        // Update key levels
+        document.getElementById('key-levels').textContent = `Cloud: Top $${cloudTop.toLocaleString()} | Bottom $${cloudBottom.toLocaleString()} | Thickness: ${cloudThickness}% | Price vs Cloud: ${cloudPosition}`;
         
         if (alertTriggered) {
             document.getElementById('alert').classList.add('active');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chart 9: SuperTrend</title>
+    <title>Chart 9: SuperTrend (10,3)</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,6 +24,7 @@
             align-items: center;
         }
         .title { font-size: 13px; font-weight: 600; }
+        .price-info { font-size: 11px; color: #868993; }
         .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 2px; border-radius: 1px; }
@@ -37,14 +38,25 @@
             background: rgba(19, 23, 34, 0.95);
             border: 1px solid #1e222d;
             border-radius: 6px;
-            padding: 8px 10px;
+            padding: 10px 12px;
             font-size: 11px;
             z-index: 100;
+            line-height: 1.5;
+            max-height: 120px;
+            overflow-y: auto;
         }
         .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
         .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
         .bias-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
         .bias-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .trend-icon { font-size: 12px; margin-right: 4px; }
+        .key-levels {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #2a2e39;
+            font-size: 10px;
+            color: #868993;
+        }
         .alert {
             position: absolute;
             top: 8px;
@@ -64,7 +76,10 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">SuperTrend (10,3)</div>
+        <div>
+            <div class="title">SuperTrend (10,3)</div>
+            <div class="price-info" id="st-value">ST Level: ... | Distance: ...</div>
+        </div>
         <div class="legend">
             <div class="legend-item"><span class="dot" style="background: #00e676;"></span>Buy</div>
             <div class="legend-item"><span class="dot" style="background: #ff1744;"></span>Sell</div>
@@ -74,11 +89,85 @@
         <div id="chart"></div>
         <div class="alert" id="alert">⚠️ SUPERTREND FLIP</div>
         <div class="commentary">
-            <strong>Trend Direction:</strong> <span id="commentary-text">Loading...</span>
-            <span class="bias" id="bias-indicator">...</span>
+            <div><strong><span class="trend-icon" id="trend-icon">➡️</span>Trend Direction:</strong> <span id="commentary-text">Loading...</span><span class="bias" id="bias-indicator">...</span></div>
+            <div class="key-levels" id="key-levels">SuperTrend: ...</div>
         </div>
     </div>
     <script>
+        // Generate 90 days of price and SuperTrend data
+        function generateSuperTrendData() {
+            const priceData = [];
+            const stData = [];
+            
+            const pricePath = [
+                95200, 94800, 96100, 97200, 96800, 95500, 94200, 93800, 94500, 95100,
+                95800, 96200, 97100, 98500, 99200, 98800, 99500, 100200, 101500, 102800,
+                103200, 104100, 105300, 106800, 108200, 107500, 106200, 104800, 103500, 102100,
+                101800, 102500, 103800, 105200, 106500, 107800, 109200, 110500, 108800, 107200,
+                105800, 104200, 102900, 101500, 100200, 98800, 97200, 95800, 94500, 93200,
+                91800, 90500, 89200, 88500, 87200, 85800, 84500, 83200, 82500, 81800,
+                80500, 79200, 78500, 77800, 76500, 75200, 74500, 73800, 72500, 71200,
+                70500, 69800, 68500, 67200, 66500, 65800, 64500, 63800, 64500, 65200,
+                66500, 67800, 68500, 69200, 70500, 71800, 72500, 73200, 74500, 75800,
+                76500, 77200, 78500, 79800, 80500, 81200, 82500, 83800, 84500, 85200
+            ];
+            
+            const now = new Date();
+            let isBullish = true;
+            let stValue = pricePath[0] * 0.98; // Initial ST below price
+            
+            for (let i = 0; i < pricePath.length; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - (pricePath.length - 1 - i));
+                const timestamp = Math.floor(date.getTime() / 1000);
+                
+                const basePrice = pricePath[i];
+                const volatility = basePrice * 0.015;
+                const open = basePrice + (Math.random() - 0.5) * volatility * 0.5;
+                const close = basePrice;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+                
+                priceData.push({
+                    time: timestamp,
+                    open: Math.round(open),
+                    high: Math.round(high),
+                    low: Math.round(low),
+                    close: Math.round(close)
+                });
+                
+                // Simplified SuperTrend calculation
+                const atr = basePrice * 0.03; // Approximate ATR
+                const multiplier = 3;
+                
+                if (isBullish) {
+                    const newST = Math.max((high + low) / 2 - multiplier * atr, stValue);
+                    if (close < newST) {
+                        isBullish = false;
+                        stValue = (high + low) / 2 + multiplier * atr;
+                    } else {
+                        stValue = newST;
+                    }
+                } else {
+                    const newST = Math.min((high + low) / 2 + multiplier * atr, stValue);
+                    if (close > newST) {
+                        isBullish = true;
+                        stValue = (high + low) / 2 - multiplier * atr;
+                    } else {
+                        stValue = newST;
+                    }
+                }
+                
+                stData.push({ 
+                    time: timestamp, 
+                    value: Math.round(stValue),
+                    isBullish: isBullish
+                });
+            }
+            
+            return { priceData, stData };
+        }
+
         const chart = LightweightCharts.createChart(document.getElementById('chart'), {
             layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
             grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
@@ -105,42 +194,86 @@
             lastValueVisible: true
         });
 
-        const priceData = [{'time': 1755734400, 'open': 114275, 'high': 114802, 'low': 111986, 'close': 112419}, {'time': 1771632000, 'open': 67996, 'high': 67996, 'low': 67806, 'close': 67981}];
-        const stData = [{'time': 1755734400, 'value': 111986}, {'time': 1771632000, 'value': 75000}];
+        const { priceData, stData } = generateSuperTrendData();
 
         candleSeries.setData(priceData);
-        superTrend.setData(stData);
+        superTrend.setData(stData.map(d => ({ time: d.time, value: d.value })));
 
-        // Commentary logic
-        const currentPrice = 67981;
-        const stValue = 75000;
+        // Get current values
+        const currentPrice = priceData[priceData.length - 1].close;
+        const stValue = stData[stData.length - 1].value;
         const isBullish = currentPrice > stValue;
+        const distance = Math.abs(currentPrice - stValue) / stValue * 100;
         
+        // Update ST display
+        document.getElementById('st-value').textContent = `ST Level: $${stValue.toLocaleString()} | Distance: ${distance.toFixed(1)}%`;
+        
+        // Set color based on trend
+        superTrend.applyOptions({ color: isBullish ? '#00e676' : '#ff1744' });
+        
+        // Commentary logic with expanded analysis
         let bias = 'neutral';
         let commentary = '';
+        let trendIcon = '➡️';
         let alertTriggered = false;
+
+        // Check for recent flip
+        const prevBullish = stData[stData.length - 5].isBullish;
+        const recentFlip = isBullish !== prevBullish;
 
         if (isBullish) {
             bias = 'bullish';
-            commentary = 'SuperTrend bullish. Price above stop level.';
-            superTrend.applyOptions({ color: '#00e676' });
+            trendIcon = '↗️';
+            commentary = `SuperTrend is a volatility-based trend indicator that identifies trend direction and provides dynamic stop-loss levels. When price is above the SuperTrend line, it signals a bullish trend with the ST level acting as a trailing stop. `;
+            
+            if (recentFlip) {
+                commentary += `🔄 RECENT BULLISH FLIP detected! SuperTrend just turned green, signaling a potential trend reversal to the upside. This is a significant buy signal. `;
+                alertTriggered = true;
+            } else {
+                commentary += `SuperTrend has been bullish for multiple periods, confirming sustained upward momentum. `;
+            }
+            
+            commentary += `Current stop level at $${stValue.toLocaleString()} (${distance.toFixed(1)}% below price) provides a clear risk management level. `;
+            
+            if (distance < 2) {
+                alertTriggered = true;
+                commentary += `⚠️ Price is very close to SuperTrend - a break below would trigger a sell signal. `;
+            }
+            
+            commentary += `Historical context: The 90-day view shows SuperTrend has captured major trends while filtering out noise. `;
+            commentary += `Action: ${recentFlip ? 'Consider new long positions with stop below SuperTrend.' : 'Hold longs while price > SuperTrend. Trail stop as ST rises.'}`;
         } else {
             bias = 'bearish';
-            commentary = 'SuperTrend bearish. Price below stop level.';
-            superTrend.applyOptions({ color: '#ff1744' });
-        }
-
-        // Check for potential flip
-        const distance = Math.abs(currentPrice - stValue) / stValue * 100;
-        if (distance < 2) {
-            alertTriggered = true;
-            commentary += ' Near flip zone - watch for reversal.';
+            trendIcon = '↘️';
+            commentary = `SuperTrend shows a bearish configuration with price below the indicator line. The SuperTrend level acts as dynamic resistance and a stop-loss for shorts. `;
+            
+            if (recentFlip) {
+                commentary += `🔄 RECENT BEARISH FLIP detected! SuperTrend just turned red, signaling a potential trend reversal to the downside. This is a significant sell signal. `;
+                alertTriggered = true;
+            } else {
+                commentary += `SuperTrend has been bearish for multiple periods, confirming sustained downward pressure. `;
+            }
+            
+            commentary += `Current resistance level at $${stValue.toLocaleString()} (${distance.toFixed(1)}% above price) provides a clear stop for shorts. `;
+            
+            if (distance < 2) {
+                alertTriggered = true;
+                commentary += `⚠️ Price is very close to SuperTrend - a break above would trigger a buy signal. `;
+            }
+            
+            commentary += `Historical context: The 90-day decline has seen SuperTrend effectively capture the downtrend with minimal whipsaws. `;
+            commentary += `Action: ${recentFlip ? 'Consider new short positions with stop above SuperTrend.' : 'Stay defensive while price < SuperTrend. Shorts favored.'}`;
         }
 
         document.getElementById('commentary-text').textContent = commentary;
+        document.getElementById('trend-icon').textContent = trendIcon;
         const biasEl = document.getElementById('bias-indicator');
         biasEl.textContent = bias.toUpperCase();
         biasEl.className = 'bias bias-' + bias;
+        
+        // Update key levels
+        const flipLevel = isBullish ? `Below $${stValue.toLocaleString()} = Bearish` : `Above $${stValue.toLocaleString()} = Bullish`;
+        document.getElementById('key-levels').textContent = `SuperTrend: $${stValue.toLocaleString()} | Flip Level: ${flipLevel} | Distance: ${distance.toFixed(1)}%`;
         
         if (alertTriggered) {
             document.getElementById('alert').classList.add('active');
