@@ -64,7 +64,43 @@
             overflow: hidden;
             transition: max-height 0.4s ease-out;
         }
-        .chart-body.open { max-height: 600px; }
+        .chart-body.open { max-height: 800px; }
+        
+        /* Commentary Section */
+        .commentary {
+            background: rgba(41, 98, 255, 0.1);
+            border-left: 4px solid #2962ff;
+            padding: 15px 20px;
+            margin: 15px;
+            border-radius: 0 12px 12px 0;
+        }
+        .commentary-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2962ff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .commentary-text {
+            font-size: 13px;
+            color: #c9d1d9;
+            line-height: 1.7;
+        }
+        .commentary-conclusion {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .commentary-conclusion strong {
+            color: #f7931a;
+        }
+        .bullish { color: #26a69a; }
+        .bearish { color: #ef5350; }
+        .neutral { color: #ffc107; }
         
         /* Chart Container - Full Width */
         .chart-wrapper {
@@ -141,6 +177,17 @@
                         title="BTC Price Action Chart"
                         sandbox="allow-scripts allow-same-origin">
                 </iframe>
+                
+                <!-- Commentary: Price Action -->
+                <div class="commentary">
+                    <div class="commentary-title">💡 What This Chart Tells Us</div>
+                    <div class="commentary-text">
+                        This chart shows Bitcoin's price movement with key moving averages. The <strong>EMA 9</strong> (cyan) represents short-term momentum, while <strong>EMA 200</strong> (purple) shows the long-term trend. <strong>VWAP</strong> (yellow) indicates where most trading volume occurred — a key institutional reference point.
+                    </div>
+                    <div class="commentary-conclusion">
+                        <strong>Current Reading:</strong> <span class="bearish">Price below all major EMAs</span> — bearish alignment. VWAP at $98,937 acting as resistance. The downtrend from $120K continues with lower highs and lower lows. <strong>Possible Outcome:</strong> If price breaks below $65K support, next target is $60-63K. Recovery requires reclaiming EMA 21 at $71,569.
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -158,6 +205,17 @@
                         allow="fullscreen" loading="lazy"
                         title="BTC Trend Indicators Chart">
                 </iframe>
+                
+                <!-- Commentary: Trend Indicators -->
+                <div class="commentary">
+                    <div class="commentary-title">💡 What This Chart Tells Us</div>
+                    <div class="commentary-text">
+                        The <strong>Ichimoku Cloud</strong> provides a complete trend picture. Price below the cloud = bearish. The <strong>SuperTrend</strong> (green/red line) gives clear buy/sell signals — currently red (sell). <strong>Bollinger Bands</strong> show volatility; price near lower band suggests oversold conditions but can stay there in strong downtrends.
+                    </div>
+                    <div class="commentary-conclusion">
+                        <strong>Current Reading:</strong> <span class="bearish">SuperTrend is bearish</span> (red) and price is below Ichimoku cloud — both confirming downtrend. Bollinger Bands are contracting, suggesting a volatility squeeze before a potential move. <strong>Possible Outcome:</strong> Break below lower BB ($64K) could accelerate selling. Watch for SuperTrend flip to green for trend reversal signal.
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -175,6 +233,17 @@
                         allow="fullscreen" loading="lazy"
                         title="BTC Momentum Chart">
                 </iframe>
+                
+                <!-- Commentary: Momentum -->
+                <div class="commentary">
+                    <div class="commentary-title">💡 What This Chart Tells Us</div>
+                    <div class="commentary-text">
+                        <strong>RSI</strong> measures speed of price changes (0-100). Below 30 = oversold, above 70 = overbought. <strong>StochRSI</strong> is more sensitive, showing when RSI itself is overbought/oversold. <strong>MACD</strong> shows trend momentum through moving average crossovers. <strong>MFI</strong> adds volume to RSI — more reliable for spotting reversals.
+                    </div>
+                    <div class="commentary-conclusion">
+                        <strong>Current Reading:</strong> <span class="neutral">RSI neutral at 50</span> — neither overbought nor oversold. MACD histogram showing weakening bearish momentum but no bullish crossover yet. StochRSI in middle range. <strong>Possible Outcome:</strong> Momentum is consolidating. A MACD bullish crossover above signal line would suggest momentum shift. Watch RSI 40 level — break below confirms bearish continuation.
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -192,6 +261,17 @@
                         allow="fullscreen" loading="lazy"
                         title="BTC Volume and On-Chain Chart">
                 </iframe>
+                
+                <!-- Commentary: Volume & On-Chain -->
+                <div class="commentary">
+                    <div class="commentary-title">💡 What This Chart Tells Us</div>
+                    <div class="commentary-text">
+                        <strong>Volume</strong> confirms price moves — high volume on down moves = strong selling. <strong>OBV</strong> (On-Balance Volume) tracks cumulative buying/selling pressure. Rising OBV with falling price = bullish divergence (smart money accumulating). <strong>ATR</strong> measures volatility — high ATR means bigger price swings. <strong>Funding rates</strong> show if longs or shorts are paying premiums.
+                    </div>
+                    <div class="commentary-conclusion">
+                        <strong>Current Reading:</strong> <span class="bearish">OBV trending down</span> with price — no divergence, confirming selling pressure. Volume spikes on down days show capitulation. ATR elevated but declining — volatility contracting. <strong>Possible Outcome:>/strong> Declining ATR often precedes big moves. Watch for OBV to flatten or rise while price falls — that would signal accumulation and potential bottom.
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -209,6 +289,17 @@
                         allow="fullscreen" loading="lazy"
                         title="BTC Forecast Chart">
                 </iframe>
+                
+                <!-- Commentary: Forecast -->
+                <div class="commentary">
+                    <div class="commentary-title">💡 What This Chart Tells Us</div>
+                    <div class="commentary-text">
+                        The <strong>Regression Channel</strong> shows the trend's direction and expected price range (±1σ, ±2σ bands). Price near lower band = statistically oversold. <strong>Fibonacci levels</strong> ($70.5K, $64.5K) are key support/resistance based on mathematical ratios. <strong>Pivot Points</strong> mark intraday support/resistance levels used by institutional traders.
+                    </div>
+                    <div class="commentary-conclusion">
+                        <strong>Current Reading:</strong> <span class="neutral">Price at middle of regression channel</span> — neutral zone, not extreme. Fibonacci 0.618 at $70.5K is key resistance; 1.0 at $64.5K is support. <strong>7-Day Forecast:</strong> Bull case $72K (break above resistance), Base case $67K (consolidation), Bear case $63K (support test). <strong>Signal:</strong> NEUTRAL — wait for breakout above $70.5K or breakdown below $65K for directional trade.
+                    </div>
+                </div>
             </div>
         </div>
         
