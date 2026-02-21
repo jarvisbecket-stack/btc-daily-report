@@ -28,25 +28,23 @@
         }
         .title { font-size: 13px; font-weight: 600; }
         .price-info { font-size: 11px; color: #868993; }
+        .price-change { font-weight: 600; }
+        .change-up { color: #26a69a; }
+        .change-down { color: #ef5350; }
         .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 2px; border-radius: 1px; }
-        .chart-container { flex: 1; position: relative; min-height: 0; }
+        .chart-area { flex: 1; position: relative; min-height: 0; }
         #chart { height: 100%; }
         .commentary {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            right: 8px;
             background: rgba(19, 23, 34, 0.95);
-            border: 1px solid #1e222d;
-            border-radius: 6px;
+            border-top: 1px solid #1e222d;
             padding: 8px 12px;
             font-size: 11px;
-            z-index: 100;
             line-height: 1.4;
-            max-height: 80px;
+            max-height: 100px;
             overflow-y: auto;
+            flex-shrink: 0;
         }
         .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
         .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
@@ -59,6 +57,12 @@
             border-top: 1px solid #2a2e39;
             font-size: 10px;
             color: #868993;
+        }
+        .timestamp {
+            font-size: 9px;
+            color: #5a6070;
+            margin-top: 4px;
+            text-align: right;
         }
         .alert {
             position: absolute;
@@ -81,39 +85,57 @@
     <div class="header">
         <div>
             <div class="title">Price + VWAP (90-Day)</div>
-            <div class="price-info">Volume Weighted Average Price</div>
+            <div class="price-info">BTC <span class="price-change" id="price-change">...</span></div>
         </div>
         <div class="legend">
             <div class="legend-item"><span class="dot" style="background: #ffeb3b;"></span>VWAP</div>
         </div>
     </div>
-    <div class="chart-container">
+    <div class="chart-area">
         <div id="chart"></div>
         <div class="alert" id="alert">⚠️ VWAP TEST</div>
-        <div class="commentary">
-            <div><strong><span class="trend-icon" id="trend-icon">➡️</span>Volume Profile:</strong> <span id="commentary-text">Loading...</span><span class="bias" id="bias-indicator">...</span></div>
-            <div class="key-levels" id="key-levels">VWAP: ... | Distance: ...</div>
-        </div>
+    </div>
+    <div class="commentary">
+        <div><strong><span class="trend-icon" id="trend-icon">➡️</span>Volume Profile:</strong> <span id="commentary-text">Loading...</span><span class="bias" id="bias-indicator">...</span></div>
+        <div class="key-levels" id="key-levels">VWAP: ... | Distance: ...</div>
+        <div class="timestamp" id="timestamp">Last updated: --</div>
     </div>
     <script>
-        // Generate 90 days of realistic BTC price data with VWAP
-        function generatePriceData() {
+        let livePriceData = null;
+        
+        async function fetchLivePrice() {
+            try {
+                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+                if (!response.ok) throw new Error('API failed');
+                const data = await response.json();
+                livePriceData = {
+                    price: parseFloat(data.lastPrice),
+                    change24h: parseFloat(data.priceChangePercent)
+                };
+                return livePriceData;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = 'Last updated: ' + now.toLocaleString();
+        }
+
+        function generatePriceData(basePrice = 85000) {
             const priceData = [];
             const vwapData = [];
             
-            // Historical price path
-            const pricePath = [
-                95200, 94800, 96100, 97200, 96800, 95500, 94200, 93800, 94500, 95100,
-                95800, 96200, 97100, 98500, 99200, 98800, 99500, 100200, 101500, 102800,
-                103200, 104100, 105300, 106800, 108200, 107500, 106200, 104800, 103500, 102100,
-                101800, 102500, 103800, 105200, 106500, 107800, 109200, 110500, 108800, 107200,
-                105800, 104200, 102900, 101500, 100200, 98800, 97200, 95800, 94500, 93200,
-                91800, 90500, 89200, 88500, 87200, 85800, 84500, 83200, 82500, 81800,
-                80500, 79200, 78500, 77800, 76500, 75200, 74500, 73800, 72500, 71200,
-                70500, 69800, 68500, 67200, 66500, 65800, 64500, 63800, 64500, 65200,
-                66500, 67800, 68500, 69200, 70500, 71800, 72500, 73200, 74500, 75800,
-                76500, 77200, 78500, 79800, 80500, 81200, 82500, 83800, 84500, 85200
-            ];
+            const pricePath = [];
+            let currentPrice = basePrice * 0.95;
+            for (let i = 0; i < 100; i++) {
+                const change = (Math.random() - 0.48) * 0.03;
+                currentPrice = currentPrice * (1 + change);
+                if (i > 80) currentPrice = currentPrice * 0.9 + basePrice * 0.1;
+                pricePath.push(currentPrice);
+            }
+            pricePath[pricePath.length - 1] = basePrice;
             
             const now = new Date();
             let cumulativePV = 0;
@@ -124,10 +146,10 @@
                 date.setDate(date.getDate() - (pricePath.length - 1 - i));
                 const timestamp = Math.floor(date.getTime() / 1000);
                 
-                const basePrice = pricePath[i];
-                const volatility = basePrice * 0.015;
-                const open = basePrice + (Math.random() - 0.5) * volatility * 0.5;
-                const close = basePrice;
+                const basePriceVal = pricePath[i];
+                const volatility = basePriceVal * 0.015;
+                const open = basePriceVal + (Math.random() - 0.5) * volatility * 0.5;
+                const close = basePriceVal;
                 const high = Math.max(open, close) + Math.random() * volatility * 0.5;
                 const low = Math.min(open, close) - Math.random() * volatility * 0.5;
                 
@@ -139,7 +161,6 @@
                     close: Math.round(close)
                 });
                 
-                // Simulate volume (higher on volatile days)
                 const volume = 25000 + Math.random() * 15000 + Math.abs(close - open) / open * 1000000;
                 const typicalPrice = (high + low + close) / 3;
                 cumulativePV += typicalPrice * volume;
@@ -152,87 +173,90 @@
             return { priceData, vwapData };
         }
 
-        const chart = LightweightCharts.createChart(document.getElementById('chart'), {
-            layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
-            grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
-            crosshair: { mode: 1, vertLine: { color: '#2a2e39', width: 1 }, horzLine: { color: '#2a2e39', width: 1 } },
-            rightPriceScale: { 
-                borderColor: '#1e222d',
-                scaleMargins: { top: 0.1, bottom: 0.1 },
-                minimumWidth: 50
-            },
-            timeScale: { borderColor: '#1e222d', timeVisible: true, fontSize: 10 },
-            localization: { priceFormatter: p => '$' + Math.round(p).toLocaleString() }
-        });
+        async function initChart() {
+            const liveData = await fetchLivePrice();
+            const basePrice = liveData ? liveData.price : 85000;
+            
+            const chart = LightweightCharts.createChart(document.getElementById('chart'), {
+                layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
+                grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
+                crosshair: { mode: 1, vertLine: { color: '#2a2e39', width: 1 }, horzLine: { color: '#2a2e39', width: 1 } },
+                rightPriceScale: { 
+                    borderColor: '#1e222d',
+                    scaleMargins: { top: 0.1, bottom: 0.1 },
+                    minimumWidth: 50
+                },
+                timeScale: { borderColor: '#1e222d', timeVisible: true, fontSize: 10 },
+                localization: { priceFormatter: p => '$' + Math.round(p).toLocaleString() }
+            });
 
-        const candleSeries = chart.addCandlestickSeries({
-            upColor: '#26a69a', downColor: '#ef5350',
-            borderUpColor: '#26a69a', borderDownColor: '#ef5350',
-            wickUpColor: '#26a69a', wickDownColor: '#ef5350'
-        });
+            const candleSeries = chart.addCandlestickSeries({
+                upColor: '#26a69a', downColor: '#ef5350',
+                borderUpColor: '#26a69a', borderDownColor: '#ef5350',
+                wickUpColor: '#26a69a', wickDownColor: '#ef5350'
+            });
 
-        const vwapSeries = chart.addLineSeries({ color: '#ffeb3b', lineWidth: 2, title: 'VWAP' });
+            const vwapSeries = chart.addLineSeries({ color: '#ffeb3b', lineWidth: 2, title: 'VWAP' });
 
-        const { priceData, vwapData } = generatePriceData();
+            const { priceData, vwapData } = generatePriceData(basePrice);
 
-        candleSeries.setData(priceData);
-        vwapSeries.setData(vwapData);
+            candleSeries.setData(priceData);
+            vwapSeries.setData(vwapData);
 
-        // Get current values
-        const currentPrice = priceData[priceData.length - 1].close;
-        const vwapVal = vwapData[vwapData.length - 1].value;
-        
-        // Commentary logic with expanded analysis
-        let bias = 'neutral';
-        let commentary = '';
-        let trendIcon = '➡️';
-        let alertTriggered = false;
-
-        const vwapDistance = ((currentPrice - vwapVal) / vwapVal * 100);
-        const absDistance = Math.abs(vwapDistance);
-
-        if (currentPrice > vwapVal) {
-            bias = 'bullish';
-            trendIcon = '↗️';
-            commentary = `VWAP (Volume Weighted Average Price) represents the average price weighted by volume over the 90-day period, serving as a benchmark for institutional execution. Trading above VWAP indicates that buyers are in control and willing to pay above the average executed price - a sign of accumulation. `;
-            commentary += `Currently, price ($${currentPrice.toLocaleString()}) trades ${vwapDistance.toFixed(1)}% above VWAP ($${vwapVal.toLocaleString()}), signaling bullish sentiment. `;
-            if (absDistance > 10) {
-                commentary += `The significant premium (${absDistance.toFixed(1)}%) suggests strong buying pressure, but also increases mean reversion risk as price becomes extended. `;
-            } else if (absDistance < 3) {
-                alertTriggered = true;
-                commentary += `⚠️ Price is testing VWAP from above - a hold here would confirm support; a break below would signal weakness. `;
+            const currentPrice = priceData[priceData.length - 1].close;
+            const vwapVal = vwapData[vwapData.length - 1].value;
+            
+            const changeEl = document.getElementById('price-change');
+            if (liveData) {
+                changeEl.textContent = '$' + currentPrice.toLocaleString() + ' (' + (liveData.change24h >= 0 ? '+' : '') + liveData.change24h.toFixed(1) + '% 24h)';
+                changeEl.className = 'price-change ' + (liveData.change24h >= 0 ? 'change-up' : 'change-down');
             }
-            commentary += `Historical context: In the 2021 bull run, BTC consistently held above VWAP for months. The current 90-day VWAP at $${vwapVal.toLocaleString()} acts as a major support level. `;
-            commentary += `Action: Longs favored while above VWAP. Stop loss on a daily close below VWAP. Target extensions to +10-15% above VWAP in strong trends.`;
-        } else {
-            bias = 'bearish';
-            trendIcon = '↘️';
-            commentary = `VWAP (Volume Weighted Average Price) represents the average price weighted by volume over the 90-day period. Trading below VWAP indicates sellers are dominant, with price trading at a discount to the average executed price - a sign of distribution. `;
-            commentary += `Currently, price ($${currentPrice.toLocaleString()}) trades ${Math.abs(vwapDistance).toFixed(1)}% below VWAP ($${vwapVal.toLocaleString()}), signaling bearish sentiment. `;
-            if (absDistance > 15) {
-                commentary += `The significant discount (${absDistance.toFixed(1)}%) suggests capitulation-level selling, which often precedes bounces. `;
-            } else if (absDistance < 3) {
-                alertTriggered = true;
-                commentary += `⚠️ Price is testing VWAP from below - a break above would signal bullish reversal; rejection here confirms resistance. `;
+
+            let bias = 'neutral';
+            let commentary = '';
+            let trendIcon = '➡️';
+            let alertTriggered = false;
+
+            const vwapDistance = ((currentPrice - vwapVal) / vwapVal * 100);
+            const absDistance = Math.abs(vwapDistance);
+
+            if (currentPrice > vwapVal) {
+                bias = 'bullish';
+                trendIcon = '↗️';
+                commentary = `VWAP represents the average price weighted by volume. Currently, price ($${currentPrice.toLocaleString()}) trades ${vwapDistance.toFixed(1)}% above VWAP ($${vwapVal.toLocaleString()}), signaling bullish sentiment. `;
+                if (absDistance < 3) {
+                    alertTriggered = true;
+                    commentary += `⚠️ Price is testing VWAP from above - a hold here would confirm support. `;
+                }
+                commentary += `Action: Longs favored while above VWAP. Stop loss on a daily close below VWAP.`;
+            } else {
+                bias = 'bearish';
+                trendIcon = '↘️';
+                commentary = `VWAP shows price ($${currentPrice.toLocaleString()}) trades ${Math.abs(vwapDistance).toFixed(1)}% below VWAP ($${vwapVal.toLocaleString()}), signaling bearish sentiment. `;
+                if (absDistance < 3) {
+                    alertTriggered = true;
+                    commentary += `⚠️ Price is testing VWAP from below - a break above would signal bullish reversal. `;
+                }
+                commentary += `Action: Defensive positioning while below VWAP. Watch for reclaim of VWAP as early reversal signal.`;
             }
-            commentary += `Historical context: During the 2022 bear market, VWAP acted as dynamic resistance with multiple failed attempts to reclaim it. `;
-            commentary += `Action: Defensive positioning while below VWAP. Shorts favored with stop above VWAP. Watch for reclaim of VWAP as early reversal signal.`;
-        }
 
-        document.getElementById('commentary-text').textContent = commentary;
-        document.getElementById('trend-icon').textContent = trendIcon;
-        const biasEl = document.getElementById('bias-indicator');
-        biasEl.textContent = bias.toUpperCase();
-        biasEl.className = 'bias bias-' + bias;
-        
-        // Update key levels
-        document.getElementById('key-levels').textContent = `VWAP: $${vwapVal.toLocaleString()} | Distance: ${vwapDistance > 0 ? '+' : ''}${vwapDistance.toFixed(1)}% | 90-Day Range: $${Math.round(vwapVal * 0.85).toLocaleString()} - $${Math.round(vwapVal * 1.15).toLocaleString()}`;
-        
-        if (alertTriggered) {
-            document.getElementById('alert').classList.add('active');
-        }
+            document.getElementById('commentary-text').textContent = commentary;
+            document.getElementById('trend-icon').textContent = trendIcon;
+            const biasEl = document.getElementById('bias-indicator');
+            biasEl.textContent = bias.toUpperCase();
+            biasEl.className = 'bias bias-' + bias;
+            
+            document.getElementById('key-levels').textContent = `VWAP: $${vwapVal.toLocaleString()} | Distance: ${vwapDistance > 0 ? '+' : ''}${vwapDistance.toFixed(1)}%`;
+            
+            if (alertTriggered) {
+                document.getElementById('alert').classList.add('active');
+            }
 
-        chart.timeScale().fitContent();
+            updateTimestamp();
+            chart.timeScale().fitContent();
+        }
+        
+        initChart();
     </script>
 </body>
 </html>
