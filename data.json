@@ -1,7 +1,7 @@
 {
-  "price": 67922,
-  "change_24h": 0.93,
-  "timestamp": "2026-02-21T10:05:00.000000",
+  "price": 68000,
+  "change_24h": 1.2,
+  "timestamp": "2026-02-21T22:23:06.073828",
   "confluence_score": 43.8,
   "signal": "Neutral",
   "recommendation": "Neutral - Mixed signals, wait for clarity",
@@ -15,11 +15,11 @@
   "options_score": 50.0,
   "weights": {
     "trend": 0.25,
-    "momentum": 0.20,
+    "momentum": 0.2,
     "volume": 0.15,
     "sentiment": 0.12,
-    "onchain": 0.10,
-    "orderflow": 0.10,
+    "onchain": 0.1,
+    "orderflow": 0.1,
     "liquidations": 0.05,
     "options": 0.03
   },
@@ -32,11 +32,11 @@
   "bull_target": 72000,
   "bear_target": 63000,
   "key_levels": {
-    "current_price": 67922,
+    "current_price": 68000,
     "ema9": 68145.02,
     "ema21": 71571.63,
     "ema50": 78660.28,
-    "ema200": 94283.00,
+    "ema200": 94283.0,
     "rsi": 41.1,
     "macd": -4265.58,
     "macd_signal": -4774.98,
@@ -63,10 +63,30 @@
     "atr": "normal"
   },
   "forecasts": [
-    {"period": "0-6h", "low": 66941, "high": 68050, "bias": "neutral"},
-    {"period": "6-12h", "low": 67042, "high": 67950, "bias": "neutral"},
-    {"period": "12-18h", "low": 66740, "high": 67748, "bias": "neutral"},
-    {"period": "18-24h", "low": 66538, "high": 67547, "bias": "neutral"}
+    {
+      "period": "0-6h",
+      "low": 66941,
+      "high": 68050,
+      "bias": "neutral"
+    },
+    {
+      "period": "6-12h",
+      "low": 67042,
+      "high": 67950,
+      "bias": "neutral"
+    },
+    {
+      "period": "12-18h",
+      "low": 66740,
+      "high": 67748,
+      "bias": "neutral"
+    },
+    {
+      "period": "18-24h",
+      "low": 66538,
+      "high": 67547,
+      "bias": "neutral"
+    }
   ],
   "advanced_analysis": {
     "features": [
@@ -79,6 +99,6 @@
       "Pivot Points",
       "Real-time Signal Generation"
     ],
-    "last_updated": "2026-02-21T10:05:00.000000"
+    "last_updated": "2026-02-21T22:23:06.073850"
   }
 }
