@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bitcoin Daily Forecast - Mobile Optimized Charts</title>
+    <title>Bitcoin Daily Forecast - Complete Analysis</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,55 +23,29 @@
         }
         h1 { font-size: 28px; background: linear-gradient(90deg, #f7931a, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* Landscape Prompt */
-        .landscape-prompt {
-            display: none;
-            background: linear-gradient(135deg, #2962ff, #7c4dff);
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .landscape-prompt .icon { font-size: 32px; margin-bottom: 8px; }
-        .landscape-prompt .text { font-size: 14px; font-weight: 600; }
-        .landscape-prompt .subtext { font-size: 12px; opacity: 0.9; margin-top: 4px; }
-        
-        @media (max-width: 768px) and (orientation: portrait) {
-            .landscape-prompt { display: block; }
-        }
-        
-        /* Chart Cards */
-        .chart-card {
+        /* Section Styling */
+        .section {
             background: rgba(30, 34, 45, 0.6);
             border-radius: 16px;
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.05);
-            overflow: hidden;
+            padding: 20px;
         }
-        .chart-header {
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            cursor: pointer;
-            background: rgba(255,255,255,0.02);
+            gap: 10px;
         }
-        .chart-title { font-size: 16px; font-weight: 600; }
-        .chart-subtitle { font-size: 12px; color: #868993; }
-        .chart-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out;
-        }
-        .chart-body.open { max-height: 800px; }
         
-        /* Commentary Section */
+        /* Commentary Box */
         .commentary {
             background: rgba(41, 98, 255, 0.1);
             border-left: 4px solid #2962ff;
             padding: 15px 20px;
-            margin: 15px;
+            margin: 15px 0;
             border-radius: 0 12px 12px 0;
         }
         .commentary-title {
@@ -79,9 +53,6 @@
             font-weight: 700;
             color: #2962ff;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         .commentary-text {
             font-size: 13px;
@@ -95,41 +66,97 @@
             border-radius: 8px;
             font-size: 13px;
         }
-        .commentary-conclusion strong {
-            color: #f7931a;
-        }
-        .bullish { color: #26a69a; }
-        .bearish { color: #ef5350; }
-        .neutral { color: #ffc107; }
+        .bullish { color: #26a69a; font-weight: 600; }
+        .bearish { color: #ef5350; font-weight: 600; }
+        .neutral { color: #ffc107; font-weight: 600; }
         
-        /* Chart Container - Full Width */
+        /* Master Commentary */
+        .master-commentary {
+            background: linear-gradient(135deg, rgba(247, 147, 26, 0.15), rgba(255, 152, 0, 0.05));
+            border: 1px solid rgba(247, 147, 26, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .master-commentary h2 {
+            color: #f7931a;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        /* Chart Cards - Always Visible */
+        .chart-card {
+            background: rgba(30, 34, 45, 0.6);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        .chart-header {
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .chart-title { font-size: 16px; font-weight: 600; }
+        .chart-subtitle { font-size: 12px; color: #868993; }
+        .chart-body { padding: 15px; }
+        
+        /* Chart Container */
         .chart-wrapper {
             width: 100%;
-            height: 500px;
+            height: 450px;
             border: none;
             display: block;
+            margin-bottom: 15px;
         }
         
         @media (max-width: 768px) {
             .chart-wrapper { height: 350px; }
-            .chart-body.open { max-height: 400px; }
         }
         
         @media (max-width: 768px) and (orientation: landscape) {
             .chart-wrapper { height: 280px; }
-            .landscape-prompt { display: none !important; }
         }
         
+        /* Price Display */
+        .price-display {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .price-main { font-size: 48px; font-weight: 800; color: #f7931a; }
+        .price-change { font-size: 18px; margin-top: 5px; }
+        .price-up { color: #26a69a; }
+        .price-down { color: #ef5350; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-label { font-size: 12px; color: #868993; margin-bottom: 5px; }
+        .stat-value { font-size: 20px; font-weight: 700; }
+        
         /* Confluence Score */
-        .confluence-panel {
+        .confluence-box {
+            text-align: center;
+            padding: 20px;
             background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(156, 39, 176, 0.05));
             border: 1px solid rgba(156, 39, 176, 0.3);
             border-radius: 16px;
-            padding: 20px;
             margin-bottom: 20px;
-            text-align: center;
         }
-        .confluence-score { font-size: 48px; font-weight: 800; color: #ffc107; }
+        .confluence-score { font-size: 56px; font-weight: 800; color: #ffc107; }
         .confluence-signal { 
             display: inline-block; 
             padding: 8px 24px; 
@@ -139,186 +166,341 @@
             color: #ffc107;
             margin-top: 10px;
         }
+        
+        /* Forecast Grid */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .forecast-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .forecast-label { font-size: 12px; color: #868993; margin-bottom: 5px; }
+        .forecast-price { font-size: 18px; font-weight: 700; }
+        .forecast-bull { color: #26a69a; }
+        .forecast-base { color: #ffc107; }
+        .forecast-bear { color: #ef5350; }
+        
+        @media (max-width: 600px) {
+            .forecast-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <header>
             <h1>📊 Bitcoin Daily Forecast</h1>
-            <p style="color: #868993; font-size: 14px;">Interactive Charts • Mobile Optimized</p>
+            <p style="color: #868993; font-size: 14px;">Complete Technical Analysis • February 21, 2026</p>
         </header>
         
-        <!-- Landscape Prompt -->
-        <div class="landscape-prompt">
-            <div class="icon">📱↔️</div>
-            <div class="text">Rotate Your Phone</div>
-            <div class="subtext">Charts are best viewed in landscape mode</div>
-        </div>
-        
-        <!-- Confluence Score -->
-        <div class="confluence-panel">
-            <div class="confluence-score">43/100</div>
-            <div style="font-size: 14px; color: #868993; margin-top: 5px;">Confluence Score</div>
-            <div class="confluence-signal">NEUTRAL</div>
-        </div>
-        
-        <!-- Chart 1: Price Action -->
-        <div class="chart-card">
-            <div class="chart-header" onclick="toggleChart(this)">
-                <div>
-                    <div class="chart-title">📈 Price Action</div>
-                    <div class="chart-subtitle">Candlesticks • EMAs • VWAP • Volume</div>
-                </div>
-                <span style="font-size: 20px;">▼</span>
-            </div>
-            <div class="chart-body open">
-                <iframe src="chart-price.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                        allow="fullscreen" loading="lazy"
-                        title="BTC Price Action Chart"
-                        sandbox="allow-scripts allow-same-origin">
-                </iframe>
+        <!-- MASTER COMMENTARY: Overall Market Picture -->
+        <div class="master-commentary">
+            <h2>🎯 Master Commentary: What All Charts Tell Us</h2>
+            <div class="commentary-text" style="font-size: 14px; line-height: 1.8;">
+                <p><strong>The Big Picture:</strong> All 5 charts are painting a consistent story. Bitcoin is in a <span class="neutral">consolidation phase</span> after the sharp drop from $120K to $67K. We're seeing a battle between buyers and sellers at current levels.</p>
                 
-                <!-- Commentary: Price Action -->
-                <div class="commentary">
-                    <div class="commentary-title">💡 What This Chart Tells Us</div>
-                    <div class="commentary-text">
-                        This chart shows Bitcoin's price movement with key moving averages. The <strong>EMA 9</strong> (cyan) represents short-term momentum, while <strong>EMA 200</strong> (purple) shows the long-term trend. <strong>VWAP</strong> (yellow) indicates where most trading volume occurred — a key institutional reference point.
-                    </div>
-                    <div class="commentary-conclusion">
-                        <strong>Current Reading:</strong> <span class="bearish">Price below all major EMAs</span> — bearish alignment. VWAP at $98,937 acting as resistance. The downtrend from $120K continues with lower highs and lower lows. <strong>Possible Outcome:</strong> If price breaks below $65K support, next target is $60-63K. Recovery requires reclaiming EMA 21 at $71,569.
-                    </div>
+                <p style="margin-top: 12px;"><strong>Key Agreement Across Charts:</strong></p>
+                <ul style="margin: 10px 0 10px 20px; color: #c9d1d9;">
+                    <li>Price Action: Below all major EMAs = bearish alignment</li>
+                    <li>Trend: SuperTrend bearish, below Ichimoku cloud</li>
+                    <li>Momentum: Neutral (RSI 50) — neither overbought nor oversold</li>
+                    <li>Volume: Selling pressure confirmed by OBV downtrend</li>
+                    <li>Forecast: Middle of regression channel — no extreme readings</li>
+                </ul>
+                
+                <p style="margin-top: 12px;"><strong>Confluence Score 43/100 = NEUTRAL:</strong> This isn't a strong buy or sell signal. It's a <span class="neutral">wait-and-see</span> environment. The market is deciding its next major move.</p>
+                
+                <p style="margin-top: 12px;"><strong>What To Watch For:</strong></p>
+                <ul style="margin: 10px 0 10px 20px; color: #c9d1d9;">
+                    <li>🟢 <span class="bullish">Bullish Trigger:</span> Break above $70.5K with volume → Target $72-75K</li>
+                    <li>🔴 <span class="bearish">Bearish Trigger:</span> Break below $65K → Target $60-63K</li>
+                    <li>🟡 <span class="neutral">Neutral:</span> Stay between $65-70.5K → Continue consolidating</li>
+                </ul>
+                
+                <div class="commentary-conclusion" style="margin-top: 15px;">
+                    <strong>Bottom Line:</strong> Don't force trades. Wait for a clear breakout in either direction. The confluence of 15+ indicators suggests the market is at equilibrium — the next catalyst (news, macro event, whale movement) will determine direction.
                 </div>
             </div>
         </div>
         
-        <!-- Chart 2: Trend Indicators -->
-        <div class="chart-card">
-            <div class="chart-header" onclick="toggleChart(this)">
-                <div>
-                    <div class="chart-title">📉 Trend Indicators</div>
+        <!-- SECTION 1: Price Overview -->
+        <div class="section">
+            <div class="section-title">💰 Current Price</div>
+            
+            <div class="price-display">
+                <div class="price-main">$67,934</div>
+                <div class="price-change price-up">+0.93% (+$626)</div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">24h High</div>
+                    <div class="stat-value">$68,318</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">24h Low</div>
+                    <div class="stat-value">$66,280</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">24h Volume</div>
+                    <div class="stat-value">35,354 BTC</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Cap</div>
+                    <div class="stat-value">$1.34T</div>
+                </div>
+            </div>
+            
+            <div class="commentary">
+                <div class="commentary-title">💡 What These Numbers Mean</div>
+                <div class="commentary-text">
+                    Bitcoin is trading near the <strong>middle of its 24-hour range</strong> ($66,280 - $68,318). This shows indecision — neither bulls nor bears have full control. The +0.93% gain is modest and within normal daily volatility. Volume at 35K BTC is average, not showing panic selling or euphoric buying. The $1.34T market cap keeps BTC as the dominant crypto asset.
+                </div>
+                <div class="commentary-conclusion">
+                    <strong>Reading:</strong> <span class="neutral">Neutral consolidation</span>. Price isn't breaking down (holding above $66K) but isn't breaking out either (capped at $68.3K). Watch which side of this range breaks first.
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION 2: Confluence Score -->
+        <div class="section">
+            <div class="section-title">🧠 Confluence Score Analysis</div>
+            
+            <div class="confluence-box">
+                <div class="confluence-score">43/100</div>
+                <div style="font-size: 14px; color: #868993; margin-top: 5px;">Based on 15+ Technical Indicators</div>
+                <div class="confluence-signal">NEUTRAL</div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Trend Score</div>
+                    <div class="stat-value bearish">25/100</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Momentum Score</div>
+                    <div class="stat-value neutral">50/100</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Volume Score</div>
+                    <div class="stat-value neutral">50/100</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Sentiment Score</div>
+                    <div class="stat-value neutral">50/100</div>
+                </div>
+            </div>
+            
+            <div class="commentary">
+                <div class="commentary-title">💡 Understanding the Confluence Score</div>
+                <div class="commentary-text">
+                    The <strong>Confluence Score</strong> combines 15+ indicators into a single 0-100 reading. Think of it as a "voting system" where each indicator casts a vote (bullish, bearish, or neutral). <strong>0-20 = Strong Sell, 21-40 = Sell, 41-60 = Neutral, 61-80 = Buy, 81-100 = Strong Buy.</strong>
+                </div>
+                <div class="commentary-conclusion">
+                    <strong>Current 43/100 = NEUTRAL:</strong> The indicators are split. <span class="bearish">Trend is bearish (25/100)</span> — price below EMAs, SuperTrend red. But <span class="neutral">Momentum, Volume, and Sentiment are neutral (50/100)</span> — not confirming the bearish trend with strong selling pressure. This divergence creates the neutral overall reading.
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION 3: 7-Day Forecast -->
+        <div class="section">
+            <div class="section-title">🔮 7-Day Price Forecast</div>
+            
+            <div class="forecast-grid">
+                <div class="forecast-box">
+                    <div class="forecast-label">🐂 Bull Case (25%)</div>
+                    <div class="forecast-price forecast-bull">$72,000</div>
+                    <div style="font-size: 11px; color: #868993; margin-top: 5px;">Break above $70.5K resistance</div>
+                </div>
+                <div class="forecast-box">
+                    <div class="forecast-label">📊 Base Case (50%)</div>
+                    <div class="forecast-price forecast-base">$67,000</div>
+                    <div style="font-size: 11px; color: #868993; margin-top: 5px;">Continue consolidation</div>
+                </div>
+                <div class="forecast-box">
+                    <div class="forecast-label">🐻 Bear Case (25%)</div>
+                    <div class="forecast-price forecast-bear">$63,000</div>
+                    <div style="font-size: 11px; color: #868993; margin-top: 5px;">Break below $65K support</div>
+                </div>
+            </div>
+            
+            <div class="commentary">
+                <div class="commentary-title">💡 How to Read the Forecast</div>
+                <div class="commentary-text">
+                    This isn't a crystal ball — it's a <strong>probability-based projection</strong> using regression analysis, Fibonacci levels, and pivot points. The <strong>Base Case (50% probability)</strong> is the most likely outcome if current conditions continue. <strong>Bull/Bear cases (25% each)</strong> represent scenarios if key levels break.
+                </div>
+                <div class="commentary-conclusion">
+                    <strong>Current Outlook:</strong> The <span class="neutral">50% base case at $67K</span> suggests we stay range-bound. The equal 25% bull/bear probabilities show uncertainty — the market is at a decision point. <strong>Trading Implication:</strong> Don't bet on direction yet. Wait for a break of $65K or $70.5K to enter with the trend.
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION 4: Interactive Charts -->
+        <div class="section">
+            <div class="section-title">📈 Interactive Technical Charts</div>
+            
+            <!-- Chart 1: Price Action -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📈 Chart 1: Price Action</div>
+                    <div class="chart-subtitle">Candlesticks • EMA 9/21/50/200 • VWAP • Volume</div>
+                </div>
+                <div class="chart-body">
+                    <iframe src="chart-price.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                            title="BTC Price Action Chart"></iframe>
+                    
+                    <div class="commentary">
+                        <div class="commentary-title">💡 What This Chart Shows</div>
+                        <div class="commentary-text">
+                            This chart displays Bitcoin's price action with <strong>Exponential Moving Averages (EMAs)</strong> at 9, 21, 50, and 200 periods. EMAs give more weight to recent prices, making them responsive to current trends. The <strong>VWAP</strong> (Volume Weighted Average Price) at $98,937 shows where most trading occurred — it's now acting as overhead resistance since price is below it.
+                        </div>
+                        
+                        <div class="commentary-conclusion">
+                            <strong>Current Reading:</strong> <span class="bearish">Bearish alignment</span> — price ($67,934) is below all EMAs (EMA 9 at $68,145, EMA 21 at $71,570, EMA 50 at $78,196, EMA 200 at $94,283). This "stacked" EMA structure shows sellers are in control. <strong>Key Level:</strong> Must reclaim EMA 9 ($68,145) for any bullish momentum. <strong>Outcome:</strong> Failure to break $68.5K keeps the downtrend intact with next support at $65K.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chart 2: Trend Indicators -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📉 Chart 2: Trend Indicators</div>
                     <div class="chart-subtitle">Ichimoku Cloud • SuperTrend • Bollinger Bands</div>
                 </div>
-                <span style="font-size: 20px;">▼</span>
-            </div>
-            <div class="chart-body">
-                <iframe src="chart-trend.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                        allow="fullscreen" loading="lazy"
-                        title="BTC Trend Indicators Chart">
-                </iframe>
-                
-                <!-- Commentary: Trend Indicators -->
-                <div class="commentary">
-                    <div class="commentary-title">💡 What This Chart Tells Us</div>
-                    <div class="commentary-text">
-                        The <strong>Ichimoku Cloud</strong> provides a complete trend picture. Price below the cloud = bearish. The <strong>SuperTrend</strong> (green/red line) gives clear buy/sell signals — currently red (sell). <strong>Bollinger Bands</strong> show volatility; price near lower band suggests oversold conditions but can stay there in strong downtrends.
-                    </div>
-                    <div class="commentary-conclusion">
-                        <strong>Current Reading:</strong> <span class="bearish">SuperTrend is bearish</span> (red) and price is below Ichimoku cloud — both confirming downtrend. Bollinger Bands are contracting, suggesting a volatility squeeze before a potential move. <strong>Possible Outcome:</strong> Break below lower BB ($64K) could accelerate selling. Watch for SuperTrend flip to green for trend reversal signal.
+                <div class="chart-body">
+                    <iframe src="chart-trend.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                            title="BTC Trend Indicators Chart"></iframe>
+                    
+                    <div class="commentary">
+                        <div class="commentary-title">💡 What This Chart Shows</div>
+                        <div class="commentary-text">
+                            The <strong>Ichimoku Cloud</strong> is a complete trend system. When price is below the cloud (red area), it's bearish. The <strong>SuperTrend</strong> indicator flips between green (buy) and red (sell) based on ATR volatility — currently red since the $120K breakdown. <strong>Bollinger Bands</strong> show volatility; price touching the lower band often signals oversold conditions, but can "walk the band" in strong trends.
+                        </div>
+                        
+                        <div class="commentary-conclusion">
+                            <strong>Current Reading:</strong> <span class="bearish">All trend indicators bearish</span>. Price below Ichimoku cloud, SuperTrend red, and Bollinger Bands contracting (volatility squeeze). <strong>What to Watch:</strong> A volatility squeeze often precedes big moves. <strong>Outcome:</strong> Wait for breakout — above upper BB ($72K) for bullish reversal, below lower BB ($64K) for continuation down.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Chart 3: Momentum -->
-        <div class="chart-card">
-            <div class="chart-header" onclick="toggleChart(this)">
-                <div>
-                    <div class="chart-title">⚡ Momentum</div>
+            
+            <!-- Chart 3: Momentum -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">⚡ Chart 3: Momentum</div>
                     <div class="chart-subtitle">RSI • StochRSI • MACD • MFI</div>
                 </div>
-                <span style="font-size: 20px;">▼</span>
-            </div>
-            <div class="chart-body">
-                <iframe src="chart-momentum.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                        allow="fullscreen" loading="lazy"
-                        title="BTC Momentum Chart">
-                </iframe>
-                
-                <!-- Commentary: Momentum -->
-                <div class="commentary">
-                    <div class="commentary-title">💡 What This Chart Tells Us</div>
-                    <div class="commentary-text">
-                        <strong>RSI</strong> measures speed of price changes (0-100). Below 30 = oversold, above 70 = overbought. <strong>StochRSI</strong> is more sensitive, showing when RSI itself is overbought/oversold. <strong>MACD</strong> shows trend momentum through moving average crossovers. <strong>MFI</strong> adds volume to RSI — more reliable for spotting reversals.
-                    </div>
-                    <div class="commentary-conclusion">
-                        <strong>Current Reading:</strong> <span class="neutral">RSI neutral at 50</span> — neither overbought nor oversold. MACD histogram showing weakening bearish momentum but no bullish crossover yet. StochRSI in middle range. <strong>Possible Outcome:</strong> Momentum is consolidating. A MACD bullish crossover above signal line would suggest momentum shift. Watch RSI 40 level — break below confirms bearish continuation.
+                <div class="chart-body">
+                    <iframe src="chart-momentum.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                            title="BTC Momentum Chart"></iframe>
+                    
+                    <div class="commentary">
+                        <div class="commentary-title">💡 What This Chart Shows</div>
+                        <div class="commentary-text">
+                            <strong>RSI (Relative Strength Index)</strong> measures speed of price changes on a 0-100 scale. <strong>StochRSI</strong> is RSI of RSI — more sensitive. <strong>MACD</strong> shows momentum through moving average crossovers. <strong>MFI (Money Flow Index)</strong> adds volume to RSI — more reliable for spotting reversals. Together they show if a move has "fuel" or is exhausted.
+                        </div>
+                        
+                        <div class="commentary-conclusion">
+                            <strong>Current Reading:</strong> <span class="neutral">Momentum is neutral</span>. RSI at 50 — neither overbought nor oversold. MACD histogram showing weakening bearish momentum (bars getting smaller) but no bullish crossover yet. StochRSI mid-range. <strong>Key Signal:</strong> MACD line crossing above signal line would be a buy signal. <strong>Outcome:</strong> Momentum suggests consolidation, not a strong directional move yet.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Chart 4: Volume & On-Chain -->
-        <div class="chart-card">
-            <div class="chart-header" onclick="toggleChart(this)">
-                <div>
-                    <div class="chart-title">📊 Volume & On-Chain</div>
-                    <div class="chart-subtitle">Volume • OBV • ATR • Funding</div>
+            
+            <!-- Chart 4: Volume & On-Chain -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📊 Chart 4: Volume & On-Chain</div>
+                    <div class="chart-subtitle">Volume • OBV • ATR • Funding Rates</div>
                 </div>
-                <span style="font-size: 20px;">▼</span>
-            </div>
-            <div class="chart-body">
-                <iframe src="chart-onchain.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                        allow="fullscreen" loading="lazy"
-                        title="BTC Volume and On-Chain Chart">
-                </iframe>
-                
-                <!-- Commentary: Volume & On-Chain -->
-                <div class="commentary">
-                    <div class="commentary-title">💡 What This Chart Tells Us</div>
-                    <div class="commentary-text">
-                        <strong>Volume</strong> confirms price moves — high volume on down moves = strong selling. <strong>OBV</strong> (On-Balance Volume) tracks cumulative buying/selling pressure. Rising OBV with falling price = bullish divergence (smart money accumulating). <strong>ATR</strong> measures volatility — high ATR means bigger price swings. <strong>Funding rates</strong> show if longs or shorts are paying premiums.
-                    </div>
-                    <div class="commentary-conclusion">
-                        <strong>Current Reading:</strong> <span class="bearish">OBV trending down</span> with price — no divergence, confirming selling pressure. Volume spikes on down days show capitulation. ATR elevated but declining — volatility contracting. <strong>Possible Outcome:>/strong> Declining ATR often precedes big moves. Watch for OBV to flatten or rise while price falls — that would signal accumulation and potential bottom.
+                <div class="chart-body">
+                    <iframe src="chart-onchain.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                            title="BTC Volume and On-Chain Chart"></iframe>
+                    
+                    <div class="commentary">
+                        <div class="commentary-title">💡 What This Chart Shows</div>
+                        <div class="commentary-text">
+                            <strong>Volume</strong> confirms price moves — high volume on drops means strong selling. <strong>OBV (On-Balance Volume)</strong> tracks cumulative buying/selling pressure. Rising OBV with falling price = bullish divergence (smart money buying quietly). <strong>ATR</strong> measures volatility — declining ATR means calmer markets, often before big moves. <strong>Funding rates</strong> show if longs or shorts are paying premiums to hold positions.
+                        </div>
+                        
+                        <div class="commentary-conclusion">
+                            <strong>Current Reading:</strong> <span class="bearish">OBV trending down with price</span> — no bullish divergence, confirming genuine selling pressure. Volume spikes on down days show capitulation. ATR declining from highs — volatility contracting. <strong>Key Signal:</strong> Watch for OBV to flatten while price falls — that would signal accumulation. <strong>Outcome:</strong> Volume profile supports the bearish trend; need OBV divergence for reversal signal.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Chart 5: Forecast -->
-        <div class="chart-card">
-            <div class="chart-header" onclick="toggleChart(this)">
-                <div>
-                    <div class="chart-title">🎯 Forecast & Signals</div>
+            
+            <!-- Chart 5: Forecast -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">🎯 Chart 5: Forecast & Signals</div>
                     <div class="chart-subtitle">Regression Channel • Fibonacci • Pivot Points</div>
                 </div>
-                <span style="font-size: 20px;">▼</span>
-            </div>
-            <div class="chart-body">
-                <iframe src="chart-forecast.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                        allow="fullscreen" loading="lazy"
-                        title="BTC Forecast Chart">
-                </iframe>
-                
-                <!-- Commentary: Forecast -->
-                <div class="commentary">
-                    <div class="commentary-title">💡 What This Chart Tells Us</div>
-                    <div class="commentary-text">
-                        The <strong>Regression Channel</strong> shows the trend's direction and expected price range (±1σ, ±2σ bands). Price near lower band = statistically oversold. <strong>Fibonacci levels</strong> ($70.5K, $64.5K) are key support/resistance based on mathematical ratios. <strong>Pivot Points</strong> mark intraday support/resistance levels used by institutional traders.
-                    </div>
-                    <div class="commentary-conclusion">
-                        <strong>Current Reading:</strong> <span class="neutral">Price at middle of regression channel</span> — neutral zone, not extreme. Fibonacci 0.618 at $70.5K is key resistance; 1.0 at $64.5K is support. <strong>7-Day Forecast:</strong> Bull case $72K (break above resistance), Base case $67K (consolidation), Bear case $63K (support test). <strong>Signal:</strong> NEUTRAL — wait for breakout above $70.5K or breakdown below $65K for directional trade.
+                <div class="chart-body">
+                    <iframe src="chart-forecast.html" class="chart-wrapper" frameborder="0" scrolling="no"
+                            title="BTC Forecast Chart"></iframe>
+                    
+                    <div class="commentary">
+                        <div class="commentary-title">💡 What This Chart Shows</div>
+                        <div class="commentary-text">
+                            The <strong>Regression Channel</strong> shows the trend's statistical range (±1σ, ±2σ bands). Price near lower band = statistically oversold. <strong>Fibonacci levels</strong> ($70.5K at 0.618, $64.5K at 1.0) are key support/resistance based on mathematical ratios found in nature and markets. <strong>Pivot Points</strong> mark intraday S/R levels used by institutional traders for entries and exits.
+                        </div>
+                        
+                        <div class="commentary-conclusion">
+                            <strong>Current Reading:</strong> <span class="neutral">Price in middle of regression channel</span> — not at statistical extremes. Fibonacci 0.618 at $70.5K is the key resistance to break for bullish continuation. $64.5K (1.0 Fib) is critical support. <strong>Trading Plan:</strong> Long above $70.5K, Short below $65K, Neutral between. <strong>Outcome:</strong> The confluence of technical levels at $65K and $70.5K creates a clear decision zone — whichever breaks first likely determines the next 10-15% move.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <script>
-            function toggleChart(header) {
-                const body = header.nextElementSibling;
-                const arrow = header.querySelector('span');
-                body.classList.toggle('open');
-                arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
-            }
+        <!-- SECTION 5: Final Summary -->
+        <div class="section">
+            <div class="section-title">📝 Trading Summary</div>
             
-            // Auto-expand first chart
-            document.addEventListener('DOMContentLoaded', function() {
-                const firstHeader = document.querySelector('.chart-header');
-                if (firstHeader) {
-                    firstHeader.click();
-                }
-            });
-        </script>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
+                <div style="font-size: 16px; font-weight: 700; margin-bottom: 15px; color: #f7931a;">📊 Signal: NEUTRAL (43/100)</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <div style="font-size: 13px; color: #868993; margin-bottom: 8px;">🟢 Bullish Triggers:</div>
+                        <ul style="font-size: 13px; color: #c9d1d9; margin-left: 20px;">
+                            <li>Break above $70,500</li>
+                            <li>MACD bullish crossover</li>
+                            <li>Reclaim EMA 21 ($71,570)</li>
+                            <li>OBV divergence (rising while price flat)</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 13px; color: #868993; margin-bottom: 8px;">🔴 Bearish Triggers:</div>
+                        <ul style="font-size: 13px; color: #c9d1d9; margin-left: 20px;">
+                            <li>Break below $65,000</li>
+                            <li>SuperTrend stays red</li>
+                            <li>RSI breaks below 40</li>
+                            <li>Volume spike on breakdown</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="padding: 15px; background: rgba(41, 98, 255, 0.1); border-radius: 8px; border-left: 4px solid #2962ff;">
+                    <strong>Bottom Line:</strong> Bitcoin is consolidating after a sharp decline. The market is at equilibrium with no clear directional edge. <span class="neutral">Patience is the trade here</span> — wait for a breakout above $70.5K or breakdown below $65K before taking a directional position. The confluence of 15+ indicators suggests the next 10-15% move will be determined by which of these key levels breaks first.
+                </div>
+            </div>
+        </div>
+        
+        <footer style="text-align: center; padding: 30px; color: #868993; font-size: 12px; border-top: 1px solid #2a2e39; margin-top: 30px;">
+            <p>Bitcoin Daily Forecast • Generated by Advanced Charting System v2.0</p>
+            <p>Data: Live from Binance, CoinGecko • Analysis: 15+ Technical Indicators</p>
+            <p style="margin-top: 10px;">⚠️ Not financial advice. For educational purposes only.</p>
+        </footer>
     </div>
 </body>
 </html>
