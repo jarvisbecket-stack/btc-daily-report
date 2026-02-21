@@ -11,54 +11,90 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #0a0e1a;
             color: #e6edf3;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            padding: 0;
         }
         .header {
             background: #131722;
-            padding: 6px 12px;
+            padding: 10px 15px;
             border-bottom: 1px solid #1e222d;
+            overflow: hidden;
+        }
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
+            margin-bottom: 5px;
         }
-        .title { font-size: 13px; font-weight: 600; }
-        .price-info { font-size: 11px; color: #868993; }
+        .title { font-size: 14px; font-weight: 600; float: left; }
+        .refresh-btn {
+            float: right;
+            background: #2a2e39;
+            border: 1px solid #3a3e49;
+            color: #e6edf3;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .refresh-btn:hover { background: #3a3e49; }
+        .price-info { 
+            font-size: 12px; 
+            color: #868993;
+            clear: both;
+            padding-top: 5px;
+        }
         .price-change { font-weight: 600; }
         .change-up { color: #26a69a; }
         .change-down { color: #ef5350; }
-        .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
-        .legend-item { display: flex; align-items: center; gap: 4px; }
-        .dot { width: 8px; height: 2px; border-radius: 1px; }
-        .chart-area { height: 400px; position: relative; flex-shrink: 0; }
-        #chart { height: 100%; }
-        .commentary {
-            background: rgba(19, 23, 34, 0.95);
-            border-top: 1px solid #1e222d;
-            padding: 12px;
-            font-size: 11px;
-            line-height: 1.5;
-            flex-shrink: 0;
+        .legend { 
+            display: flex; 
+            gap: 15px; 
+            font-size: 11px; 
+            color: #868993;
+            margin-top: 8px;
         }
-        .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .dot { width: 10px; height: 3px; border-radius: 1px; }
+        #chart { 
+            width: 100%; 
+            height: 550px;
+            background: #0a0e1a;
+        }
+        .commentary {
+            background: #131722;
+            border-top: 1px solid #1e222d;
+            padding: 15px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .bias { 
+            display: inline-block; 
+            padding: 2px 8px; 
+            border-radius: 3px; 
+            font-size: 10px; 
+            font-weight: 600; 
+            margin-left: 8px; 
+        }
         .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
         .bias-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
         .bias-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-        .trend-icon { font-size: 12px; margin-right: 4px; }
+        .trend-icon { font-size: 14px; margin-right: 5px; }
         .key-levels {
-            margin-top: 8px;
-            padding-top: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px solid #2a2e39;
-            font-size: 10px;
+            font-size: 11px;
             color: #868993;
         }
         .timestamp {
-            font-size: 9px;
+            font-size: 10px;
             color: #5a6070;
-            margin-top: 6px;
+            margin-top: 8px;
             text-align: right;
+        }
+        .price-error {
+            color: #ef5350;
+            font-size: 11px;
         }
         .alert {
             position: absolute;
@@ -75,132 +111,165 @@
         }
         .alert.active { display: block; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .price-error {
-            color: #ef5350;
-            font-size: 10px;
-        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div>
+        <div class="header-top">
             <div class="title">7-Day Forecast Bands</div>
-            <div class="price-info">BTC <span class="price-change" id="price-change">Loading...</span></div>
+            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
         </div>
+        <div class="price-info">BTC <span id="price-display" class="price-change">Loading...</span></div>
         <div class="legend">
+            <div class="legend-item"><span class="dot" style="background: #26a69a;"></span>Price</div>
             <div class="legend-item"><span class="dot" style="background: #26a69a;"></span>Bull</div>
             <div class="legend-item"><span class="dot" style="background: #ffc107;"></span>Base</div>
             <div class="legend-item"><span class="dot" style="background: #ef5350;"></span>Bear</div>
         </div>
     </div>
-    <div class="chart-area">
-        <div id="chart"></div>
+    <div id="chart" style="position: relative;">
         <div class="alert" id="alert">⚠️ FORECAST BAND BREACH</div>
     </div>
     <div class="commentary">
         <div><strong><span class="trend-icon" id="trend-icon">➡️</span>Forecast:</strong> <span id="commentary-text">Loading...</span><span class="bias" id="bias-indicator">...</span></div>
-        <div class="key-levels" id="key-levels">Forecast Levels: ...</div>
-        <div class="timestamp" id="timestamp">Last updated: --</div>
+        <div class="key-levels" id="key-levels">Loading...</div>
+        <div class="timestamp" id="timestamp"></div>
     </div>
+
     <script>
-        let livePriceData = null;
-        let fetchError = null;
-        
+        // Fetch live BTC price from CoinGecko
         async function fetchLivePrice() {
-            console.log('[BTC Price] Starting fetch from Binance API...');
             try {
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
-                console.log('[BTC Price] Response status:', response.status);
-                if (!response.ok) throw new Error('API failed with status: ' + response.status);
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+                if (!response.ok) throw new Error('API error: ' + response.status);
                 const data = await response.json();
-                console.log('[BTC Price] Raw data:', data);
-                livePriceData = {
-                    price: parseFloat(data.lastPrice),
-                    change24h: parseFloat(data.priceChangePercent)
+                return {
+                    price: data.bitcoin.usd,
+                    change: data.bitcoin.usd_24h_change || 0
                 };
-                console.log('[BTC Price] Parsed data:', livePriceData);
-                fetchError = null;
-                return livePriceData;
             } catch (error) {
-                console.error('[BTC Price] Fetch error:', error);
-                fetchError = error.message;
+                console.error('Failed to fetch price:', error);
                 return null;
             }
         }
 
-        function updateTimestamp() {
-            const now = new Date();
-            document.getElementById('timestamp').textContent = 'Last updated: ' + now.toLocaleString();
+        // Fetch historical data from CoinGecko
+        async function fetchHistoricalData() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=90');
+                if (!response.ok) throw new Error('History API error: ' + response.status);
+                const data = await response.json();
+                
+                const prices = data.prices;
+                const candleData = [];
+                
+                for (let i = 0; i < prices.length; i += 24) {
+                    const dayPrices = prices.slice(i, i + 24);
+                    if (dayPrices.length === 0) continue;
+                    
+                    const open = dayPrices[0][1];
+                    const close = dayPrices[dayPrices.length - 1][1];
+                    const high = Math.max(...dayPrices.map(p => p[1]));
+                    const low = Math.min(...dayPrices.map(p => p[1]));
+                    const timestamp = Math.floor(dayPrices[0][0] / 1000);
+                    
+                    candleData.push({
+                        time: timestamp,
+                        open: Math.round(open),
+                        high: Math.round(high),
+                        low: Math.round(low),
+                        close: Math.round(close)
+                    });
+                }
+                
+                return candleData;
+            } catch (error) {
+                console.error('Failed to fetch historical data:', error);
+                return null;
+            }
         }
 
-        function generateForecastData(basePrice = 85000) {
-            const priceData = [];
+        // Calculate Forecast Bands based on recent volatility
+        function calculateForecastBands(data) {
             const bullData = [];
             const baseData = [];
             const bearData = [];
             
-            const pricePath = [];
-            let currentPrice = basePrice * 0.95;
-            for (let i = 0; i < 100; i++) {
-                const change = (Math.random() - 0.48) * 0.03;
-                currentPrice = currentPrice * (1 + change);
-                if (i > 80) currentPrice = currentPrice * 0.9 + basePrice * 0.1;
-                pricePath.push(currentPrice);
-            }
-            pricePath[pricePath.length - 1] = basePrice;
-            
-            const now = new Date();
-            
-            for (let i = 0; i < pricePath.length; i++) {
-                const date = new Date(now);
-                date.setDate(date.getDate() - (pricePath.length - 1 - i));
-                const timestamp = Math.floor(date.getTime() / 1000);
+            // Calculate 20-day rolling volatility
+            for (let i = 20; i < data.length; i++) {
+                const slice = data.slice(i - 20, i + 1);
+                const closes = slice.map(d => d.close);
+                const avgPrice = closes.reduce((a, b) => a + b, 0) / closes.length;
                 
-                const basePriceVal = pricePath[i];
-                const volatility = basePriceVal * 0.015;
-                const open = basePriceVal + (Math.random() - 0.5) * volatility * 0.5;
-                const close = basePriceVal;
-                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
-                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+                // Calculate standard deviation
+                const variance = closes.reduce((a, b) => a + Math.pow(b - avgPrice, 2), 0) / closes.length;
+                const stdDev = Math.sqrt(variance);
                 
-                priceData.push({
-                    time: timestamp,
-                    open: Math.round(open),
-                    high: Math.round(high),
-                    low: Math.round(low),
-                    close: Math.round(close)
-                });
+                // 7-day forecast bands (approx 2 std dev for bull/bear)
+                const volatility7d = stdDev * 1.5;
                 
-                const lookback = Math.max(0, i - 20);
-                const recentPrices = pricePath.slice(lookback, i + 1);
-                const avgPrice = recentPrices.reduce((a, b) => a + b, 0) / recentPrices.length;
-                const volatility7d = avgPrice * 0.08;
-                
-                bullData.push({ time: timestamp, value: Math.round(avgPrice + volatility7d) });
-                baseData.push({ time: timestamp, value: Math.round(avgPrice) });
-                bearData.push({ time: timestamp, value: Math.round(avgPrice - volatility7d) });
+                bullData.push({ time: data[i].time, value: Math.round(avgPrice + volatility7d) });
+                baseData.push({ time: data[i].time, value: Math.round(avgPrice) });
+                bearData.push({ time: data[i].time, value: Math.round(avgPrice - volatility7d) });
             }
             
-            return { priceData, bullData, baseData, bearData };
+            return { bullData, baseData, bearData };
         }
 
+        // Initialize chart
         async function initChart() {
-            console.log('[Chart] Initializing...');
-            const liveData = await fetchLivePrice();
-            const basePrice = liveData ? liveData.price : 85000;
-            console.log('[Chart] Using base price:', basePrice);
+            const [liveData, historicalData] = await Promise.all([
+                fetchLivePrice(),
+                fetchHistoricalData()
+            ]);
             
+            const currentPrice = liveData ? liveData.price : (historicalData ? historicalData[historicalData.length - 1].close : 85000);
+            const priceChange = liveData ? liveData.change : 0;
+            
+            // Update price display
+            const priceDisplay = document.getElementById('price-display');
+            if (liveData) {
+                const changeClass = priceChange >= 0 ? 'change-up' : 'change-down';
+                const changeSign = priceChange >= 0 ? '+' : '';
+                priceDisplay.innerHTML = `$${currentPrice.toLocaleString()} <span class="${changeClass}">${changeSign}${priceChange.toFixed(2)}%</span>`;
+            } else {
+                priceDisplay.innerHTML = `<span class="price-error">Price unavailable</span>`;
+            }
+            
+            // Update timestamp
+            document.getElementById('timestamp').textContent = 'Last updated: ' + new Date().toLocaleString();
+            
+            // Use historical data or fallback
+            const priceData = historicalData || generateFallbackData(currentPrice);
+            const { bullData, baseData, bearData } = calculateForecastBands(priceData);
+            
+            // Create chart
             const chart = LightweightCharts.createChart(document.getElementById('chart'), {
-                layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
-                grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
-                crosshair: { mode: 1, vertLine: { color: '#2a2e39', width: 1 }, horzLine: { color: '#2a2e39', width: 1 } },
+                layout: { 
+                    background: { type: 'solid', color: '#0a0e1a' }, 
+                    textColor: '#868993' 
+                },
+                grid: { 
+                    vertLines: { color: '#1e222d', style: 3 }, 
+                    horzLines: { color: '#1e222d', style: 3 } 
+                },
+                crosshair: { 
+                    mode: 1, 
+                    vertLine: { color: '#2a2e39', width: 1 }, 
+                    horzLine: { color: '#2a2e39', width: 1 } 
+                },
                 rightPriceScale: { 
                     borderColor: '#1e222d',
-                    scaleMargins: { top: 0.1, bottom: 0.1 },
-                    minimumWidth: 50
+                    scaleMargins: { top: 0.1, bottom: 0.1 }
                 },
-                timeScale: { borderColor: '#1e222d', timeVisible: true, fontSize: 10 },
-                localization: { priceFormatter: p => '$' + Math.round(p).toLocaleString() }
+                timeScale: { 
+                    borderColor: '#1e222d', 
+                    timeVisible: true, 
+                    fontSize: 11 
+                },
+                localization: { 
+                    priceFormatter: p => '$' + Math.round(p).toLocaleString()
+                }
             });
 
             const candleSeries = chart.addCandlestickSeries({
@@ -209,30 +278,38 @@
                 wickUpColor: '#26a69a', wickDownColor: '#ef5350'
             });
 
-            const bullBand = chart.addLineSeries({ color: '#26a69a', lineWidth: 1.5, lineStyle: 2, title: 'Bull' });
-            const baseBand = chart.addLineSeries({ color: '#ffc107', lineWidth: 1.5, lineStyle: 2, title: 'Base' });
-            const bearBand = chart.addLineSeries({ color: '#ef5350', lineWidth: 1.5, lineStyle: 2, title: 'Bear' });
-
-            const { priceData, bullData, baseData, bearData } = generateForecastData(basePrice);
+            const bullBand = chart.addLineSeries({ 
+                color: '#26a69a', 
+                lineWidth: 1.5, 
+                lineStyle: 2, 
+                title: 'Bull' 
+            });
+            
+            const baseBand = chart.addLineSeries({ 
+                color: '#ffc107', 
+                lineWidth: 1.5, 
+                lineStyle: 2, 
+                title: 'Base' 
+            });
+            
+            const bearBand = chart.addLineSeries({ 
+                color: '#ef5350', 
+                lineWidth: 1.5, 
+                lineStyle: 2, 
+                title: 'Bear' 
+            });
 
             candleSeries.setData(priceData);
             bullBand.setData(bullData);
             baseBand.setData(baseData);
             bearBand.setData(bearData);
 
-            const currentPrice = priceData[priceData.length - 1].close;
+            // Get current values for commentary
             const bull = bullData[bullData.length - 1].value;
             const base = baseData[baseData.length - 1].value;
             const bear = bearData[bearData.length - 1].value;
             
-            const changeEl = document.getElementById('price-change');
-            if (liveData) {
-                changeEl.textContent = '$' + basePrice.toLocaleString() + ' (' + (liveData.change24h >= 0 ? '+' : '') + liveData.change24h.toFixed(1) + '% 24h)';
-                changeEl.className = 'price-change ' + (liveData.change24h >= 0 ? 'change-up' : 'change-down');
-            } else {
-                changeEl.innerHTML = '<span class="price-error">Price unavailable - ' + (fetchError || 'check console') + '</span>';
-            }
-
+            // Generate commentary
             let bias = 'neutral';
             let commentary = '';
             let trendIcon = '➡️';
@@ -290,16 +367,60 @@
             biasEl.className = 'bias bias-' + bias;
             
             const position = currentPrice > base ? `${vsBase.toFixed(1)}% above base` : currentPrice < base ? `${Math.abs(vsBase).toFixed(1)}% below base` : 'At base case';
-            document.getElementById('key-levels').textContent = `Forecast: Bull $${bull.toLocaleString()} | Base $${base.toLocaleString()} | Bear $${bear.toLocaleString()} | Position: ${position}`;
+            document.getElementById('key-levels').textContent = 
+                `Forecast: Bull $${bull.toLocaleString()} | Base $${base.toLocaleString()} | Bear $${bear.toLocaleString()} | Position: ${position}`;
             
             if (alertTriggered) {
                 document.getElementById('alert').classList.add('active');
             }
 
-            updateTimestamp();
             chart.timeScale().fitContent();
         }
-        
+
+        // Fallback data generator
+        function generateFallbackData(endPrice) {
+            const data = [];
+            const now = new Date();
+            const basePrices = [
+                102000, 104500, 103200, 105800, 107200, 106500, 108000, 105500, 103800, 101200,
+                99800, 102500, 104800, 103200, 101500, 99800, 98500, 96200, 94500, 92800,
+                95200, 96800, 98500, 97200, 95800, 93500, 91200, 92800, 94500, 96200,
+                97800, 96500, 94800, 92500, 90200, 91800, 93500, 95200, 93800, 91500,
+                89200, 87500, 85800, 88200, 90500, 92800, 91200, 88800, 86500, 84200,
+                85800, 88200, 90500, 92800, 91200, 88800, 86500, 84200, 81800, 79500,
+                77800, 75500, 73200, 70800, 68500, 70200, 72500, 74800, 73200, 70800,
+                68500, 66200, 63800, 61500, 59200, 60800, 63200, 65500, 67800, 66200,
+                63800, 61500, 59200, 56800, 54500, 56200, 58500, 60800, 63200, 65500
+            ];
+            
+            for (let i = 0; i < basePrices.length; i++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - (basePrices.length - 1 - i));
+                const timestamp = Math.floor(date.getTime() / 1000);
+                
+                const basePrice = basePrices[i];
+                const volatility = basePrice * 0.015;
+                const open = basePrice + (Math.random() - 0.5) * volatility * 0.3;
+                const close = basePrice;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.3;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.3;
+                
+                data.push({
+                    time: timestamp,
+                    open: Math.round(open),
+                    high: Math.round(high),
+                    low: Math.round(low),
+                    close: Math.round(close)
+                });
+            }
+            
+            data[data.length - 1].close = Math.round(endPrice);
+            data[data.length - 1].high = Math.max(data[data.length - 1].high, Math.round(endPrice));
+            data[data.length - 1].low = Math.min(data[data.length - 1].low, Math.round(endPrice));
+            
+            return data;
+        }
+
         initChart();
     </script>
 </body>
