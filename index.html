@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Daily Forecast v4.2</title>
+    <title>Bitcoin Daily Forecast - Enhanced v2.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -30,6 +30,37 @@
         .price-change { font-size: 18px; padding: 8px 20px; border-radius: 20px; display: inline-block; font-weight: 600; }
         .price-change.up { background: rgba(38, 166, 154, 0.2); color: #26a69a; border: 1px solid rgba(38, 166, 154, 0.3); }
         .price-change.down { background: rgba(239, 83, 80, 0.2); color: #ef5350; border: 1px solid rgba(239, 83, 80, 0.3); }
+        
+        /* Confluence Score Banner */
+        .confluence-banner {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.15) 0%, rgba(156, 39, 176, 0.05) 100%);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px auto;
+            max-width: 700px;
+        }
+        .confluence-header { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .confluence-header h3 { color: #ce93d8; font-size: 16px; }
+        .confluence-score-main { text-align: center; margin-bottom: 20px; }
+        .confluence-score-value { font-size: 64px; font-weight: 800; color: #ffc107; }
+        .confluence-score-label { font-size: 14px; color: #868993; margin-top: 5px; }
+        .confluence-signal { 
+            display: inline-block; 
+            padding: 10px 30px; 
+            border-radius: 25px; 
+            font-size: 18px; 
+            font-weight: 700; 
+            background: rgba(255, 193, 7, 0.15); 
+            color: #ffc107; 
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        /* Score Bar */
+        .score-bar-container { margin: 20px 0; }
+        .score-bar-bg { height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; }
+        .score-bar-fill { height: 100%; background: linear-gradient(90deg, #ef5350, #ffc107, #26a69a); border-radius: 6px; transition: width 0.5s ease; }
+        .score-labels { display: flex; justify-content: space-between; font-size: 11px; color: #868993; margin-top: 5px; }
         
         /* CST Forecast */
         .cst-forecast {
@@ -140,6 +171,7 @@
         .section-icon.reddit { background: linear-gradient(135deg, #ff4500, #cc3700); }
         .section-icon.ttc { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
         .section-icon.strategy { background: linear-gradient(135deg, #4caf50, #388e3c); }
+        .section-icon.advanced { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
         .section-info { display: flex; flex-direction: column; }
         .section-title { font-size: 18px; font-weight: 600; color: #fff; }
         .section-subtitle { font-size: 12px; color: #868993; margin-top: 2px; }
@@ -151,7 +183,7 @@
         }
         .badge-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
         .badge-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
-        .badge-neutral { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+        .badge-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
         .section-toggle { font-size: 20px; color: #868993; transition: transform 0.3s; }
         .section-toggle.active { transform: rotate(180deg); }
         .section-content {
@@ -159,8 +191,110 @@
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
-        .section-content.open { max-height: 2000px; }
+        .section-content.open { max-height: 3000px; }
         .section-inner { padding: 0 25px 25px; }
+        
+        /* Advanced Analysis Grid */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Category Cards */
+        .category-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .category-name { font-size: 14px; font-weight: 600; color: #fff; }
+        .category-score { font-size: 20px; font-weight: 700; }
+        .category-score.bullish { color: #26a69a; }
+        .category-score.bearish { color: #ef5350; }
+        .category-score.neutral { color: #ffc107; }
+        .category-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+        .category-bar-fill { height: 100%; border-radius: 3px; }
+        .category-weight { font-size: 11px; color: #868993; text-align: right; }
+        
+        /* Signal Count Grid */
+        .signal-count-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .signal-count-item { text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; }
+        .signal-count-value { font-size: 32px; font-weight: 700; }
+        .signal-count-value.bullish { color: #26a69a; }
+        .signal-count-value.bearish { color: #ef5350; }
+        .signal-count-value.neutral { color: #ffc107; }
+        .signal-count-label { font-size: 12px; color: #868993; margin-top: 5px; }
+        
+        /* Weights Display */
+        .weights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .weight-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .weight-name { color: #a0a3b0; }
+        .weight-value { font-weight: 600; color: #fff; }
+        
+        /* Forecast Targets */
+        .target-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .target-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .target-card.bull { background: rgba(38, 166, 154, 0.1); border: 1px solid rgba(38, 166, 154, 0.2); }
+        .target-card.bear { background: rgba(239, 83, 80, 0.1); border: 1px solid rgba(239, 83, 80, 0.2); }
+        .target-label { font-size: 12px; color: #868993; margin-bottom: 8px; }
+        .target-price { font-size: 28px; font-weight: 700; }
+        .target-price.bull { color: #26a69a; }
+        .target-price.bear { color: #ef5350; }
+        
+        /* Indicator List */
+        .indicator-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+        }
+        .indicator-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .indicator-name { color: #a0a3b0; }
+        .indicator-signal { font-weight: 600; }
+        .indicator-signal.bull { color: #26a69a; }
+        .indicator-signal.bear { color: #ef5350; }
+        .indicator-signal.neutral { color: #ffc107; }
         
         /* Social Media Cards - SUMMARY STYLE */
         .social-grid {
@@ -178,7 +312,7 @@
         .social-card:hover { transform: translateX(4px); }
         .social-card.bullish { background: rgba(38, 166, 154, 0.08); border-color: #26a69a; }
         .social-card.bearish { background: rgba(239, 83, 80, 0.08); border-color: #ef5350; }
-        .social-card.neutral { background: rgba(255, 152, 0, 0.08); border-color: #ff9800; }
+        .social-card.neutral { background: rgba(255, 193, 7, 0.08); border-color: #ffc107; }
         
         .social-header {
             display: flex;
@@ -231,7 +365,7 @@
         }
         .social-sentiment.bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
         .social-sentiment.bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
-        .social-sentiment.neutral { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+        .social-sentiment.neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
         
         .social-engagement {
             font-size: 11px;
@@ -319,9 +453,12 @@
             font-weight: 600;
             transition: transform 0.2s, box-shadow 0.2s;
             margin-top: 15px;
+            text-decoration: none;
+            display: inline-block;
         }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(41,98,255,0.4); }
         
+        /* Responsive */
         @media (max-width: 768px) {
             .price-main { font-size: 40px; }
             .cst-grid { grid-template-columns: 1fr; }
@@ -330,6 +467,19 @@
             .social-grid { grid-template-columns: 1fr; }
             .section-header { padding: 15px 20px; }
             .section-inner { padding: 0 20px 20px; }
+            .analysis-grid { grid-template-columns: 1fr; }
+            .signal-count-grid { grid-template-columns: 1fr; }
+            .target-grid { grid-template-columns: 1fr; }
+            .weights-grid { grid-template-columns: 1fr; }
+            .confluence-score-value { font-size: 48px; }
+            h1 { font-size: 28px; }
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .confluence-banner { padding: 15px; }
+            .chart-container { padding: 15px; }
+            .stat-card { padding: 15px; }
         }
     </style>
 </head>
@@ -338,44 +488,67 @@
         <!-- Header -->
         <header>
             <h1>₿ Bitcoin Daily Forecast</h1>
-            <div class="subtitle">Professional Technical Analysis & Market Intelligence</div>
+            <div class="subtitle">Enhanced Technical Analysis v2.0 • Professional Market Intelligence</div>
             
-            <div class="price-main" id="current-price">$67,929.00</div>
-            <div class="price-change up" id="price-change">+1.41% (24h)</div>
+            <div class="price-main" id="current-price">$67,922.00</div>
+            <div class="price-change up" id="price-change">+0.93% (24h)</div>
+            
+            <!-- Confluence Score Banner -->
+            <div class="confluence-banner">
+                <div class="confluence-header">
+                    <span style="font-size: 24px;">🎯</span>
+                    <h3>Confluence Scoring System</h3>
+                </div>
+                <div class="confluence-score-main">
+                    <div class="confluence-score-value">43.8</div>
+                    <div class="confluence-score-label">out of 100</div>
+                </div>
+                <div style="text-align: center;">
+                    <span class="confluence-signal">NEUTRAL</span>
+                </div>
+                <div class="score-bar-container">
+                    <div class="score-bar-bg">
+                        <div class="score-bar-fill" style="width: 43.8%;"></div>
+                    </div>
+                    <div class="score-labels">
+                        <span>Strong Sell</span>
+                        <span>Sell</span>
+                        <span>Neutral</span>
+                        <span>Buy</span>
+                        <span>Strong Buy</span>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 13px; color: #a0a3b0; margin-top: 10px;">
+                    💡 Recommendation: Neutral - Mixed signals, wait for clarity
+                </div>
+            </div>
             
             <div class="cst-forecast">
                 <h3>📅 CST Market Hours Forecast</h3>
                 <div class="cst-grid">
                     <div class="cst-item">
                         <div class="cst-time">Open 8:00 AM</div>
-                        <div class="cst-price" style="color: #26a69a;">$67,200</div>
-                        <div class="cst-change" style="color: #26a69a;">+0.5%</div>
+                        <div class="cst-price" style="color: #ffc107;">$67,200</div>
+                        <div class="cst-change" style="color: #ffc107;">-1.1%</div>
                     </div>
                     <div class="cst-item">
                         <div class="cst-time">Mid 12:00 PM</div>
-                        <div class="cst-price" style="color: #ff9800;">$67,800</div>
-                        <div class="cst-change" style="color: #ff9800;">+1.4%</div>
+                        <div class="cst-price" style="color: #ffc107;">$67,800</div>
+                        <div class="cst-change" style="color: #ffc107;">-0.2%</div>
                     </div>
                     <div class="cst-item">
                         <div class="cst-time">Close 4:00 PM</div>
-                        <div class="cst-price" style="color: #ef5350;">$67,400</div>
-                        <div class="cst-change" style="color: #ef5350;">+0.8%</div>
+                        <div class="cst-price" style="color: #26a69a;">$68,400</div>
+                        <div class="cst-change" style="color: #26a69a;">+0.7%</div>
                     </div>
                 </div>
             </div>
             
             <div style="margin-top: 15px; color: #868993; font-size: 12px;">
-                Last updated: 2026-02-21 03:02 UTC
+                Last updated: 2026-02-21 10:05 UTC
             </div>
             <button class="btn" onclick="refreshData()">🔄 Refresh Data</button>
         </header>
-        
-        <!-- Chart -->
-        <div class="chart-container">
-            <h2 style="margin-bottom: 15px; color: #ff9800;">📈 BTC/USD - 30 Day Technical Analysis</h2>
-            <img src="chart.png?v=1771614130" alt="BTC Chart">
-            <div style="margin-top: 15px; font-size: 12px; color: #868993;">Powered by Yahoo Finance • Includes MA, Volume, RSI, MACD</div>
-        </div>
         
         <!-- Advanced Technical Analysis -->
         <div class="section-divider"><span>🔬 Advanced Technical Analysis</span></div>
@@ -383,24 +556,33 @@
         <div class="section-card">
             <div class="section-header" onclick="toggleSection(this)">
                 <div class="section-left">
-                    <div class="section-icon" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2);">🧠</div>
+                    <div class="section-icon advanced">🧠</div>
                     <div class="section-info">
-                        <div class="section-title">Advanced Charting System v1.0</div>
+                        <div class="section-title">Advanced Charting System v2.0</div>
                         <div class="section-subtitle">15+ Indicators • Confluence Scoring • Self-Learning AI</div>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-bearish">SELL</span>
+                    <span class="section-badge badge-neutral">NEUTRAL</span>
                     <span class="section-toggle">▼</span>
                 </div>
             </div>
-            <div class="section-content">
+            <div class="section-content open">
                 <div class="section-inner">
-                    <div class="sentiment-summary">
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">0</div><div class="sentiment-label">Bullish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">6</div><div class="sentiment-label">Bearish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">5</div><div class="sentiment-label">Neutral</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">36/100</div><div class="sentiment-label">Confluence</div></div>
+                    <!-- Signal Count Summary -->
+                    <div class="signal-count-grid">
+                        <div class="signal-count-item">
+                            <div class="signal-count-value bullish">2</div>
+                            <div class="signal-count-label">Bullish Signals</div>
+                        </div>
+                        <div class="signal-count-item">
+                            <div class="signal-count-value bearish">4</div>
+                            <div class="signal-count-label">Bearish Signals</div>
+                        </div>
+                        <div class="signal-count-item">
+                            <div class="signal-count-value neutral">9</div>
+                            <div class="signal-count-label">Neutral Signals</div>
+                        </div>
                     </div>
                     
                     <div class="live-banner">
@@ -408,58 +590,146 @@
                         <span><strong>Advanced System:</strong> 15 indicators analyzed • Real-time confluence scoring • Self-learning AI</span>
                     </div>
                     
-                    <div class="quick-stats">
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">🎯</div>
-                                <div class="stat-title">Confluence Score</div>
+                    <!-- 8 Category Breakdown -->
+                    <h3 style="font-size: 14px; color: #868993; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">8-Category Breakdown</h3>
+                    <div class="analysis-grid">
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">📈 Trend</span>
+                                <span class="category-score bearish">25.0</span>
                             </div>
-                            <div class="metric"><span class="metric-label">Total Score</span><span class="metric-value" style="color: #ef5350;">36/100</span></div>
-                            <div class="metric"><span class="metric-label">Signal</span><span class="metric-value" style="color: #ef5350;">SELL</span></div>
-                            <div class="metric"><span class="metric-label">Trend Score</span><span class="metric-value" style="color: #ef5350;">27/100</span></div>
-                            <div class="metric"><span class="metric-label">Momentum Score</span><span class="metric-value" style="color: #ff9800;">48/100</span></div>
-                            <div class="metric"><span class="metric-label">Volume Score</span><span class="metric-value" style="color: #ef5350;">35/100</span></div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 25%; background: #ef5350;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 25%</div>
                         </div>
                         
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">📊</div>
-                                <div class="stat-title">15 Technical Indicators</div>
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">⚡ Momentum</span>
+                                <span class="category-score neutral">50.0</span>
                             </div>
-                            <div class="metric"><span class="metric-label">EMA Alignment</span><span class="metric-value" style="color: #ef5350;">Bearish</span></div>
-                            <div class="metric"><span class="metric-label">EMA Crossover</span><span class="metric-value" style="color: #ff9800;">Neutral</span></div>
-                            <div class="metric"><span class="metric-label">SuperTrend</span><span class="metric-value" style="color: #ef5350;">Bearish</span></div>
-                            <div class="metric"><span class="metric-label">Long-term Trend (EMA200)</span><span class="metric-value" style="color: #ef5350;">Bearish</span></div>
-                            <div class="metric"><span class="metric-label">RSI(14)</span><span class="metric-value" style="color: #ff9800;">Neutral</span></div>
-                            <div class="metric"><span class="metric-label">MACD</span><span class="metric-value" style="color: #ff9800;">Neutral-Bull</span></div>
-                            <div class="metric"><span class="metric-label">StochRSI</span><span class="metric-value" style="color: #ef5350;">Bearish</span></div>
-                            <div class="metric"><span class="metric-label">Price Momentum</span><span class="metric-value" style="color: #ff9800;">Neutral</span></div>
-                            <div class="metric"><span class="metric-label">Volume Trend</span><span class="metric-value" style="color: #ff9800;">Neutral</span></div>
-                            <div class="metric"><span class="metric-label">OBV</span><span class="metric-value" style="color: #ef5350;">Bearish</span></div>
-                            <div class="metric"><span class="metric-label">MFI(14)</span><span class="metric-value" style="color: #ef5350;">Bearish</span></div>
-                            <div class="metric"><span class="metric-label">Bollinger Bands</span><span class="metric-value" style="color: #868993;">Volatility</span></div>
-                            <div class="metric"><span class="metric-label">VWAP</span><span class="metric-value" style="color: #868993;">Volume Weighted</span></div>
-                            <div class="metric"><span class="metric-label">Ichimoku Cloud</span><span class="metric-value" style="color: #868993;">Trend</span></div>
-                            <div class="metric"><span class="metric-label">ATR(14)</span><span class="metric-value" style="color: #868993;">Volatility</span></div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 50%; background: #ffc107;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 20%</div>
                         </div>
                         
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">🔮</div>
-                                <div class="stat-title">Forecast Bands</div>
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">📊 Volume</span>
+                                <span class="category-score neutral">50.0</span>
                             </div>
-                            <div class="metric"><span class="metric-label">Ensemble Direction</span><span class="metric-value" style="color: #ef5350;">BEAR</span></div>
-                            <div class="metric"><span class="metric-label">Confidence</span><span class="metric-value">66%</span></div>
-                            <div class="metric"><span class="metric-label">Bull Target</span><span class="metric-value" style="color: #26a69a;">$69,771</span></div>
-                            <div class="metric"><span class="metric-label">Bear Target</span><span class="metric-value" style="color: #ef5350;">$61,369</span></div>
-                            <div class="metric"><span class="metric-label">Regression Channel</span><span class="metric-value">±1σ, ±2σ</span></div>
-                            <div class="metric"><span class="metric-label">Pivot Points</span><span class="metric-value">R1-R3, S1-S3</span></div>
-                            <div class="metric"><span class="metric-label">Fibonacci</span><span class="metric-value">0.618, 1.0, 1.618</span></div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 50%; background: #ffc107;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 15%</div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">🧠 Sentiment</span>
+                                <span class="category-score neutral">50.0</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 50%; background: #ffc107;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 12%</div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">⛓️ On-Chain</span>
+                                <span class="category-score neutral">50.0</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 50%; background: #ffc107;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 10%</div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">📈 Order Flow</span>
+                                <span class="category-score neutral">50.0</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 50%; background: #ffc107;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 10%</div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">💥 Liquidations</span>
+                                <span class="category-score neutral">50.0</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 50%; background: #ffc107;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 5%</div>
+                        </div>
+                        
+                        <div class="category-card">
+                            <div class="category-header">
+                                <span class="category-name">📋 Options</span>
+                                <span class="category-score neutral">50.0</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width: 50%; background: #ffc107;"></div>
+                            </div>
+                            <div class="category-weight">Weight: 3%</div>
                         </div>
                     </div>
                     
+                    <!-- Dynamic Weights Display -->
+                    <h3 style="font-size: 14px; color: #868993; margin: 25px 0 15px; text-transform: uppercase; letter-spacing: 1px;">Dynamic Weights Configuration</h3>
+                    <div class="weights-grid">
+                        <div class="weight-item"><span class="weight-name">📈 Trend</span><span class="weight-value">25.0%</span></div>
+                        <div class="weight-item"><span class="weight-name">⚡ Momentum</span><span class="weight-value">20.0%</span></div>
+                        <div class="weight-item"><span class="weight-name">📊 Volume</span><span class="weight-value">15.0%</span></div>
+                        <div class="weight-item"><span class="weight-name">🧠 Sentiment</span><span class="weight-value">12.0%</span></div>
+                        <div class="weight-item"><span class="weight-name">⛓️ On-Chain</span><span class="weight-value">10.0%</span></div>
+                        <div class="weight-item"><span class="weight-name">📈 Order Flow</span><span class="weight-value">10.0%</span></div>
+                        <div class="weight-item"><span class="weight-name">💥 Liquidations</span><span class="weight-value">5.0%</span></div>
+                        <div class="weight-item"><span class="weight-name">📋 Options</span><span class="weight-value">3.0%</span></div>
+                    </div>
+                    
+                    <!-- Forecast Targets -->
+                    <h3 style="font-size: 14px; color: #868993; margin: 25px 0 15px; text-transform: uppercase; letter-spacing: 1px;">Ensemble Forecast Targets</h3>
+                    <div class="target-grid">
+                        <div class="target-card bull">
+                            <div class="target-label">🟢 Bull Target</div>
+                            <div class="target-price bull">$72,000</div>
+                        </div>
+                        <div class="target-card bear">
+                            <div class="target-label">🔴 Bear Target</div>
+                            <div class="target-price bear">$63,000</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 15 Indicators Status -->
+                    <h3 style="font-size: 14px; color: #868993; margin: 25px 0 15px; text-transform: uppercase; letter-spacing: 1px;">15 Technical Indicators</h3>
+                    <div class="indicator-list">
+                        <div class="indicator-item"><span class="indicator-name">EMA Alignment</span><span class="indicator-signal bear">Bearish</span></div>
+                        <div class="indicator-item"><span class="indicator-name">EMA Crossover</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">SuperTrend</span><span class="indicator-signal bear">Bearish</span></div>
+                        <div class="indicator-item"><span class="indicator-name">Long-term Trend (EMA200)</span><span class="indicator-signal bear">Bearish</span></div>
+                        <div class="indicator-item"><span class="indicator-name">RSI(14)</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">MACD</span><span class="indicator-signal neutral">Neutral-Bull</span></div>
+                        <div class="indicator-item"><span class="indicator-name">StochRSI</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">Price Momentum</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">Volume Trend</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">OBV</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">MFI(14)</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">Bollinger Bands</span><span class="indicator-signal neutral">Normal</span></div>
+                        <div class="indicator-item"><span class="indicator-name">VWAP</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">Ichimoku Cloud</span><span class="indicator-signal neutral">Neutral</span></div>
+                        <div class="indicator-item"><span class="indicator-name">ATR(14)</span><span class="indicator-signal neutral">Normal</span></div>
+                    </div>
+                    
                     <div style="margin-top: 20px; text-align: center;">
-                        <a href="advanced-chart.html" class="btn" style="text-decoration: none; display: inline-block;">📊 Open Interactive Advanced Chart</a>
+                        <a href="advanced-chart.html" class="btn">📊 Open Interactive Advanced Chart</a>
                     </div>
                 </div>
             </div>
@@ -472,10 +742,10 @@
                     <div class="stat-icon">📊</div>
                     <div class="stat-title">Market Status</div>
                 </div>
-                <div class="metric"><span class="metric-label">Current</span><span class="metric-value" id="market-price">$67,929.00</span></div>
-                <div class="metric"><span class="metric-label">24h Change</span><span class="metric-value" style="color: #26a69a">+1.41%</span></div>
-                <div class="metric"><span class="metric-label">Fear & Greed</span><span class="metric-value" style="color: #26a69a;">9/100 Extreme Fear</span></div>
-                <div class="metric"><span class="metric-label">Market Cap</span><span class="metric-value">$1.32T</span></div>
+                <div class="metric"><span class="metric-label">Current</span><span class="metric-value" id="market-price">$67,922.00</span></div>
+                <div class="metric"><span class="metric-label">24h Change</span><span class="metric-value" style="color: #26a69a">+0.93%</span></div>
+                <div class="metric"><span class="metric-label">Fear & Greed</span><span class="metric-value" style="color: #ffc107;">50/100 Neutral</span></div>
+                <div class="metric"><span class="metric-label">Market Cap</span><span class="metric-value">$1.34T</span></div>
             </div>
             
             <div class="stat-card">
@@ -484,9 +754,9 @@
                     <div class="stat-title">Key Levels</div>
                 </div>
                 <div class="metric"><span class="metric-label">Resistance 2</span><span class="metric-value" style="color: #26a69a;">$72,000</span></div>
-                <div class="metric"><span class="metric-label">Resistance 1</span><span class="metric-value" style="color: #ff9800;">$68,000</span></div>
-                <div class="metric"><span class="metric-label">Support 1</span><span class="metric-value" style="color: #ff9800;">$65,000</span></div>
-                <div class="metric"><span class="metric-label">Support 2</span><span class="metric-value" style="color: #ef5350;">$63,472</span></div>
+                <div class="metric"><span class="metric-label">Resistance 1</span><span class="metric-value" style="color: #ffc107;">$70,000</span></div>
+                <div class="metric"><span class="metric-label">Support 1</span><span class="metric-value" style="color: #ffc107;">$65,000</span></div>
+                <div class="metric"><span class="metric-label">Support 2</span><span class="metric-value" style="color: #ef5350;">$63,000</span></div>
             </div>
             
             <div class="stat-card">
@@ -494,10 +764,10 @@
                     <div class="stat-icon">🔮</div>
                     <div class="stat-title">24h Forecast</div>
                 </div>
-                <div class="metric"><span class="metric-label">0-6h</span><span class="metric-value" style="color: #26a69a;">Bullish ↑</span></div>
-                <div class="metric"><span class="metric-label">6-12h</span><span class="metric-value" style="color: #ff9800;">Neutral →</span></div>
-                <div class="metric"><span class="metric-label">12-18h</span><span class="metric-value" style="color: #ff9800;">Neutral →</span></div>
-                <div class="metric"><span class="metric-label">18-24h</span><span class="metric-value" style="color: #ef5350;">Bearish ↓</span></div>
+                <div class="metric"><span class="metric-label">0-6h</span><span class="metric-value" style="color: #ffc107;">Neutral →</span></div>
+                <div class="metric"><span class="metric-label">6-12h</span><span class="metric-value" style="color: #ffc107;">Neutral →</span></div>
+                <div class="metric"><span class="metric-label">12-18h</span><span class="metric-value" style="color: #ffc107;">Neutral →</span></div>
+                <div class="metric"><span class="metric-label">18-24h</span><span class="metric-value" style="color: #26a69a;">Bullish ↑</span></div>
             </div>
         </div>
         
@@ -515,17 +785,17 @@
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="section-badge badge-bearish">BEARISH</span>
+                    <span class="section-badge badge-neutral">NEUTRAL</span>
                     <span class="section-toggle">▼</span>
                 </div>
             </div>
             <div class="section-content">
-                <div class="section-inner"
+                <div class="section-inner">
                     <div class="sentiment-summary">
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">4</div><div class="sentiment-label">Bullish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">8</div><div class="sentiment-label">Bearish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">13</div><div class="sentiment-label">Neutral</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">BEAR</div><div class="sentiment-label">Consensus</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">5</div><div class="sentiment-label">Bullish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">5</div><div class="sentiment-label">Bearish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ffc107;">15</div><div class="sentiment-label">Neutral</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ffc107;">NEUT</div><div class="sentiment-label">Consensus</div></div>
                     </div>
                     
                     <div class="live-banner">
@@ -534,26 +804,6 @@
                     </div>
                     
                     <div class="social-grid">
-                        <div class="social-card bearish">
-                            <div class="social-header">
-                                <div class="social-source">
-                                    @rektcapital
-                                    <span class="social-platform">X</span>
-                                </div>
-                                <div class="social-meta">234K followers</div>
-                            </div>
-                            <div class="social-summary">⚠️ Bitcoin below 200-week EMA (~$68.3K). Historical pattern suggests bearish acceleration if support lost. Caution warranted.</div>
-                            
-                            <div class="social-footer">
-                                <span class="social-sentiment bearish">🔴 BEARISH</span>
-                                <div class="social-engagement">
-                                    <span>❤️ 1.2K</span>
-                                    <span>💬 89</span>
-                                    <span>Feb 20</span>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="social-card bullish">
                             <div class="social-header">
                                 <div class="social-source">
@@ -569,7 +819,7 @@
                                 <div class="social-engagement">
                                     <span>❤️ 2.1K</span>
                                     <span>💬 156</span>
-                                    <span>Feb 19</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -589,7 +839,7 @@
                                 <div class="social-engagement">
                                     <span>❤️ 890</span>
                                     <span>💬 67</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -609,7 +859,27 @@
                                 <div class="social-engagement">
                                     <span>❤️ 3.4K</span>
                                     <span>💬 234</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="social-card bearish">
+                            <div class="social-header">
+                                <div class="social-source">
+                                    @rektcapital
+                                    <span class="social-platform">X</span>
+                                </div>
+                                <div class="social-meta">234K followers</div>
+                            </div>
+                            <div class="social-summary">⚠️ Bitcoin below 200-week EMA (~$68.3K). Historical pattern suggests bearish acceleration if support lost. Caution warranted.</div>
+                            
+                            <div class="social-footer">
+                                <span class="social-sentiment bearish">🔴 BEARISH</span>
+                                <div class="social-engagement">
+                                    <span>❤️ 1.2K</span>
+                                    <span>💬 89</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -636,9 +906,9 @@
             <div class="section-content">
                 <div class="section-inner">
                     <div class="sentiment-summary">
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">5</div><div class="sentiment-label">Bullish</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">6</div><div class="sentiment-label">Bullish</div></div>
                         <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">3</div><div class="sentiment-label">Bearish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">4</div><div class="sentiment-label">Neutral</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ffc107;">3</div><div class="sentiment-label">Neutral</div></div>
                         <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">BULL</div><div class="sentiment-label">Consensus</div></div>
                     </div>
                     
@@ -662,7 +932,7 @@
                                 <span class="social-sentiment bullish">🟢 BULLISH</span>
                                 <div class="social-engagement">
                                     <span>👁️ 45K views</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -681,7 +951,7 @@
                                 <span class="social-sentiment bullish">🟢 BULLISH</span>
                                 <div class="social-engagement">
                                     <span>👁️ 23K views</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -700,7 +970,7 @@
                                 <span class="social-sentiment bearish">🔴 BEARISH</span>
                                 <div class="social-engagement">
                                     <span>👁️ 112K views</span>
-                                    <span>Feb 19</span>
+                                    <span>Feb 20</span>
                                 </div>
                             </div>
                         </div>
@@ -729,8 +999,8 @@
                     <div class="sentiment-summary">
                         <div class="sentiment-item"><div class="sentiment-count" style="color: #26a69a;">5</div><div class="sentiment-label">Bullish</div></div>
                         <div class="sentiment-item"><div class="sentiment-count" style="color: #ef5350;">5</div><div class="sentiment-label">Bearish</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">19</div><div class="sentiment-label">Neutral</div></div>
-                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ff9800;">NEUT</div><div class="sentiment-label">Consensus</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ffc107;">19</div><div class="sentiment-label">Neutral</div></div>
+                        <div class="sentiment-item"><div class="sentiment-count" style="color: #ffc107;">NEUT</div><div class="sentiment-label">Consensus</div></div>
                     </div>
                     
                     <div class="live-banner">
@@ -754,7 +1024,7 @@
                                 <div class="social-engagement">
                                     <span>⬆️ 198 pts</span>
                                     <span>💬 11</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -774,7 +1044,7 @@
                                 <div class="social-engagement">
                                     <span>⬆️ 126 pts</span>
                                     <span>💬 32</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -794,7 +1064,7 @@
                                 <div class="social-engagement">
                                     <span>⬆️ 26 pts</span>
                                     <span>💬 20</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -814,7 +1084,7 @@
                                 <div class="social-engagement">
                                     <span>⬆️ 45 pts</span>
                                     <span>💬 15</span>
-                                    <span>Feb 20</span>
+                                    <span>Feb 21</span>
                                 </div>
                             </div>
                         </div>
@@ -858,7 +1128,7 @@
                         </div>
                         <div class="ttc-item">
                             <div class="ttc-timeframe">4H</div>
-                            <div class="ttc-signal" style="color: #ff9800;">NEUT</div>
+                            <div class="ttc-signal" style="color: #ffc107;">NEUT</div>
                         </div>
                     </div>
                     
@@ -888,22 +1158,22 @@
                 <div class="section-inner">
                     <div class="strategy-item">
                         <div class="strategy-label" style="color: #fff;">📍 Current Situation</div>
-                        <div class="strategy-text">Bitcoin consolidating between $66K-$68K. Mixed TTC signals with no clear directional bias. Market waiting for catalyst. Social sentiment split: X bearish, YouTube bullish, Reddit neutral.</div>
+                        <div class="strategy-text">Bitcoin consolidating between $66K-$68K. Mixed TTC signals with no clear directional bias. Market waiting for catalyst. Social sentiment split: X neutral, YouTube bullish, Reddit neutral.</div>
                     </div>
                     
                     <div class="strategy-item">
                         <div class="strategy-label" style="color: #26a69a;">🟢 Bull Case</div>
-                        <div class="strategy-text">Fear & Greed at 9/100 marks historical bottoms. Extreme fear = contrarian buy signal. YouTube analysts see Wyckoff accumulation. ETF inflows resuming. Negative funding unsustainable.</div>
+                        <div class="strategy-text">Confluence score at 43.8 showing neutral territory with potential upside. YouTube analysts see Wyckoff accumulation. ETF inflows resuming. Price holding above key support at $65K.</div>
                     </div>
                     
                     <div class="strategy-item">
                         <div class="strategy-label" style="color: #ef5350;">🔴 Bear Case</div>
-                        <div class="strategy-text">Monthly M-formation reversal pattern. Daily close below 200 EMA. X influencers predominantly bearish. ETF outflows last week. $62K target if $65K support breaks.</div>
+                        <div class="strategy-text">Monthly M-formation reversal pattern. Daily close below 200 EMA. Trend score weak at 25/100. $62K target if $65K support breaks.</div>
                     </div>
                     
                     <div class="strategy-item">
-                        <div class="strategy-label" style="color: #ff9800;">⚡ Strategy</div>
-                        <div class="strategy-text">Range-bound approach. Longs: Wait for $63.4K sweep or $68K reclaim with volume. Shorts: Fade rallies to $68K. Risk: 2% max per trade. Patience until TTC aligns.</div>
+                        <div class="strategy-label" style="color: #ffc107;">⚡ Strategy</div>
+                        <div class="strategy-text">Range-bound approach. Longs: Wait for $63K sweep or $68K reclaim with volume. Shorts: Fade rallies to $70K. Risk: 2% max per trade. Patience until TTC aligns.</div>
                     </div>
                 </div>
             </div>
@@ -913,6 +1183,9 @@
         <div class="footer">
             <p>Data: CoinGecko • Charts: Yahoo Finance • Social: X + YouTube + Reddit</p>
             <p style="margin-top: 10px;">⚠️ Not financial advice. DYOR. Trade responsibly.</p>
+            <p style="margin-top: 10px; font-size: 11px; color: #5a5e6a;">
+                Enhanced Report v2.0 • Generated: 2026-02-21 10:05 UTC
+            </p>
         </div>
     </div>
     
@@ -939,31 +1212,29 @@
                 const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
                 const data = await response.json();
                 const price = data.bitcoin.usd;
-                const change = data.bitcoin.usd_24h_change || 0;
+                const change = data.bitcoin.usd_24h_change;
                 
-                document.getElementById('current-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2});
-                document.getElementById('market-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('current-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('market-price').textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 const changeEl = document.getElementById('price-change');
-                changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '% (24h)';
+                const changeText = (change >= 0 ? '+' : '') + change.toFixed(2) + '% (24h)';
+                changeEl.textContent = changeText;
                 changeEl.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
                 
-                location.reload();
-            } catch (err) {
-                alert('Refresh failed: ' + err.message);
-                btn.disabled = false;
-                btn.textContent = '🔄 Refresh Data';
+                btn.textContent = '✅ Updated!';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Refresh Data';
+                }, 2000);
+            } catch (error) {
+                btn.textContent = '❌ Error';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Refresh Data';
+                }, 2000);
             }
         }
-        
-        // Open first social section by default
-        document.addEventListener('DOMContentLoaded', function() {
-            const firstSocial = document.querySelector('.section-card:nth-of-type(4) .section-content');
-            if (firstSocial) {
-                firstSocial.classList.add('open');
-                firstSocial.previousElementSibling.querySelector('.section-toggle').classList.add('active');
-            }
-        });
     </script>
 </body>
 </html>
