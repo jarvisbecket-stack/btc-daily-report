@@ -481,6 +481,127 @@
             .chart-container { padding: 15px; }
             .stat-card { padding: 15px; }
         }
+        
+        /* Interactive Charts Section */
+        .interactive-charts-section {
+            margin: 40px 0;
+        }
+        
+        .chart-card {
+            background: rgba(30, 34, 45, 0.6);
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        
+        .chart-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+            background: linear-gradient(135deg, rgba(41,98,255,0.1) 0%, rgba(41,98,255,0.05) 100%);
+        }
+        
+        .chart-card-header:hover {
+            background: linear-gradient(135deg, rgba(41,98,255,0.15) 0%, rgba(41,98,255,0.08) 100%);
+        }
+        
+        .chart-card-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chart-card-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 22px;
+            background: linear-gradient(135deg, #2962ff, #1e54e4);
+        }
+        
+        .chart-card-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .chart-card-subtitle {
+            font-size: 12px;
+            color: #868993;
+            margin-top: 2px;
+        }
+        
+        .chart-card-toggle {
+            font-size: 18px;
+            color: #868993;
+            transition: transform 0.3s;
+        }
+        
+        .chart-card-toggle.active {
+            transform: rotate(180deg);
+        }
+        
+        .chart-card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        
+        .chart-card-content.open {
+            max-height: 800px;
+        }
+        
+        .chart-card-inner {
+            padding: 0;
+        }
+        
+        .chart-iframe-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: #0d1117;
+        }
+        
+        .chart-iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0 0 16px 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-iframe-container {
+                height: 400px;
+            }
+            .chart-card-header {
+                padding: 15px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chart-iframe-container {
+                height: 350px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -730,6 +851,116 @@
                     
                     <div style="margin-top: 20px; text-align: center;">
                         <a href="advanced-chart.html" class="btn">📊 Open Interactive Advanced Chart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- INTERACTIVE CHARTS SECTION -->
+        <div class="section-divider"><span>📊 Interactive Charts</span></div>
+        
+        <div class="interactive-charts-section">
+            <!-- Price Action Chart -->
+            <div class="chart-card">
+                <div class="chart-card-header" onclick="toggleChartCard(this)">
+                    <div class="chart-card-left">
+                        <div class="chart-card-icon">📈</div>
+                        <div class="chart-card-info">
+                            <div class="chart-card-title">Price Action</div>
+                            <div class="chart-card-subtitle">Candlesticks • EMA 9/21/50/200 • VWAP • Volume</div>
+                        </div>
+                    </div>
+                    <span class="chart-card-toggle">▼</span>
+                </div>
+                <div class="chart-card-content">
+                    <div class="chart-card-inner">
+                        <div class="chart-iframe-container">
+                            <iframe src="chart-price.html" loading="lazy" title="Price Action Chart"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Trend Indicators Chart -->
+            <div class="chart-card">
+                <div class="chart-card-header" onclick="toggleChartCard(this)">
+                    <div class="chart-card-left">
+                        <div class="chart-card-icon">📊</div>
+                        <div class="chart-card-info">
+                            <div class="chart-card-title">Trend Indicators</div>
+                            <div class="chart-card-subtitle">Ichimoku Cloud • SuperTrend • Bollinger Bands</div>
+                        </div>
+                    </div>
+                    <span class="chart-card-toggle">▼</span>
+                </div>
+                <div class="chart-card-content">
+                    <div class="chart-card-inner">
+                        <div class="chart-iframe-container">
+                            <iframe src="chart-trend.html" loading="lazy" title="Trend Indicators Chart"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Momentum Chart -->
+            <div class="chart-card">
+                <div class="chart-card-header" onclick="toggleChartCard(this)">
+                    <div class="chart-card-left">
+                        <div class="chart-card-icon">⚡</div>
+                        <div class="chart-card-info">
+                            <div class="chart-card-title">Momentum Indicators</div>
+                            <div class="chart-card-subtitle">RSI • StochRSI • MACD • MFI</div>
+                        </div>
+                    </div>
+                    <span class="chart-card-toggle">▼</span>
+                </div>
+                <div class="chart-card-content">
+                    <div class="chart-card-inner">
+                        <div class="chart-iframe-container">
+                            <iframe src="chart-momentum.html" loading="lazy" title="Momentum Chart"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Forecast Chart -->
+            <div class="chart-card">
+                <div class="chart-card-header" onclick="toggleChartCard(this)">
+                    <div class="chart-card-left">
+                        <div class="chart-card-icon">🔮</div>
+                        <div class="chart-card-info">
+                            <div class="chart-card-title">Forecast & Signals</div>
+                            <div class="chart-card-subtitle">Regression Channels • Forecast Bands • Signal Markers</div>
+                        </div>
+                    </div>
+                    <span class="chart-card-toggle">▼</span>
+                </div>
+                <div class="chart-card-content">
+                    <div class="chart-card-inner">
+                        <div class="chart-iframe-container">
+                            <iframe src="chart-forecast.html" loading="lazy" title="Forecast Chart"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- On-Chain Chart -->
+            <div class="chart-card">
+                <div class="chart-card-header" onclick="toggleChartCard(this)">
+                    <div class="chart-card-left">
+                        <div class="chart-card-icon">⛓️</div>
+                        <div class="chart-card-info">
+                            <div class="chart-card-title">On-Chain & Liquidations</div>
+                            <div class="chart-card-subtitle">Funding Rate • Open Interest • Exchange Flow • Liquidation Levels</div>
+                        </div>
+                    </div>
+                    <span class="chart-card-toggle">▼</span>
+                </div>
+                <div class="chart-card-content">
+                    <div class="chart-card-inner">
+                        <div class="chart-iframe-container">
+                            <iframe src="chart-onchain.html" loading="lazy" title="On-Chain Chart"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1193,6 +1424,19 @@
         function toggleSection(header) {
             const content = header.nextElementSibling;
             const toggle = header.querySelector('.section-toggle');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                toggle.classList.remove('active');
+            } else {
+                content.classList.add('open');
+                toggle.classList.add('active');
+            }
+        }
+        
+        function toggleChartCard(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.chart-card-toggle');
             
             if (content.classList.contains('open')) {
                 content.classList.remove('open');
