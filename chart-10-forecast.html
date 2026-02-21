@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart 10: Forecast Bands</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0e1a;
+            color: #e6edf3;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #131722;
+            padding: 8px 12px;
+            border-bottom: 1px solid #1e222d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .title { font-size: 13px; font-weight: 600; }
+        .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .dot { width: 8px; height: 2px; border-radius: 1px; }
+        .chart-container { flex: 1; position: relative; }
+        #chart { height: 100%; }
+        .commentary {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            background: rgba(19, 23, 34, 0.95);
+            border: 1px solid #1e222d;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 11px;
+            z-index: 100;
+        }
+        .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
+        .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
+        .bias-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
+        .bias-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .alert {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(41, 98, 255, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            display: none;
+            z-index: 100;
+        }
+        .alert.active { display: block; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">7-Day Forecast Bands</div>
+        <div class="legend">
+            <div class="legend-item"><span class="dot" style="background: #26a69a;"></span>Bull $72K</div>
+            <div class="legend-item"><span class="dot" style="background: #ffc107;"></span>Base $67K</div>
+            <div class="legend-item"><span class="dot" style="background: #ef5350;"></span>Bear $63K</div>
+        </div>
+    </div>
+    <div class="chart-container">
+        <div id="chart"></div>
+        <div class="alert" id="alert">⚠️ FORECAST BAND BREACH</div>
+        <div class="commentary">
+            <strong>Forecast:</strong> <span id="commentary-text">Loading...</span>
+            <span class="bias" id="bias-indicator">...</span>
+        </div>
+    </div>
+    <script>
+        const chart = LightweightCharts.createChart(document.getElementById('chart'), {
+            layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
+            grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
+            crosshair: { mode: 1, vertLine: { color: '#2a2e39', width: 1 }, horzLine: { color: '#2a2e39', width: 1 } },
+            rightPriceScale: { 
+                borderColor: '#1e222d',
+                scaleMargins: { top: 0.1, bottom: 0.1 },
+                minimumWidth: 50
+            },
+            timeScale: { borderColor: '#1e222d', timeVisible: true, fontSize: 10 },
+            localization: { priceFormatter: p => '$' + Math.round(p).toLocaleString() }
+        });
+
+        const candleSeries = chart.addCandlestickSeries({
+            upColor: '#26a69a', downColor: '#ef5350',
+            borderUpColor: '#26a69a', borderDownColor: '#ef5350',
+            wickUpColor: '#26a69a', wickDownColor: '#ef5350'
+        });
+
+        const bullBand = chart.addLineSeries({ color: '#26a69a', lineWidth: 1.5, lineStyle: 2, title: 'Bull' });
+        const baseBand = chart.addLineSeries({ color: '#ffc107', lineWidth: 1.5, lineStyle: 2, title: 'Base' });
+        const bearBand = chart.addLineSeries({ color: '#ef5350', lineWidth: 1.5, lineStyle: 2, title: 'Bear' });
+
+        const priceData = [{'time': 1755734400, 'open': 114275, 'high': 114802, 'low': 111986, 'close': 112419}, {'time': 1771632000, 'open': 67996, 'high': 67996, 'low': 67806, 'close': 67981}];
+        const bullData = [{'time': 1755734400, 'value': 115000}, {'time': 1771632000, 'value': 72000}];
+        const baseData = [{'time': 1755734400, 'value': 112000}, {'time': 1771632000, 'value': 67000}];
+        const bearData = [{'time': 1755734400, 'value': 110000}, {'time': 1771632000, 'value': 63000}];
+
+        candleSeries.setData(priceData);
+        bullBand.setData(bullData);
+        baseBand.setData(baseData);
+        bearBand.setData(bearData);
+
+        // Commentary logic
+        const currentPrice = 67981;
+        const bull = 72000;
+        const base = 67000;
+        const bear = 63000;
+        
+        let bias = 'neutral';
+        let commentary = '';
+        let alertTriggered = false;
+
+        if (currentPrice > bull) {
+            bias = 'bullish';
+            commentary = 'Price above bull case! Momentum exceeding forecast.';
+            alertTriggered = true;
+        } else if (currentPrice < bear) {
+            bias = 'bearish';
+            commentary = 'Price below bear case. Weakness exceeding forecast.';
+            alertTriggered = true;
+        } else if (currentPrice > base) {
+            bias = 'bullish';
+            commentary = 'Price above base case. Bullish scenario playing out.';
+            const distance = (bull - currentPrice) / bull * 100;
+            if (distance < 3) {
+                alertTriggered = true;
+                commentary += ' Approaching bull target.';
+            }
+        } else if (currentPrice < base) {
+            bias = 'bearish';
+            commentary = 'Price below base case. Bearish scenario playing out.';
+            const distance = (currentPrice - bear) / bear * 100;
+            if (distance < 3) {
+                alertTriggered = true;
+                commentary += ' Approaching bear target.';
+            }
+        } else {
+            bias = 'neutral';
+            commentary = 'Price at base case. Forecast on track.';
+        }
+
+        document.getElementById('commentary-text').textContent = commentary;
+        const biasEl = document.getElementById('bias-indicator');
+        biasEl.textContent = bias.toUpperCase();
+        biasEl.className = 'bias bias-' + bias;
+        
+        if (alertTriggered) {
+            document.getElementById('alert').classList.add('active');
+        }
+
+        chart.timeScale().fitContent();
+    </script>
+</body>
+</html>

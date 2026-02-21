@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart 8: Ichimoku Cloud</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0e1a;
+            color: #e6edf3;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #131722;
+            padding: 8px 12px;
+            border-bottom: 1px solid #1e222d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .title { font-size: 13px; font-weight: 600; }
+        .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .dot { width: 8px; height: 2px; border-radius: 1px; }
+        .chart-container { flex: 1; position: relative; }
+        #chart { height: 100%; }
+        .commentary {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            background: rgba(19, 23, 34, 0.95);
+            border: 1px solid #1e222d;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 11px;
+            z-index: 100;
+        }
+        .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
+        .bias-bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
+        .bias-bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
+        .bias-neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .alert {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(105, 240, 174, 0.9);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            display: none;
+            z-index: 100;
+        }
+        .alert.active { display: block; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">Ichimoku Cloud</div>
+        <div class="legend">
+            <div class="legend-item"><span class="dot" style="background: #69f0ae;"></span>Cloud A</div>
+            <div class="legend-item"><span class="dot" style="background: #ff5252;"></span>Cloud B</div>
+        </div>
+    </div>
+    <div class="chart-container">
+        <div id="chart"></div>
+        <div class="alert" id="alert">⚠️ CLOUD BREAK</div>
+        <div class="commentary">
+            <strong>Ichimoku Signal:</strong> <span id="commentary-text">Loading...</span>
+            <span class="bias" id="bias-indicator">...</span>
+        </div>
+    </div>
+    <script>
+        const chart = LightweightCharts.createChart(document.getElementById('chart'), {
+            layout: { background: { type: 'solid', color: '#0a0e1a' }, textColor: '#868993' },
+            grid: { vertLines: { color: '#1e222d', style: 3 }, horzLines: { color: '#1e222d', style: 3 } },
+            crosshair: { mode: 1, vertLine: { color: '#2a2e39', width: 1 }, horzLine: { color: '#2a2e39', width: 1 } },
+            rightPriceScale: { 
+                borderColor: '#1e222d',
+                scaleMargins: { top: 0.1, bottom: 0.1 },
+                minimumWidth: 50
+            },
+            timeScale: { borderColor: '#1e222d', timeVisible: true, fontSize: 10 },
+            localization: { priceFormatter: p => '$' + Math.round(p).toLocaleString() }
+        });
+
+        const candleSeries = chart.addCandlestickSeries({
+            upColor: '#26a69a', downColor: '#ef5350',
+            borderUpColor: '#26a69a', borderDownColor: '#ef5350',
+            wickUpColor: '#26a69a', wickDownColor: '#ef5350'
+        });
+
+        const senkouA = chart.addLineSeries({ color: '#69f0ae', lineWidth: 1, title: 'Senkou A' });
+        const senkouB = chart.addLineSeries({ color: '#ff5252', lineWidth: 1, title: 'Senkou B' });
+
+        const priceData = [{'time': 1755734400, 'open': 114275, 'high': 114802, 'low': 111986, 'close': 112419}, {'time': 1771632000, 'open': 67996, 'high': 67996, 'low': 67806, 'close': 67981}];
+        const senkouAData = [{'time': 1760140800, 'value': 112907}, {'time': 1771632000, 'value': 91366}];
+        const senkouBData = [{'time': 1762387200, 'value': 115390}, {'time': 1771632000, 'value': 91148}];
+
+        candleSeries.setData(priceData);
+        senkouA.setData(senkouAData);
+        senkouB.setData(senkouBData);
+
+        // Commentary logic
+        const currentPrice = 67981;
+        const cloudTop = Math.max(91366, 91148);
+        const cloudBottom = Math.min(91366, 91148);
+        
+        let bias = 'neutral';
+        let commentary = '';
+        let alertTriggered = false;
+
+        if (currentPrice > cloudTop) {
+            bias = 'bullish';
+            commentary = 'Price above cloud. Strong bullish trend.';
+            const distance = (currentPrice - cloudTop) / cloudTop * 100;
+            if (distance < 2) {
+                alertTriggered = true;
+                commentary += ' Testing cloud support.';
+            }
+        } else if (currentPrice < cloudBottom) {
+            bias = 'bearish';
+            commentary = 'Price below cloud. Strong bearish trend.';
+            const distance = (cloudBottom - currentPrice) / cloudBottom * 100;
+            if (distance < 2) {
+                alertTriggered = true;
+                commentary += ' Testing cloud resistance.';
+            }
+        } else {
+            bias = 'neutral';
+            commentary = 'Price inside cloud. Consolidation zone.';
+            alertTriggered = true;
+        }
+
+        document.getElementById('commentary-text').textContent = commentary;
+        const biasEl = document.getElementById('bias-indicator');
+        biasEl.textContent = bias.toUpperCase();
+        biasEl.className = 'bias bias-' + bias;
+        
+        if (alertTriggered) {
+            document.getElementById('alert').classList.add('active');
+        }
+
+        chart.timeScale().fitContent();
+    </script>
+</body>
+</html>
