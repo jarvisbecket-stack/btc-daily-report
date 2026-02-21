@@ -12,23 +12,26 @@
             background: #0a0e1a;
             color: #e6edf3;
             height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
         .header {
             background: #131722;
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-bottom: 1px solid #1e222d;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         .title { font-size: 13px; font-weight: 600; }
         .price-info { font-size: 11px; color: #868993; }
         .legend { display: flex; gap: 12px; font-size: 10px; color: #868993; }
         .legend-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 2px; border-radius: 1px; }
-        .chart-container { flex: 1; position: relative; }
+        .chart-container { flex: 1; position: relative; min-height: 0; }
         #chart { height: 100%; }
         .commentary {
             position: absolute;
@@ -38,11 +41,11 @@
             background: rgba(19, 23, 34, 0.95);
             border: 1px solid #1e222d;
             border-radius: 6px;
-            padding: 10px 12px;
+            padding: 8px 12px;
             font-size: 11px;
             z-index: 100;
-            line-height: 1.5;
-            max-height: 120px;
+            line-height: 1.4;
+            max-height: 80px;
             overflow-y: auto;
         }
         .bias { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: 6px; }
