@@ -1,581 +1,392 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bitcoin Daily Forecast - Complete Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Forecast - February 23, 2026</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0e1a;
-            color: #fff;
-            line-height: 1.5;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; font-size: 13px; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 15px; }
         
-        header {
-            text-align: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #1e222d;
-            margin-bottom: 15px;
-        }
-        h1 { font-size: 22px; background: linear-gradient(90deg, #f7931a, #ff9800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .subtitle { color: #868993; font-size: 12px; margin-top: 4px; }
+        /* Header */
+        .header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header .date { font-size: 13px; opacity: 0.9; }
         
-        /* Early Warning System */
-        .warning-section {
-            background: linear-gradient(135deg, rgba(239, 83, 80, 0.15), rgba(239, 83, 80, 0.05));
-            border: 1px solid rgba(239, 83, 80, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .warning-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #ef5350;
-            margin-bottom: 12px;
-        }
-        .warning-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 8px;
-        }
-        .warning-item {
-            background: rgba(0,0,0,0.3);
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            border-left: 3px solid #1e222d;
-            transition: all 0.3s;
-        }
-        .warning-item.active {
-            border-left-color: #ef5350;
-            background: rgba(239, 83, 80, 0.15);
-        }
-        .warning-item.bullish {
-            border-left-color: #26a69a;
-            background: rgba(38, 166, 154, 0.15);
-        }
-        .warning-label { color: #868993; font-size: 10px; margin-bottom: 2px; }
-        .warning-status { font-weight: 600; }
-        .warning-status.alert { color: #ef5350; }
-        .warning-status.bull { color: #26a69a; }
-        .warning-status.neutral { color: #868993; }
+        /* Prediction Banner */
+        .prediction { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .pred-title { font-size: 22px; font-weight: 700; color: #f59e0b; }
+        .pred-stats { display: flex; gap: 20px; }
+        .pred-stat { text-align: center; }
+        .pred-stat .val { font-size: 18px; font-weight: 700; color: #1e293b; }
+        .pred-stat .lbl { font-size: 11px; color: #64748b; text-transform: uppercase; }
         
-        /* Section Styling */
-        .section {
-            background: #131722;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #1e222d;
-            padding: 15px;
-        }
-        .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #e6edf3;
-        }
+        /* Two Column Layout */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         
-        /* Price Display */
-        .price-display {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .price-main { font-size: 36px; font-weight: 800; color: #f7931a; }
-        .price-change { font-size: 14px; margin-top: 4px; }
-        .price-up { color: #26a69a; }
-        .price-down { color: #ef5350; }
+        /* Cards */
+        .card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .card-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
         
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 12px 0;
-        }
-        .stat-box {
-            background: rgba(0,0,0,0.2);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .stat-label { font-size: 10px; color: #868993; margin-bottom: 4px; }
-        .stat-value { font-size: 16px; font-weight: 700; }
+        /* Metrics Compact */
+        .metric-row { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #cbd5e1; }
+        .metric-row.bullish { border-left-color: #10b981; background: #f0fdf4; }
+        .metric-row.bearish { border-left-color: #ef4444; background: #fef2f2; }
+        .metric-row.neutral { border-left-color: #f59e0b; background: #fffbeb; }
+        .metric-icon { font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border-radius: 8px; }
+        .metric-info { flex: 1; }
+        .metric-name { font-size: 11px; color: #64748b; text-transform: uppercase; }
+        .metric-val { font-size: 16px; font-weight: 700; color: #1e293b; }
+        .metric-sig { font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; color: white; }
+        .sig-bullish { background: #10b981; }
+        .sig-bearish { background: #ef4444; }
+        .sig-neutral { background: #f59e0b; }
+        .metric-exp { font-size: 11px; color: #64748b; margin-top: 2px; }
         
-        /* Chart Grid */
-        .chart-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 12px;
-        }
-        .chart-card {
-            background: #0a0e1a;
-            border-radius: 10px;
-            border: 1px solid #1e222d;
-            overflow: hidden;
-        }
-        .chart-wrapper {
-            width: 100%;
-            height: 280px;
-            border: none;
-            display: block;
-        }
+        /* Chart Section */
+        .chart-box { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 8px; padding: 15px; }
+        .chart-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .chart-title { font-size: 12px; color: #64748b; font-weight: 600; }
+        .chart-price { font-size: 18px; font-weight: 700; color: #1e293b; }
+        .chart-wrap { background: white; border-radius: 6px; padding: 10px; }
+        
+        /* Timeframes */
+        .tf-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+        .tf-item { text-align: center; padding: 10px 5px; background: #f8fafc; border-radius: 6px; font-size: 11px; border: 2px solid transparent; }
+        .tf-item.bullish { border-color: #10b981; background: #f0fdf4; }
+        .tf-item.bearish { border-color: #ef4444; background: #fef2f2; }
+        .tf-item.neutral { border-color: #f59e0b; background: #fffbeb; }
+        .tf-time { color: #64748b; margin-bottom: 4px; }
+        .tf-bias { font-weight: 700; font-size: 11px; margin-bottom: 2px; }
+        .tf-range { color: #64748b; font-size: 10px; }
+        
+        /* TTC Analysis */
+        .ttc-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+        .ttc-row:last-child { border-bottom: none; }
+        .ttc-tf { width: 70px; font-weight: 600; color: #4f46e5; font-size: 12px; }
+        .ttc-pattern { flex: 1; font-size: 12px; }
+        .ttc-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+        .status-bullish { background: #d1fae5; color: #065f46; }
+        .status-bearish { background: #fee2e2; color: #991b1b; }
+        .status-neutral { background: #fef3c7; color: #92400e; }
+        
+        /* Levels */
+        .levels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .level { text-align: center; padding: 15px 10px; border-radius: 8px; }
+        .level.support { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); }
+        .level.battle { background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%); }
+        .level.resistance { background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%); }
+        .level-lbl { font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 5px; }
+        .level-price { font-size: 20px; font-weight: 700; color: #1e293b; }
+        .level-desc { font-size: 10px; color: rgba(0,0,0,0.5); margin-top: 3px; }
+        
+        /* YouTube */
+        .yt-stats { display: flex; gap: 15px; margin-bottom: 10px; }
+        .yt-stat { background: #f8fafc; padding: 8px 12px; border-radius: 6px; text-align: center; }
+        .yt-stat-val { font-size: 16px; font-weight: 700; color: #1e293b; }
+        .yt-stat-lbl { font-size: 10px; color: #64748b; }
+        .yt-videos { font-size: 11px; }
+        .yt-video { padding: 8px; background: #f8fafc; border-radius: 6px; margin-bottom: 6px; }
+        .yt-video-title { font-weight: 600; color: #1e293b; margin-bottom: 2px; }
+        .yt-video-meta { color: #64748b; font-size: 10px; }
+        
+        /* Economic Calendar */
+        .econ-item { display: flex; align-items: center; gap: 10px; padding: 8px; background: #f8fafc; border-radius: 6px; margin-bottom: 6px; }
+        .econ-impact { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+        .impact-high { background: #fecaca; color: #991b1b; }
+        .impact-med { background: #fde68a; color: #92400e; }
+        .econ-title { flex: 1; font-size: 12px; }
+        .econ-time { font-size: 11px; color: #64748b; }
+        
+        /* IBIT Flows */
+        .ibit-list { font-size: 11px; }
+        .ibit-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; }
+        .ibit-item:last-child { border-bottom: none; }
+        .ibit-date { color: #64748b; }
+        .ibit-flow { font-weight: 600; }
+        .flow-pos { color: #10b981; }
+        .flow-neg { color: #ef4444; }
+        
+        /* Footer */
+        .footer { text-align: center; padding: 15px; color: #64748b; font-size: 11px; margin-top: 15px; }
+        
         @media (max-width: 768px) {
-            .chart-wrapper { height: 240px; }
-            .chart-grid { grid-template-columns: 1fr; }
-        }
-        
-        /* Confluence Score */
-        .confluence-box {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .confluence-score { font-size: 42px; font-weight: 800; }
-        .confluence-score.bullish { color: #26a69a; }
-        .confluence-score.bearish { color: #ef5350; }
-        .confluence-score.neutral { color: #ffc107; }
-        .confluence-signal { 
-            display: inline-block; 
-            padding: 6px 16px; 
-            border-radius: 16px; 
-            font-weight: 700; 
-            font-size: 12px;
-            margin-top: 8px;
-        }
-        .confluence-signal.bullish { background: rgba(38, 166, 154, 0.2); color: #26a69a; }
-        .confluence-signal.bearish { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
-        .confluence-signal.neutral { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-        
-        /* Forecast Grid */
-        .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 12px 0;
-        }
-        .forecast-box {
-            background: rgba(0,0,0,0.2);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .forecast-label { font-size: 10px; color: #868993; margin-bottom: 4px; }
-        .forecast-price { font-size: 16px; font-weight: 700; }
-        .forecast-bull { color: #26a69a; }
-        .forecast-base { color: #ffc107; }
-        .forecast-bear { color: #ef5350; }
-        
-        @media (max-width: 600px) {
-            .forecast-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        
-        /* Commentary */
-        .commentary {
-            background: rgba(41, 98, 255, 0.1);
-            border-left: 3px solid #2962ff;
-            padding: 12px 15px;
-            margin: 12px 0;
-            border-radius: 0 8px 8px 0;
-            font-size: 12px;
-        }
-        .commentary-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #2962ff;
-            margin-bottom: 6px;
-        }
-        .commentary-text { color: #c9d1d9; line-height: 1.6; }
-        .bullish { color: #26a69a; font-weight: 600; }
-        .bearish { color: #ef5350; font-weight: 600; }
-        .neutral { color: #ffc107; font-weight: 600; }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #868993;
-            font-size: 11px;
-            border-top: 1px solid #1e222d;
-            margin-top: 20px;
+            .two-col { grid-template-columns: 1fr; }
+            .tf-grid { grid-template-columns: repeat(3, 1fr); }
+            .levels-grid { grid-template-columns: 1fr; }
+            .pred-stats { width: 100%; justify-content: space-around; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
-        <header>
-            <h1>📊 Bitcoin Daily Forecast</h1>
-            <div class="subtitle">February 21, 2026 • Technical Analysis</div>
-        </header>
+        <div class="header">
+            <h1>📈 Bitcoin Daily Forecast</h1>
+            <div class="date">February 23, 2026 at 04:57 UTC</div>
+        </div>
         
-        <!-- EARLY WARNING SYSTEM -->
-        <div class="warning-section">
-            <div class="warning-header">
-                🚨 Early Warning System
-            </div>
-            <div class="warning-grid" id="warning-grid">
-                <div class="warning-item" id="warn-ema">
-                    <div class="warning-label">EMA 9/21 Cross</div>
-                    <div class="warning-status neutral">Monitoring...</div>
-                </div>
-                <div class="warning-item" id="warn-rsi">
-                    <div class="warning-label">RSI 30/70</div>
-                    <div class="warning-status neutral">Neutral</div>
-                </div>
-                <div class="warning-item" id="warn-macd">
-                    <div class="warning-label">MACD Cross</div>
-                    <div class="warning-status bull">Bullish Cross</div>
-                </div>
-                <div class="warning-item" id="warn-bb">
-                    <div class="warning-label">Bollinger Bands</div>
-                    <div class="warning-status neutral">Within Bands</div>
-                </div>
-                <div class="warning-item" id="warn-supertrend">
-                    <div class="warning-label">SuperTrend</div>
-                    <div class="warning-status alert">Bearish</div>
-                </div>
-                <div class="warning-item" id="warn-forecast">
-                    <div class="warning-label">Forecast Bands</div>
-                    <div class="warning-status neutral">On Track</div>
-                </div>
+        <!-- Prediction -->
+        <div class="prediction">
+            <div class="pred-title">NEUTRAL</div>
+            <div class="pred-stats">
+                <div class="pred-stat"><div class="val">0/7</div><div class="lbl">Score</div></div>
+                <div class="pred-stat"><div class="val">Low</div><div class="lbl">Confidence</div></div>
+                <div class="pred-stat"><div class="val">$66,900</div><div class="lbl">Price</div></div>
+                <div class="pred-stat"><div class="val" style="color:#10b981">+1.14%</div><div class="lbl">24h</div></div>
             </div>
         </div>
         
-        <!-- SECTION 1: Price Overview -->
-        <div class="section">
-            <div class="section-title">💰 Current Price</div>
-            
-            <div class="price-display">
-                <div class="price-main">$68,000</div>
-                <div class="price-change price-up">+1.2% (+$800)</div>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">24h High</div>
-                    <div class="stat-value">$68,318</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">24h Low</div>
-                    <div class="stat-value">$66,280</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">24h Volume</div>
-                    <div class="stat-value">35.4K BTC</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Market Cap</div>
-                    <div class="stat-value">$1.34T</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- SECTION 2: Confluence Score -->
-        <div class="section">
-            <div class="section-title">🧠 Confluence Score</div>
-            
-            <div class="confluence-box">
-                <div class="confluence-score neutral" id="confluence-score">43/100</div>
-                <div style="font-size: 11px; color: #868993; margin-top: 4px;">Based on 15+ Technical Indicators</div>
-                <div class="confluence-signal neutral" id="confluence-signal">NEUTRAL</div>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">Trend Score</div>
-                    <div class="stat-value bearish">25/100</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Momentum Score</div>
-                    <div class="stat-value neutral">50/100</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Volume Score</div>
-                    <div class="stat-value neutral">50/100</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Sentiment Score</div>
-                    <div class="stat-value neutral">50/100</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- SECTION 3: 7-Day Forecast -->
-        <div class="section">
-            <div class="section-title">🔮 7-Day Price Forecast</div>
-            
-            <div class="forecast-grid">
-                <div class="forecast-box">
-                    <div class="forecast-label">🐂 Bull Case (25%)</div>
-                    <div class="forecast-price forecast-bull">$72,000</div>
-                    <div style="font-size: 10px; color: #868993; margin-top: 4px;">Break $70.5K</div>
-                </div>
-                <div class="forecast-box">
-                    <div class="forecast-label">📊 Base Case (50%)</div>
-                    <div class="forecast-price forecast-base">$67,000</div>
-                    <div style="font-size: 10px; color: #868993; margin-top: 4px;">Consolidation</div>
-                </div>
-                <div class="forecast-box">
-                    <div class="forecast-label">🐻 Bear Case (25%)</div>
-                    <div class="forecast-price forecast-bear">$63,000</div>
-                    <div style="font-size: 10px; color: #868993; margin-top: 4px;">Break $65K</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- SECTION 4: Interactive Charts -->
-        <div class="section">
-            <div class="section-title">📈 Technical Charts</div>
-            
-            <div class="chart-grid">
-                <!-- Chart 1: EMA 9/21 -->
-                <div class="chart-card">
-                    <iframe src="chart-01-ema-short.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="EMA 9/21"></iframe>
-                </div>
-                
-                <!-- Chart 2: EMA 50/200 -->
-                <div class="chart-card">
-                    <iframe src="chart-02-ema-long.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="EMA 50/200"></iframe>
-                </div>
-                
-                <!-- Chart 3: VWAP -->
-                <div class="chart-card">
-                    <iframe src="chart-03-vwap.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="VWAP"></iframe>
-                </div>
-                
-                <!-- Chart 4: Volume -->
-                <div class="chart-card">
-                    <iframe src="chart-04-volume.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="Volume"></iframe>
-                </div>
-                
-                <!-- Chart 5: RSI -->
-                <div class="chart-card">
-                    <iframe src="chart-05-rsi.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="RSI"></iframe>
-                </div>
-                
-                <!-- Chart 6: MACD -->
-                <div class="chart-card">
-                    <iframe src="chart-06-macd.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="MACD"></iframe>
-                </div>
-                
-                <!-- Chart 7: Bollinger Bands -->
-                <div class="chart-card">
-                    <iframe src="chart-07-bollinger.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="Bollinger Bands"></iframe>
-                </div>
-                
-                <!-- Chart 8: Ichimoku -->
-                <div class="chart-card">
-                    <iframe src="chart-08-ichimoku.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="Ichimoku Cloud"></iframe>
-                </div>
-                
-                <!-- Chart 9: SuperTrend -->
-                <div class="chart-card">
-                    <iframe src="chart-09-supertrend.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="SuperTrend"></iframe>
-                </div>
-                
-                <!-- Chart 10: Forecast -->
-                <div class="chart-card">
-                    <iframe src="chart-10-forecast.html" class="chart-wrapper" frameborder="0" scrolling="no"
-                            title="Forecast Bands"></iframe>
-                </div>
-            </div>
-        </div>
-        
-        <!-- SECTION 5: Trading Strategy -->
-        <div class="section">
-            <div class="section-title">💡 Trading Strategy</div>
-            
-            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px;">
-                <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #f7931a;">📊 Signal: NEUTRAL (43/100)</div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    <div>
-                        <div style="font-size: 11px; color: #868993; margin-bottom: 6px;">🟢 Bullish Triggers:</div>
-                        <ul style="font-size: 11px; color: #c9d1d9; margin-left: 16px; line-height: 1.8;">
-                            <li>Break above $70,500</li>
-                            <li>MACD bullish crossover</li>
-                            <li>RSI above 60</li>
-                            <li>SuperTrend flip green</li>
-                        </ul>
+        <!-- Two Column: Chart + TTC -->
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">📊 7-Day Price Action</div>
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <span class="chart-title">BTC/USD</span>
+                        <span class="chart-price">$66,900</span>
                     </div>
-                    
-                    <div>
-                        <div style="font-size: 11px; color: #868993; margin-bottom: 6px;">🔴 Bearish Triggers:</div>
-                        <ul style="font-size: 11px; color: #c9d1d9; margin-left: 16px; line-height: 1.8;">
-                            <li>Break below $65,000</li>
-                            <li>RSI below 30</li>
-                            <li>Volume spike on drop</li>
-                            <li>BB lower band break</li>
-                        </ul>
+                    <div class="chart-wrap"><svg width="280" height="80">
+            <defs><linearGradient id="g" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.3"/>
+                <stop offset="100%" style="stop-color:#667eea;stop-opacity:0"/>
+            </linearGradient></defs>
+            <path d="M0,80 LM0.0,11.4 L3.0,9.8 L6.0,8.2 L9.0,7.6 L12.0,6.6 L15.1,5.6 L18.1,5.3 L21.1,5.0 L24.1,5.6 L27.1,6.6 L30.1,7.6 L33.1,8.9 L36.1,9.8 L39.1,10.8 L42.2,11.4 L45.2,12.1 L48.2,13.0 L51.2,14.0 L54.2,14.6 L57.2,15.3 L60.2,16.2 L63.2,17.2 L66.2,17.8 L69.2,18.5 L72.3,19.4 L75.3,20.4 L78.3,21.1 L81.3,21.7 L84.3,22.7 L87.3,23.6 L90.3,24.3 L93.3,24.9 L96.3,25.9 L99.4,26.8 L102.4,27.5 L105.4,28.1 L108.4,29.1 L111.4,30.0 L114.4,30.7 L117.4,31.3 L120.4,32.3 L123.4,33.3 L126.5,33.9 L129.5,34.5 L132.5,35.5 L135.5,36.5 L138.5,37.1 L141.5,37.8 L144.5,38.7 L147.5,39.7 L150.5,40.3 L153.5,41.0 L156.6,41.9 L159.6,42.9 L162.6,43.5 L165.6,44.2 L168.6,45.1 L171.6,46.1 L174.6,46.7 L177.6,47.4 L180.6,48.3 L183.7,49.3 L186.7,50.0 L189.7,50.6 L192.7,51.6 L195.7,52.5 L198.7,53.2 L201.7,53.8 L204.7,54.8 L207.7,55.7 L210.8,56.4 L213.8,57.0 L216.8,58.0 L219.8,58.9 L222.8,59.6 L225.8,60.2 L228.8,61.2 L231.8,62.2 L234.8,62.8 L237.8,63.4 L240.9,64.4 L243.9,65.4 L246.9,66.0 L249.9,66.7 L252.9,67.6 L255.9,68.6 L258.9,69.2 L261.9,69.9 L264.9,70.8 L268.0,71.8 L271.0,72.4 L274.0,73.1 L277.0,74.0 L280.0,75.0 L280,80 Z" fill="url(#g)"/>
+            <path d="M0.0,11.4 L3.0,9.8 L6.0,8.2 L9.0,7.6 L12.0,6.6 L15.1,5.6 L18.1,5.3 L21.1,5.0 L24.1,5.6 L27.1,6.6 L30.1,7.6 L33.1,8.9 L36.1,9.8 L39.1,10.8 L42.2,11.4 L45.2,12.1 L48.2,13.0 L51.2,14.0 L54.2,14.6 L57.2,15.3 L60.2,16.2 L63.2,17.2 L66.2,17.8 L69.2,18.5 L72.3,19.4 L75.3,20.4 L78.3,21.1 L81.3,21.7 L84.3,22.7 L87.3,23.6 L90.3,24.3 L93.3,24.9 L96.3,25.9 L99.4,26.8 L102.4,27.5 L105.4,28.1 L108.4,29.1 L111.4,30.0 L114.4,30.7 L117.4,31.3 L120.4,32.3 L123.4,33.3 L126.5,33.9 L129.5,34.5 L132.5,35.5 L135.5,36.5 L138.5,37.1 L141.5,37.8 L144.5,38.7 L147.5,39.7 L150.5,40.3 L153.5,41.0 L156.6,41.9 L159.6,42.9 L162.6,43.5 L165.6,44.2 L168.6,45.1 L171.6,46.1 L174.6,46.7 L177.6,47.4 L180.6,48.3 L183.7,49.3 L186.7,50.0 L189.7,50.6 L192.7,51.6 L195.7,52.5 L198.7,53.2 L201.7,53.8 L204.7,54.8 L207.7,55.7 L210.8,56.4 L213.8,57.0 L216.8,58.0 L219.8,58.9 L222.8,59.6 L225.8,60.2 L228.8,61.2 L231.8,62.2 L234.8,62.8 L237.8,63.4 L240.9,64.4 L243.9,65.4 L246.9,66.0 L249.9,66.7 L252.9,67.6 L255.9,68.6 L258.9,69.2 L261.9,69.9 L264.9,70.8 L268.0,71.8 L271.0,72.4 L274.0,73.1 L277.0,74.0 L280.0,75.0" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="280.0" cy="75.0" r="3" fill="#667eea"/>
+        </svg></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📐 TTC Method Analysis</div>
+                <div class="ttc-row">
+                    <div class="ttc-tf">Monthly</div>
+                    <div class="ttc-pattern">M-Formation (Bearish)</div>
+                    <span class="ttc-status status-bearish">BEARISH</span>
+                </div>
+                <div class="ttc-row">
+                    <div class="ttc-tf">Weekly</div>
+                    <div class="ttc-pattern">Descending M</div>
+                    <span class="ttc-status status-bullish">BULLISH</span>
+                </div>
+                <div class="ttc-row">
+                    <div class="ttc-tf">Daily</div>
+                    <div class="ttc-pattern">Downtrend</div>
+                    <span class="ttc-status status-bearish">BEARISH</span>
+                </div>
+                <div class="ttc-row">
+                    <div class="ttc-tf">4-Hour</div>
+                    <div class="ttc-pattern">Range Bound</div>
+                    <span class="ttc-status status-neutral">NEUTRAL</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Two Column: Metrics + YouTube -->
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">📈 Market Metrics & Signals</div>
+                
+                <div class="metric-row bullish">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-info">
+                        <div class="metric-name">Fear & Greed Index</div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="metric-val">9/100</span>
+                            <span class="metric-sig sig-bullish">BUY</span>
+                        </div>
+                        <div class="metric-exp">Extreme Fear = Contrarian Buy Signal. FTX-era pessimism.</div>
                     </div>
                 </div>
                 
-                <div class="commentary">
-                    <strong>Bottom Line:</strong> Bitcoin is consolidating after a sharp decline. The market is at equilibrium with no clear directional edge. <span class="neutral">Patience is the trade here</span> — wait for a breakout above $70.5K or breakdown below $65K before taking a directional position.
+                <div class="metric-row bearish">
+                    <div class="metric-icon">📉</div>
+                    <div class="metric-info">
+                        <div class="metric-name">IBIT ETF Flow (7D)</div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="metric-val">-$62.7M</span>
+                            <span class="metric-sig sig-bearish">SELLING</span>
+                        </div>
+                        <div class="metric-exp">6 of 7 days negative. Heavy institutional outflows.</div>
+                    </div>
+                </div>
+                
+                <div class="metric-row bullish">
+                    <div class="metric-icon">⚡</div>
+                    <div class="metric-info">
+                        <div class="metric-name">Funding Rate</div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="metric-val">-0.003%</span>
+                            <span class="metric-sig sig-bullish">BULLISH</span>
+                        </div>
+                        <div class="metric-exp">Shorts paying longs. Crowded bearish positioning.</div>
+                    </div>
+                </div>
+                
+                <div class="metric-row neutral">
+                    <div class="metric-icon">💧</div>
+                    <div class="metric-info">
+                        <div class="metric-name">Order Book Depth</div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="metric-val">3,230 BTC</span>
+                            <span class="metric-sig sig-neutral">BALANCED</span>
+                        </div>
+                        <div class="metric-exp">Bid/Ask 0.85. Excellent liquidity, low volatility risk.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📺 YouTube Learnings (48H)</div>
+                
+                <div class="yt-stats">
+                    <div class="yt-stat"><div class="yt-stat-val">10</div><div class="yt-stat-lbl">Videos</div></div>
+                    <div class="yt-stat"><div class="yt-stat-val" style="color:#f59e0b">NEUTRAL</div><div class="yt-stat-lbl">Sentiment</div></div>
+                    <div class="yt-stat"><div class="yt-stat-val">0/10</div><div class="yt-stat-lbl">Score</div></div>
+                </div>
+                
+                <div class="yt-videos">
+                    <div class="yt-video">
+                        <div class="yt-video-title">Bitcoin Outlook | Bullish or Bearish Setup?</div>
+                        <div class="yt-video-meta">Market DNA • 📄 Transcript analyzed</div>
+                    </div>
+                    <div class="yt-video">
+                        <div class="yt-video-title">Breakout Entry = Guaranteed Loss? Liquidity Secret</div>
+                        <div class="yt-video-meta">The Crypto Box • 📄 Transcript analyzed</div>
+                    </div>
+                    <div class="yt-video">
+                        <div class="yt-video-title">Michael Saylor: Amazon to accept Bitcoin?</div>
+                        <div class="yt-video-meta">Donnie Sanabria • 📝 Description only</div>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <footer>
-            <p>Bitcoin Daily Forecast • Generated by Advanced Charting System v3.0</p>
-            <p style="margin-top: 8px;">⚠️ Not financial advice. For educational purposes only.</p>
-        </footer>
+        <!-- Two Column: Timeframes + Economic -->
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">⏰ 2-Hour Predictions</div>
+                <div class="tf-grid">
+                    <div class="tf-item bearish">
+                        <div class="tf-time">Now-2H</div>
+                        <div class="tf-bias" style="color:#ef4444">Slightly Bearish</div>
+                        <div class="tf-range">$66.5K-$66.9K</div>
+                    </div>
+                    <div class="tf-item neutral">
+                        <div class="tf-time">2H-4H</div>
+                        <div class="tf-bias" style="color:#f59e0b">Neutral</div>
+                        <div class="tf-range">$66.4K-$67.1K</div>
+                    </div>
+                    <div class="tf-item neutral">
+                        <div class="tf-time">4H-6H</div>
+                        <div class="tf-bias" style="color:#f59e0b">Neutral</div>
+                        <div class="tf-range">$66.3K-$67.2K</div>
+                    </div>
+                    <div class="tf-item bullish">
+                        <div class="tf-time">6H-8H</div>
+                        <div class="tf-bias" style="color:#10b981">Slightly Bullish</div>
+                        <div class="tf-range">$66.8K-$67.5K</div>
+                    </div>
+                    <div class="tf-item bullish">
+                        <div class="tf-time">8H-10H</div>
+                        <div class="tf-bias" style="color:#10b981">Bullish</div>
+                        <div class="tf-range">$67.2K-$68.0K</div>
+                    </div>
+                    <div class="tf-item neutral">
+                        <div class="tf-time">10H-12H</div>
+                        <div class="tf-bias" style="color:#f59e0b">Neutral</div>
+                        <div class="tf-range">$67.0K-$68.2K</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📅 Economic Calendar (Next 48H)</div>
+                
+                <div class="econ-item">
+                    <span class="econ-impact impact-high">HIGH</span>
+                    <span class="econ-title">Advance GDP q/q</span>
+                    <span class="econ-time">Fri 08:30 AM</span>
+                </div>
+                <div class="econ-item">
+                    <span class="econ-impact impact-high">HIGH</span>
+                    <span class="econ-title">Core PCE Price Index m/m</span>
+                    <span class="econ-time">Fri 08:30 AM</span>
+                </div>
+                <div class="econ-item">
+                    <span class="econ-impact impact-med">MED</span>
+                    <span class="econ-title">Advance GDP Price Index q/q</span>
+                    <span class="econ-time">Fri 08:30 AM</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Two Column: Key Levels + IBIT Flows -->
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">🎯 Key Levels</div>
+                <div class="levels-grid">
+                    <div class="level support">
+                        <div class="level-lbl">Critical Support</div>
+                        <div class="level-price">$63,472</div>
+                        <div class="level-desc">20x Long Liquidation</div>
+                    </div>
+                    <div class="level battle">
+                        <div class="level-lbl">Key Battleground</div>
+                        <div class="level-price">$68,000</div>
+                        <div class="level-desc">Reclaim = Bullish</div>
+                    </div>
+                    <div class="level resistance">
+                        <div class="level-lbl">Target Resistance</div>
+                        <div class="level-price">$70,153</div>
+                        <div class="level-desc">20x Short Liquidation</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">💰 Recent IBIT Flows (7 Days)</div>
+                <div class="ibit-list">
+                    <div class="ibit-item">
+                        <span class="ibit-date">Feb 18</span>
+                        <span class="ibit-flow flow-neg">-$84.2M</span>
+                    </div>
+                    <div class="ibit-item">
+                        <span class="ibit-date">Feb 17</span>
+                        <span class="ibit-flow flow-neg">-$119.7M</span>
+                    </div>
+                    <div class="ibit-item">
+                        <span class="ibit-date">Feb 13</span>
+                        <span class="ibit-flow flow-neg">-$9.4M</span>
+                    </div>
+                    <div class="ibit-item">
+                        <span class="ibit-date">Feb 12</span>
+                        <span class="ibit-flow flow-neg">-$157.6M</span>
+                    </div>
+                    <div class="ibit-item">
+                        <span class="ibit-date">Feb 11</span>
+                        <span class="ibit-flow flow-neg">-$73.4M</span>
+                    </div>
+                    <div class="ibit-item">
+                        <span class="ibit-date">Feb 10</span>
+                        <span class="ibit-flow flow-pos">+$26.5M</span>
+                    </div>
+                    <div class="ibit-item">
+                        <span class="ibit-date">Feb 09</span>
+                        <span class="ibit-flow flow-neg">-$20.9M</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Footer -->
+        <div class="footer">
+            <strong>Disclaimer:</strong> For educational purposes only. Not financial advice. <br>
+            Data: Farside Investors, CoinGecko, Alternative.me, CoinAPI, Binance, YouTube
+        </div>
     </div>
-    
-    <script>
-        // Early Warning System Logic
-        function updateWarnings() {
-            const data = {
-                price: 68000,
-                ema9: 68145,
-                ema21: 71571,
-                rsi: 41.1,
-                macd: -4265,
-                macdSignal: -4774,
-                bbUpper: 72000,
-                bbLower: 64000,
-                supertrend: 75000,
-                bullTarget: 72000,
-                bearTarget: 63000
-            };
-            
-            // EMA Warning
-            const emaDiff = Math.abs(data.ema9 - data.ema21) / data.ema21 * 100;
-            const emaEl = document.getElementById('warn-ema');
-            const emaStatus = emaEl.querySelector('.warning-status');
-            if (emaDiff < 2) {
-                emaEl.classList.add('active');
-                emaStatus.textContent = 'Cross Imminent';
-                emaStatus.className = 'warning-status alert';
-            } else if (data.price < data.ema9) {
-                emaStatus.textContent = 'Bearish';
-                emaStatus.className = 'warning-status alert';
-            } else {
-                emaStatus.textContent = 'Bullish';
-                emaStatus.className = 'warning-status bull';
-            }
-            
-            // RSI Warning
-            const rsiEl = document.getElementById('warn-rsi');
-            const rsiStatus = rsiEl.querySelector('.warning-status');
-            if (data.rsi > 70) {
-                rsiEl.classList.add('active');
-                rsiStatus.textContent = 'Overbought!';
-                rsiStatus.className = 'warning-status alert';
-            } else if (data.rsi < 30) {
-                rsiEl.classList.add('bullish');
-                rsiStatus.textContent = 'Oversold!';
-                rsiStatus.className = 'warning-status bull';
-            } else if (data.rsi > 60) {
-                rsiStatus.textContent = 'Elevated';
-                rsiStatus.className = 'warning-status neutral';
-            } else if (data.rsi < 40) {
-                rsiStatus.textContent = 'Weak';
-                rsiStatus.className = 'warning-status neutral';
-            } else {
-                rsiStatus.textContent = 'Neutral';
-            }
-            
-            // MACD Warning
-            const macdEl = document.getElementById('warn-macd');
-            const macdStatus = macdEl.querySelector('.warning-status');
-            const macdDiff = data.macd - data.macdSignal;
-            if (Math.abs(macdDiff) < 200) {
-                macdEl.classList.add('active');
-                macdStatus.textContent = 'Cross Imminent';
-                macdStatus.className = 'warning-status alert';
-            } else if (macdDiff > 0) {
-                macdStatus.textContent = 'Bullish';
-                macdStatus.className = 'warning-status bull';
-            } else {
-                macdStatus.textContent = 'Bearish';
-                macdStatus.className = 'warning-status alert';
-            }
-            
-            // Bollinger Warning
-            const bbEl = document.getElementById('warn-bb');
-            const bbStatus = bbEl.querySelector('.warning-status');
-            if (data.price > data.bbUpper) {
-                bbEl.classList.add('active');
-                bbStatus.textContent = 'Above Upper!';
-                bbStatus.className = 'warning-status alert';
-            } else if (data.price < data.bbLower) {
-                bbEl.classList.add('bullish');
-                bbStatus.textContent = 'Below Lower!';
-                bbStatus.className = 'warning-status bull';
-            } else {
-                const bbRange = data.bbUpper - data.bbLower;
-                const bbPos = (data.price - data.bbLower) / bbRange;
-                if (bbPos > 0.8) {
-                    bbStatus.textContent = 'Near Upper';
-                } else if (bbPos < 0.2) {
-                    bbStatus.textContent = 'Near Lower';
-                } else {
-                    bbStatus.textContent = 'Within Bands';
-                }
-            }
-            
-            // SuperTrend Warning
-            const stEl = document.getElementById('warn-supertrend');
-            const stStatus = stEl.querySelector('.warning-status');
-            const stDistance = Math.abs(data.price - data.supertrend) / data.supertrend * 100;
-            if (stDistance < 2) {
-                stEl.classList.add('active');
-                stStatus.textContent = 'Flip Zone!';
-            } else if (data.price > data.supertrend) {
-                stEl.classList.remove('active');
-                stStatus.textContent = 'Bullish';
-                stStatus.className = 'warning-status bull';
-            } else {
-                stStatus.textContent = 'Bearish';
-                stStatus.className = 'warning-status alert';
-            }
-            
-            // Forecast Warning
-            const fcEl = document.getElementById('warn-forecast');
-            const fcStatus = fcEl.querySelector('.warning-status');
-            if (data.price > data.bullTarget) {
-                fcEl.classList.add('active');
-                fcStatus.textContent = 'Above Bull!';
-                fcStatus.className = 'warning-status bull';
-            } else if (data.price < data.bearTarget) {
-                fcEl.classList.add('active');
-                fcStatus.textContent = 'Below Bear!';
-                fcStatus.className = 'warning-status alert';
-            } else {
-                fcStatus.textContent = 'On Track';
-            }
-        }
-        
-        // Update on load
-        updateWarnings();
-        
-        // Refresh every 30 seconds
-        setInterval(updateWarnings, 30000);
-    </script>
 </body>
 </html>
