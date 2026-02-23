@@ -741,6 +741,10 @@
         }
         
         initTechCharts();
+        
+        // Debug: Log chart initialization
+        console.log('Charts initialized');
+        
         setInterval(updatePrice, 60000);
         
         // Auto-reload page every 5 minutes to refresh all data
