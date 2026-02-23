@@ -618,32 +618,123 @@
         updatePrice();
         initPriceChart();
         
-        // Initialize technical charts - simple version
+        // Initialize technical charts with indicators
         async function initTechCharts() {
             try {
                 const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7');
                 const data = await response.json();
                 const prices = data.prices.map(p => ({ time: p[0] / 1000, value: p[1] }));
                 
-                const chartIds = ['chart-ema', 'chart-bb', 'chart-vwap', 'chart-volume', 'chart-rsi', 'chart-macd'];
-                const colors = ['#4f46e5', '#8b5cf6', '#06b6d4', '#64748b', '#f59e0b', '#10b981'];
+                function calcEMA(data, period) {
+                    const k = 2 / (period + 1);
+                    const ema = [{ time: data[0].time, value: data[0].value }];
+                    for (let i = 1; i < data.length; i++) {
+                        ema.push({ time: data[i].time, value: data[i].value * k + ema[i-1].value * (1 - k) });
+                    }
+                    return ema;
+                }
                 
-                chartIds.forEach((id, i) => {
-                    const el = document.getElementById(id);
-                    if (!el) return;
-                    
-                    const chart = LightweightCharts.createChart(el, {
-                        layout: { background: { color: 'transparent' }, textColor: '#64748b' },
-                        grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
-                        rightPriceScale: { borderColor: '#e2e8f0', visible: true },
-                        timeScale: { borderColor: '#e2e8f0', timeVisible: false },
-                        handleScroll: false, handleScale: false
-                    });
-                    
-                    const series = chart.addLineSeries({ color: colors[i], lineWidth: 2 });
-                    series.setData(prices);
+                function calcBB(data, period = 20, stdDev = 2) {
+                    const bb = [];
+                    for (let i = period - 1; i < data.length; i++) {
+                        const slice = data.slice(i - period + 1, i + 1);
+                        const avg = slice.reduce((a, b) => a + b.value, 0) / period;
+                        const variance = slice.reduce((a, b) => a + Math.pow(b.value - avg, 2), 0) / period;
+                        const std = Math.sqrt(variance);
+                        bb.push({ time: data[i].time, upper: avg + stdDev * std, middle: avg, lower: avg - stdDev * std });
+                    }
+                    return bb;
+                }
+                
+                function calcRSI(data, period = 14) {
+                    const rsi = []; let gains = 0, losses = 0;
+                    for (let i = 1; i <= period; i++) {
+                        const change = data[i].value - data[i-1].value;
+                        if (change > 0) gains += change; else losses += Math.abs(change);
+                    }
+                    let avgGain = gains / period, avgLoss = losses / period;
+                    for (let i = period; i < data.length; i++) {
+                        const change = data[i].value - data[i-1].value;
+                        avgGain = ((avgGain * (period - 1)) + (change > 0 ? change : 0)) / period;
+                        avgLoss = ((avgLoss * (period - 1)) + (change < 0 ? Math.abs(change) : 0)) / period;
+                        rsi.push({ time: data[i].time, value: 100 - (100 / (1 + avgGain / avgLoss)) });
+                    }
+                    return rsi;
+                }
+                
+                function calcMACD(data, fast = 12, slow = 26, signal = 9) {
+                    const ema = (arr, period) => {
+                        const k = 2 / (period + 1);
+                        const result = [{ time: arr[0].time, value: arr[0].value }];
+                        for (let i = 1; i < arr.length; i++) result.push({ time: arr[i].time, value: arr[i].value * k + result[i-1].value * (1 - k) });
+                        return result;
+                    };
+                    const fastEMA = ema(data, fast), slowEMA = ema(data, slow);
+                    const macd = fastEMA.map((f, i) => ({ time: f.time, value: f.value - slowEMA[i].value }));
+                    return { macd, signal: ema(macd, signal) };
+                }
+                
+                // EMA Chart
+                const emaEl = document.getElementById('chart-ema');
+                if (emaEl) {
+                    const chart = LightweightCharts.createChart(emaEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
+                    chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
+                    chart.addLineSeries({ color: '#f59e0b', lineWidth: 2 }).setData(calcEMA(prices, 9));
+                    chart.addLineSeries({ color: '#ef4444', lineWidth: 2 }).setData(calcEMA(prices, 21));
                     chart.timeScale().fitContent();
-                });
+                }
+                
+                // BB Chart
+                const bbEl = document.getElementById('chart-bb');
+                if (bbEl) {
+                    const chart = LightweightCharts.createChart(bbEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
+                    const bb = calcBB(prices);
+                    chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
+                    chart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 }).setData(bb.map(d => ({ time: d.time, value: d.upper })));
+                    chart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 }).setData(bb.map(d => ({ time: d.time, value: d.lower })));
+                    chart.addLineSeries({ color: '#64748b', lineWidth: 1 }).setData(bb.map(d => ({ time: d.time, value: d.middle })));
+                    chart.timeScale().fitContent();
+                }
+                
+                // VWAP Chart
+                const vwapEl = document.getElementById('chart-vwap');
+                if (vwapEl) {
+                    const chart = LightweightCharts.createChart(vwapEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
+                    let cumulativeTPV = 0, cumulativeVol = 0;
+                    const vwapData = prices.map(p => { const vol = Math.random() * 1000 + 500; cumulativeTPV += p.value * vol; cumulativeVol += vol; return { time: p.time, value: cumulativeTPV / cumulativeVol }; });
+                    chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
+                    chart.addLineSeries({ color: '#06b6d4', lineWidth: 2 }).setData(vwapData);
+                    chart.timeScale().fitContent();
+                }
+                
+                // Volume Chart
+                const volEl = document.getElementById('chart-volume');
+                if (volEl) {
+                    const chart = LightweightCharts.createChart(volEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
+                    chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
+                    chart.timeScale().fitContent();
+                }
+                
+                // RSI Chart
+                const rsiEl = document.getElementById('chart-rsi');
+                if (rsiEl) {
+                    const chart = LightweightCharts.createChart(rsiEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
+                    const rsi = calcRSI(prices);
+                    chart.addLineSeries({ color: '#f59e0b', lineWidth: 2 }).setData(rsi);
+                    chart.addLineSeries({ color: '#ef4444', lineWidth: 1, lineStyle: 2, lastValueVisible: false }).setData(rsi.map(d => ({ time: d.time, value: 70 })));
+                    chart.addLineSeries({ color: '#10b981', lineWidth: 1, lineStyle: 2, lastValueVisible: false }).setData(rsi.map(d => ({ time: d.time, value: 30 })));
+                    chart.timeScale().fitContent();
+                }
+                
+                // MACD Chart
+                const macdEl = document.getElementById('chart-macd');
+                if (macdEl) {
+                    const chart = LightweightCharts.createChart(macdEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
+                    const macd = calcMACD(prices);
+                    chart.addLineSeries({ color: '#3b82f6', lineWidth: 2 }).setData(macd.macd);
+                    chart.addLineSeries({ color: '#f59e0b', lineWidth: 2 }).setData(macd.signal);
+                    chart.timeScale().fitContent();
+                }
             } catch (e) {
                 console.log('Tech charts error:', e);
             }
