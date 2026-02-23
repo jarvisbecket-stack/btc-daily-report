@@ -651,6 +651,11 @@
         
         initTechCharts();
         setInterval(updatePrice, 60000);
+        
+        // Auto-reload page every 5 minutes to refresh all data
+        setTimeout(() => {
+            window.location.reload();
+        }, 300000);
     </script>
 </body>
 </html>
