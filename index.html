@@ -746,7 +746,7 @@
             }
         }
         
-        // Initialize technical indicator charts with price overlay
+                // Initialize technical indicator charts with price overlay
         async function initTechnicalCharts() {
             try {
                 // Fetch price data
@@ -757,22 +757,6 @@
                     time: p[0] / 1000,
                     value: p[1]
                 }));
-                
-                // Chart 1: Price + EMA
-                const emaChart = LightweightCharts.createChart(document.getElementById('chart-ema'), {
-                    layout: { background: { color: 'transparent' }, textColor: '#64748b' },
-                    grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
-                    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-                    rightPriceScale: { borderColor: '#e2e8f0', visible: true },
-                    timeScale: { borderColor: '#e2e8f0', timeVisible: false },
-                    handleScroll: false,
-                    handleScale: false
-                });
-                
-                const priceSeries = emaChart.addCandlestickSeries({
-                    upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444',
-                    wickUpColor: '#10b981', wickDownColor: '#ef4444'
-                });
                 
                 // Convert to candlestick data
                 const candleData = [];
@@ -789,109 +773,247 @@
                         });
                     }
                 }
-                priceSeries.setData(candleData);
                 
-                // Add EMA lines
-                const ema9 = emaChart.addLineSeries({ color: '#f59e0b', lineWidth: 2, title: 'EMA 9' });
-                const ema21 = emaChart.addLineSeries({ color: '#3b82f6', lineWidth: 2, title: 'EMA 21' });
-                
-                function calcEMA(data, period) {
-                    const k = 2 / (period + 1);
-                    const ema = [{ time: data[0].time, value: data[0].value }];
-                    for (let i = 1; i < data.length; i++) {
-                        ema.push({
-                            time: data[i].time,
-                            value: data[i].value * k + ema[i-1].value * (1 - k)
-                        });
+                // Chart 1: Price + EMA
+                const emaContainer = document.getElementById('chart-ema');
+                if (emaContainer) {
+                    const emaChart = LightweightCharts.createChart(emaContainer, {
+                        layout: { background: { color: 'transparent' }, textColor: '#64748b' },
+                        grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
+                        crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+                        rightPriceScale: { borderColor: '#e2e8f0', visible: true },
+                        timeScale: { borderColor: '#e2e8f0', timeVisible: false },
+                        handleScroll: false,
+                        handleScale: false
+                    });
+                    
+                    const priceSeries = emaChart.addCandlestickSeries({
+                        upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444',
+                        wickUpColor: '#10b981', wickDownColor: '#ef4444'
+                    });
+                    priceSeries.setData(candleData);
+                    
+                    const ema9 = emaChart.addLineSeries({ color: '#f59e0b', lineWidth: 2, title: 'EMA 9' });
+                    const ema21 = emaChart.addLineSeries({ color: '#3b82f6', lineWidth: 2, title: 'EMA 21' });
+                    
+                    function calcEMA(data, period) {
+                        const k = 2 / (period + 1);
+                        const ema = [{ time: data[0].time, value: data[0].value }];
+                        for (let i = 1; i < data.length; i++) {
+                            ema.push({
+                                time: data[i].time,
+                                value: data[i].value * k + ema[i-1].value * (1 - k)
+                            });
+                        }
+                        return ema;
                     }
-                    return ema;
+                    
+                    ema9.setData(calcEMA(prices, 9));
+                    ema21.setData(calcEMA(prices, 21));
+                    emaChart.timeScale().fitContent();
                 }
-                
-                ema9.setData(calcEMA(prices, 9));
-                ema21.setData(calcEMA(prices, 21));
-                emaChart.timeScale().fitContent();
                 
                 // Chart 2: Price + Bollinger Bands
-                const bbChart = LightweightCharts.createChart(document.getElementById('chart-bb'), {
-                    layout: { background: { color: 'transparent' }, textColor: '#64748b' },
-                    grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
-                    rightPriceScale: { borderColor: '#e2e8f0', visible: true },
-                    timeScale: { borderColor: '#e2e8f0', timeVisible: false },
-                    handleScroll: false, handleScale: false
-                });
-                
-                const bbPrice = bbChart.addCandlestickSeries({
-                    upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444',
-                    wickUpColor: '#10b981', wickDownColor: '#ef4444'
-                });
-                bbPrice.setData(candleData);
-                
-                const bbUpper = bbChart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 });
-                const bbLower = bbChart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 });
-                const bbMiddle = bbChart.addLineSeries({ color: '#64748b', lineWidth: 1 });
-                
-                function calcBB(data, period = 20, stdDev = 2) {
-                    const bb = [];
-                    for (let i = period - 1; i < data.length; i++) {
-                        const slice = data.slice(i - period + 1, i + 1);
-                        const avg = slice.reduce((a, b) => a + b.value, 0) / period;
-                        const variance = slice.reduce((a, b) => a + Math.pow(b.value - avg, 2), 0) / period;
-                        const std = Math.sqrt(variance);
-                        bb.push({
-                            time: data[i].time,
-                            upper: avg + stdDev * std,
-                            middle: avg,
-                            lower: avg - stdDev * std
-                        });
+                const bbContainer = document.getElementById('chart-bb');
+                if (bbContainer) {
+                    const bbChart = LightweightCharts.createChart(bbContainer, {
+                        layout: { background: { color: 'transparent' }, textColor: '#64748b' },
+                        grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
+                        rightPriceScale: { borderColor: '#e2e8f0', visible: true },
+                        timeScale: { borderColor: '#e2e8f0', timeVisible: false },
+                        handleScroll: false, handleScale: false
+                    });
+                    
+                    const bbPrice = bbChart.addCandlestickSeries({
+                        upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444',
+                        wickUpColor: '#10b981', wickDownColor: '#ef4444'
+                    });
+                    bbPrice.setData(candleData);
+                    
+                    const bbUpper = bbChart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 });
+                    const bbLower = bbChart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 });
+                    const bbMiddle = bbChart.addLineSeries({ color: '#64748b', lineWidth: 1 });
+                    
+                    function calcBB(data, period = 20, stdDev = 2) {
+                        const bb = [];
+                        for (let i = period - 1; i < data.length; i++) {
+                            const slice = data.slice(i - period + 1, i + 1);
+                            const avg = slice.reduce((a, b) => a + b.value, 0) / period;
+                            const variance = slice.reduce((a, b) => a + Math.pow(b.value - avg, 2), 0) / period;
+                            const std = Math.sqrt(variance);
+                            bb.push({
+                                time: data[i].time,
+                                upper: avg + stdDev * std,
+                                middle: avg,
+                                lower: avg - stdDev * std
+                            });
+                        }
+                        return bb;
                     }
-                    return bb;
+                    
+                    const bbData = calcBB(prices);
+                    bbUpper.setData(bbData.map(d => ({ time: d.time, value: d.upper })));
+                    bbLower.setData(bbData.map(d => ({ time: d.time, value: d.lower })));
+                    bbMiddle.setData(bbData.map(d => ({ time: d.time, value: d.middle })));
+                    bbChart.timeScale().fitContent();
                 }
-                
-                const bbData = calcBB(prices);
-                bbUpper.setData(bbData.map(d => ({ time: d.time, value: d.upper })));
-                bbLower.setData(bbData.map(d => ({ time: d.time, value: d.lower })));
-                bbMiddle.setData(bbData.map(d => ({ time: d.time, value: d.middle })));
-                bbChart.timeScale().fitContent();
                 
                 // Chart 3: Price + VWAP
-                const vwapChart = LightweightCharts.createChart(document.getElementById('chart-vwap'), {
-                    layout: { background: { color: 'transparent' }, textColor: '#64748b' },
-                    grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
-                    rightPriceScale: { borderColor: '#e2e8f0', visible: true },
-                    timeScale: { borderColor: '#e2e8f0', timeVisible: false },
-                    handleScroll: false, handleScale: false
-                });
-                
-                const vwapPrice = vwapChart.addCandlestickSeries({
-                    upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444',
-                    wickUpColor: '#10b981', wickDownColor: '#ef4444'
-                });
-                vwapPrice.setData(candleData);
-                
-                const vwapLine = vwapChart.addLineSeries({ color: '#06b6d4', lineWidth: 2, title: 'VWAP' });
-                
-                const vwapData = [];
-                let cumulativeTPV = 0;
-                let cumulativeVol = 0;
-                for (let i = 0; i < prices.length; i++) {
-                    const typicalPrice = prices[i].value;
-                    const volume = Math.random() * 1000 + 500;
-                    cumulativeTPV += typicalPrice * volume;
-                    cumulativeVol += volume;
-                    vwapData.push({
-                        time: prices[i].time,
-                        value: cumulativeTPV / cumulativeVol
+                const vwapContainer = document.getElementById('chart-vwap');
+                if (vwapContainer) {
+                    const vwapChart = LightweightCharts.createChart(vwapContainer, {
+                        layout: { background: { color: 'transparent' }, textColor: '#64748b' },
+                        grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
+                        rightPriceScale: { borderColor: '#e2e8f0', visible: true },
+                        timeScale: { borderColor: '#e2e8f0', timeVisible: false },
+                        handleScroll: false, handleScale: false
                     });
+                    
+                    const vwapPrice = vwapChart.addCandlestickSeries({
+                        upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444',
+                        wickUpColor: '#10b981', wickDownColor: '#ef4444'
+                    });
+                    vwapPrice.setData(candleData);
+                    
+                    const vwapLine = vwapChart.addLineSeries({ color: '#06b6d4', lineWidth: 2, title: 'VWAP' });
+                    
+                    const vwapData = [];
+                    let cumulativeTPV = 0;
+                    let cumulativeVol = 0;
+                    for (let i = 0; i < prices.length; i++) {
+                        const typicalPrice = prices[i].value;
+                        const volume = Math.random() * 1000 + 500;
+                        cumulativeTPV += typicalPrice * volume;
+                        cumulativeVol += volume;
+                        vwapData.push({
+                            time: prices[i].time,
+                            value: cumulativeTPV / cumulativeVol
+                        });
+                    }
+                    vwapLine.setData(vwapData);
+                    vwapChart.timeScale().fitContent();
                 }
-                vwapLine.setData(vwapData);
-                vwapChart.timeScale().fitContent();
                 
                 // Chart 4: Price + Volume
-                const volChart = LightweightCharts.createChart(document.getElementById('chart-volume'), {
-                    layout: { background: { color: 'transparent' }, textColor: '#64748b' },
-                    grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
-                    rightPriceScale: { borderColor: '#e2e8f0', visible: true },
-                    timeScale: { borderColor: '#e2e8f0', timeVisible: false },
+                const volContainer = document.getElementById('chart-volume');
+                if (volContainer) {
+                    const volChart = LightweightCharts.createChart(volContainer, {
+                        layout: { background: { color: 'transparent' }, textColor: '#64748b' },
+                        grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
+                        rightPriceScale: { borderColor: '#e2e8f0', visible: true },
+                        timeScale: { borderColor: '#e2e8f0', timeVisible: false },
+                        handleScroll: false, handleScale: false
+                    });
+                    
+                    const volPrice = volChart.addCandlestickSeries({
+                        upColor: '#10b981', downColor: '#ef4444', borderUpColor: '#10b981', borderDownColor: '#ef4444',
+                        wickUpColor: '#10b981', wickDownColor: '#ef4444'
+                    });
+                    volPrice.setData(candleData);
+                    
+                    const volumeSeries = volChart.addHistogramSeries({
+                        color: '#64748b',
+                        priceFormat: { type: 'volume' },
+                        priceScaleId: '',
+                        scaleMargins: { top: 0.8, bottom: 0 }
+                    });
+                    
+                    const volData = candleData.map((c, i) => ({
+                        time: c.time,
+                        value: Math.random() * 100000 + 50000,
+                        color: c.close > c.open ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+                    }));
+                    volumeSeries.setData(volData);
+                    volChart.timeScale().fitContent();
+                }
+                
+                // Chart 5: RSI
+                const rsiContainer = document.getElementById('chart-rsi');
+                if (rsiContainer) {
+                    const rsiChart = LightweightCharts.createChart(rsiContainer, {
+                        layout: { background: { color: 'transparent' }, textColor: '#64748b' },
+                        grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
+                        rightPriceScale: { borderColor: '#e2e8f0', visible: true },
+                        timeScale: { borderColor: '#e2e8f0', timeVisible: false },
+                        handleScroll: false, handleScale: false
+                    });
+                    
+                    const rsiSeries = rsiChart.addLineSeries({ color: '#f59e0b', lineWidth: 2 });
+                    
+                    function calcRSI(data, period = 14) {
+                        const rsi = [];
+                        let gains = 0, losses = 0;
+                        
+                        for (let i = 1; i <= period; i++) {
+                            const change = data[i].value - data[i-1].value;
+                            if (change > 0) gains += change;
+                            else losses += Math.abs(change);
+                        }
+                        
+                        let avgGain = gains / period;
+                        let avgLoss = losses / period;
+                        
+                        for (let i = period; i < data.length; i++) {
+                            const change = data[i].value - data[i-1].value;
+                            avgGain = ((avgGain * (period - 1)) + (change > 0 ? change : 0)) / period;
+                            avgLoss = ((avgLoss * (period - 1)) + (change < 0 ? Math.abs(change) : 0)) / period;
+                            const rs = avgGain / avgLoss;
+                            rsi.push({ time: data[i].time, value: 100 - (100 / (1 + rs)) });
+                        }
+                        return rsi;
+                    }
+                    
+                    rsiSeries.setData(calcRSI(prices));
+                    
+                    const rsi70 = rsiChart.addLineSeries({ color: '#ef4444', lineWidth: 1, lineStyle: 2, lastValueVisible: false });
+                    const rsi30 = rsiChart.addLineSeries({ color: '#10b981', lineWidth: 1, lineStyle: 2, lastValueVisible: false });
+                    rsi70.setData(prices.map(p => ({ time: p.time, value: 70 })));
+                    rsi30.setData(prices.map(p => ({ time: p.time, value: 30 })));
+                    rsiChart.timeScale().fitContent();
+                }
+                
+                // Chart 6: MACD
+                const macdContainer = document.getElementById('chart-macd');
+                if (macdContainer) {
+                    const macdChart = LightweightCharts.createChart(macdContainer, {
+                        layout: { background: { color: 'transparent' }, textColor: '#64748b' },
+                        grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
+                        rightPriceScale: { borderColor: '#e2e8f0', visible: true },
+                        timeScale: { borderColor: '#e2e8f0', timeVisible: false },
+                        handleScroll: false, handleScale: false
+                    });
+                    
+                    const macdLine = macdChart.addLineSeries({ color: '#3b82f6', lineWidth: 2, title: 'MACD' });
+                    const signalLine = macdChart.addLineSeries({ color: '#f59e0b', lineWidth: 2, title: 'Signal' });
+                    
+                    function calcMACD(data, fast = 12, slow = 26, signal = 9) {
+                        const ema = (arr, period) => {
+                            const k = 2 / (period + 1);
+                            const result = [{ time: arr[0].time, value: arr[0].value }];
+                            for (let i = 1; i < arr.length; i++) {
+                                result.push({ time: arr[i].time, value: arr[i].value * k + result[i-1].value * (1 - k) });
+                            }
+                            return result;
+                        };
+                        
+                        const fastEMA = ema(data, fast);
+                        const slowEMA = ema(data, slow);
+                        const macd = fastEMA.map((f, i) => ({ time: f.time, value: f.value - slowEMA[i].value }));
+                        const signalEMA = ema(macd, signal);
+                        
+                        return { macd, signal: signalEMA };
+                    }
+                    
+                    const macdData = calcMACD(prices);
+                    macdLine.setData(macdData.macd);
+                    signalLine.setData(macdData.signal);
+                    macdChart.timeScale().fitContent();
+                }
+                
+            } catch (e) {
+                console.log('Technical charts load failed:', e);
+            }
+        }', timeVisible: false },
                     handleScroll: false, handleScale: false
                 });
                 
