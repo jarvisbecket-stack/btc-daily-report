@@ -398,6 +398,7 @@
             
             <div class="card">
                 <div class="card-title">💰 Recent IBIT Flows (7 Days)</div>
+                <div id="ibit-chart" style="height: 150px; margin-bottom: 15px;"></div>
                 <div class="ibit-list">
                     <div class="ibit-item">
                         <span class="ibit-date">Feb 18</span>
@@ -511,31 +512,49 @@
                 <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + EMA</div>
                     <div id="chart-ema" style="height: 250px;"></div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
+                        <strong>Signal:</strong> Price below EMA 9 and EMA 21 = Bearish trend. Wait for golden cross above $69K for bullish flip.
+                    </div>
                 </div>
                 
                 <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + Bollinger Bands</div>
                     <div id="chart-bb" style="height: 250px;"></div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
+                        <strong>Signal:</strong> Price near middle band = Neutral. Bands squeezing = Volatility expansion coming. Watch for breakout.
+                    </div>
                 </div>
                 
                 <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + VWAP</div>
                     <div id="chart-vwap" style="height: 250px;"></div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
+                        <strong>Signal:</strong> Price below VWAP = Sellers in control. Reclaim VWAP for bullish intraday signal.
+                    </div>
                 </div>
                 
                 <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Volume</div>
                     <div id="chart-volume" style="height: 200px;"></div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
+                        <strong>Signal:</strong> Volume declining = Weak conviction. Watch for volume spike >50K BTC on breakout.
+                    </div>
                 </div>
                 
                 <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">RSI</div>
                     <div id="chart-rsi" style="height: 200px;"></div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
+                        <strong>Signal:</strong> RSI neutral zone. Not oversold (&lt;30) or overbought (&gt;70). No momentum edge.
+                    </div>
                 </div>
                 
                 <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">MACD</div>
                     <div id="chart-macd" style="height: 200px;"></div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
+                        <strong>Signal:</strong> MACD below signal = Bearish momentum. Watch for zero line cross for trend change.
+                    </div>
                 </div>
             </div>
         </div>
@@ -739,6 +758,23 @@
                     chart.addLineSeries({ color: '#3b82f6', lineWidth: 2 }).setData(macd.macd);
                     chart.addLineSeries({ color: '#f59e0b', lineWidth: 2 }).setData(macd.signal);
                     chart.timeScale().fitContent();
+                }
+                
+                // IBIT Flows Chart
+                const ibitEl = document.getElementById('ibit-chart');
+                if (ibitEl) {
+                    const chart = LightweightCharts.createChart(ibitEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { visible: false }, timeScale: { visible: false }, handleScroll: false, handleScale: false });
+                    const ibitData = [
+                        { time: 1, value: -20.9 },
+                        { time: 2, value: 26.5 },
+                        { time: 3, value: -73.4 },
+                        { time: 4, value: -157.6 },
+                        { time: 5, value: -9.4 },
+                        { time: 6, value: -119.7 },
+                        { time: 7, value: -84.2 }
+                    ];
+                    const ibitSeries = chart.addHistogramSeries({ color: '#64748b' });
+                    ibitSeries.setData(ibitData.map(d => ({ time: d.time, value: d.value, color: d.value >= 0 ? '#10b981' : '#ef4444' })));
                 }
             } catch (e) {
                 console.log('Tech charts error:', e);
