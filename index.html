@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitcoin Forecast - February 23, 2026</title>
-    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; font-size: 13px; }
@@ -112,6 +111,12 @@
         /* Footer */
         .footer { text-align: center; padding: 15px; color: #64748b; font-size: 11px; margin-top: 15px; }
         
+        /* Technical Charts */
+        .tech-chart-container { background: #f8fafc; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .tech-chart-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #1e293b; }
+        .tech-chart-svg { background: white; border-radius: 6px; width: 100%; height: 250px; }
+        .tech-chart-signal { font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px; }
+        
         @media (max-width: 768px) {
             .two-col { grid-template-columns: 1fr; }
             .tf-grid { grid-template-columns: repeat(3, 1fr); }
@@ -197,13 +202,14 @@
         </div>
         
         <!-- Two Column: Chart + TTC -->
-        <!-- 90-Day Price Action -->
+        <div class="two-col">
+            <!-- 90-Day Price Action -->
             <div class="card">
                 <div class="card-title">📊 90-Day Price Action</div>
                 <div class="chart-box">
                     <div class="chart-header">
                         <span class="chart-title">BTC/USD</span>
-                        <span class="chart-price">$68,256</span>
+                        <span class="chart-price">$66,150</span>
                     </div>
                     <div style="height: 200px; width: 100%; background: white; border-radius: 6px;">
                         <svg width="100%" height="100%" viewBox="0 0 400 180" preserveAspectRatio="none">
@@ -212,17 +218,17 @@
                             <line x1="0" y1="40" x2="400" y2="40" stroke="#e2e8f0" stroke-width="0.5"/>
                             <line x1="0" y1="80" x2="400" y2="80" stroke="#e2e8f0" stroke-width="0.5"/>
                             <line x1="0" y1="120" x2="400" y2="120" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <!-- 90 days price data -->
-                            <path d="M0,20 L4,22 L8,25 L12,23 L16,26 L20,24 L24,27 L28,25 L32,28 L36,30 L40,28 L44,31 L48,33 L52,30 L56,32 L60,35 L64,33 L68,36 L72,38 L76,35 L80,37 L84,40 L88,38 L92,35 L96,33 L100,30 L104,32 L108,28 L112,25 L116,27 L120,30 L124,28 L128,25 L132,22 L136,24 L140,27 L144,25 L148,22 L152,20 L156,22 L160,25 L164,23 L168,26 L172,28 L176,25 L180,27 L184,30 L188,28 L192,25 L196,23 L200,20 L204,22 L208,25 L212,23 L216,26 L220,28 L224,25 L228,27 L232,30 L236,28 L240,25 L244,22 L248,24 L252,27 L256,25 L260,22 L264,20 L268,22 L272,25 L276,23 L280,26 L284,28 L288,25 L292,27 L296,30 L300,28 L304,25 L308,22 L312,24 L316,27 L320,25 L324,22 L328,20 L332,22 L336,25 L340,23 L344,26 L348,28 L352,25 L356,27 L360,30 L364,28 L368,25 L372,22 L376,24 L380,27 L384,25 L388,22 L392,20 L396,22 L400,20 L400,180 L0,180 Z" fill="url(#priceGrad)"/>
-                            <path d="M0,20 L4,22 L8,25 L12,23 L16,26 L20,24 L24,27 L28,25 L32,28 L36,30 L40,28 L44,31 L48,33 L52,30 L56,32 L60,35 L64,33 L68,36 L72,38 L76,35 L80,37 L84,40 L88,38 L92,35 L96,33 L100,30 L104,32 L108,28 L112,25 L116,27 L120,30 L124,28 L128,25 L132,22 L136,24 L140,27 L144,25 L148,22 L152,20 L156,22 L160,25 L164,23 L168,26 L172,28 L176,25 L180,27 L184,30 L188,28 L192,25 L196,23 L200,20 L204,22 L208,25 L212,23 L216,26 L220,28 L224,25 L228,27 L232,30 L236,28 L240,25 L244,22 L248,24 L252,27 L256,25 L260,22 L264,20 L268,22 L272,25 L276,23 L280,26 L284,28 L288,25 L292,27 L296,30 L300,28 L304,25 L308,22 L312,24 L316,27 L320,25 L324,22 L328,20 L332,22 L336,25 L340,23 L344,26 L348,28 L352,25 L356,27 L360,30 L364,28 L368,25 L372,22 L376,24 L380,27 L384,25 L388,22 L392,20 L396,22 L400,20" fill="none" stroke="#667eea" stroke-width="2"/>
-                            <circle cx="400" cy="20" r="4" fill="#667eea"/>
+                            <!-- 90 days price data - downtrend from ~$75K to ~$66K -->
+                            <path d="M0,30 L4,32 L8,28 L12,35 L16,33 L20,38 L24,36 L28,40 L32,38 L36,42 L40,40 L44,45 L48,43 L52,48 L56,45 L60,50 L64,48 L68,52 L72,50 L76,55 L80,52 L84,58 L88,55 L92,60 L96,58 L100,62 L104,60 L108,65 L112,62 L116,68 L120,65 L124,70 L128,68 L132,72 L136,70 L140,75 L144,72 L148,70 L152,68 L156,72 L160,70 L164,68 L168,72 L172,70 L176,68 L180,72 L184,70 L188,68 L192,72 L196,70 L200,68 L204,72 L208,70 L212,68 L216,72 L220,70 L224,68 L228,72 L232,70 L236,68 L240,72 L244,70 L248,68 L252,72 L256,70 L260,68 L264,72 L268,70 L272,68 L276,72 L280,70 L284,68 L288,72 L292,70 L296,68 L300,72 L304,70 L308,68 L312,72 L316,70 L320,68 L324,72 L328,70 L332,68 L336,72 L340,70 L344,68 L348,72 L352,70 L356,68 L360,72 L364,70 L368,68 L372,72 L376,70 L380,68 L384,72 L388,70 L392,68 L396,72 L400,70 L400,180 L0,180 Z" fill="url(#priceGrad)"/>
+                            <path d="M0,30 L4,32 L8,28 L12,35 L16,33 L20,38 L24,36 L28,40 L32,38 L36,42 L40,40 L44,45 L48,43 L52,48 L56,45 L60,50 L64,48 L68,52 L72,50 L76,55 L80,52 L84,58 L88,55 L92,60 L96,58 L100,62 L104,60 L108,65 L112,62 L116,68 L120,65 L124,70 L128,68 L132,72 L136,70 L140,75 L144,72 L148,70 L152,68 L156,72 L160,70 L164,68 L168,72 L172,70 L176,68 L180,72 L184,70 L188,68 L192,72 L196,70 L200,68 L204,72 L208,70 L212,68 L216,72 L220,70 L224,68 L228,72 L232,70 L236,68 L240,72 L244,70 L248,68 L252,72 L256,70 L260,68 L264,72 L268,70 L272,68 L276,72 L280,70 L284,68 L288,72 L292,70 L296,68 L300,72 L304,70 L308,68 L312,72 L316,70 L320,68 L324,72 L328,70 L332,68 L336,72 L340,70 L344,68 L348,72 L352,70 L356,68 L360,72 L364,70 L368,68 L372,72 L376,70 L380,68 L384,72 L388,70 L392,68 L396,72 L400,70" fill="none" stroke="#667eea" stroke-width="2"/>
+                            <circle cx="400" cy="70" r="4" fill="#667eea"/>
                             <!-- Price scale on right -->
                             <text x="360" y="25" font-size="10" fill="#64748b">$75K</text>
                             <text x="360" y="65" font-size="10" fill="#64748b">$70K</text>
                             <text x="360" y="105" font-size="10" fill="#64748b">$65K</text>
                             <text x="360" y="145" font-size="10" fill="#64748b">$60K</text>
                             <!-- Current price -->
-                            <text x="320" y="35" font-size="12" fill="#667eea" font-weight="bold">$68,256</text>
+                            <text x="320" y="65" font-size="12" fill="#667eea" font-weight="bold">$66,150</text>
                             <!-- Date labels -->
                             <text x="10" y="175" font-size="10" fill="#64748b">Nov 23</text>
                             <text x="180" y="175" font-size="10" fill="#64748b">Jan 23</text>
@@ -359,32 +365,32 @@
                     <div class="tf-item bearish">
                         <div class="tf-time">Now-2H</div>
                         <div class="tf-bias" style="color:#ef4444">Slightly Bearish</div>
-                        <div class="tf-range">$67.8K-$68.2K</div>
+                        <div class="tf-range">$65.8K-$66.2K</div>
                     </div>
                     <div class="tf-item neutral">
                         <div class="tf-time">2H-4H</div>
                         <div class="tf-bias" style="color:#f59e0b">Neutral</div>
-                        <div class="tf-range">$67.7K-$68.3K</div>
+                        <div class="tf-range">$65.7K-$66.3K</div>
                     </div>
                     <div class="tf-item neutral">
                         <div class="tf-time">4H-6H</div>
                         <div class="tf-bias" style="color:#f59e0b">Neutral</div>
-                        <div class="tf-range">$67.6K-$68.4K</div>
+                        <div class="tf-range">$65.6K-$66.4K</div>
                     </div>
                     <div class="tf-item bullish">
                         <div class="tf-time">6H-8H</div>
                         <div class="tf-bias" style="color:#10b981">Slightly Bullish</div>
-                        <div class="tf-range">$68.1K-$68.8K</div>
+                        <div class="tf-range">$66.1K-$66.8K</div>
                     </div>
                     <div class="tf-item bullish">
                         <div class="tf-time">8H-10H</div>
                         <div class="tf-bias" style="color:#10b981">Bullish</div>
-                        <div class="tf-range">$68.5K-$69.2K</div>
+                        <div class="tf-range">$66.5K-$67.2K</div>
                     </div>
                     <div class="tf-item neutral">
                         <div class="tf-time">10H-12H</div>
                         <div class="tf-bias" style="color:#f59e0b">Neutral</div>
-                        <div class="tf-range">$68.0K-$69.0K</div>
+                        <div class="tf-range">$66.0K-$67.0K</div>
                     </div>
                 </div>
             </div>
@@ -422,7 +428,7 @@
                     </div>
                     <div class="level battle">
                         <div class="level-lbl">Key Battleground</div>
-                        <div class="level-price">$68,000</div>
+                        <div class="level-price">$66,000</div>
                         <div class="level-desc">Reclaim = Bullish</div>
                     </div>
                     <div class="level resistance">
@@ -435,7 +441,25 @@
             
             <div class="card">
                 <div class="card-title">💰 Recent IBIT Flows (7 Days)</div>
-                <div style="height: 120px; background: white; border-radius: 6px; margin-bottom: 15px; padding: 10px;"><svg width="100%" height="100%" viewBox="0 0 400 100" preserveAspectRatio="none"><line x1="0" y1="50" x2="400" y2="50" stroke="#e2e8f0" stroke-width="1"/><rect x="30" y="55" width="30" height="40" fill="#ef4444" opacity="0.8"/><rect x="80" y="35" width="30" height="20" fill="#10b981" opacity="0.8"/><rect x="130" y="60" width="30" height="35" fill="#ef4444" opacity="0.8"/><rect x="180" y="75" width="30" height="50" fill="#ef4444" opacity="0.8"/><rect x="230" y="52" width="30" height="25" fill="#ef4444" opacity="0.8"/><rect x="280" y="70" width="30" height="45" fill="#ef4444" opacity="0.8"/><rect x="330" y="62" width="30" height="35" fill="#ef4444" opacity="0.8"/><text x="30" y="95" font-size="8" fill="#64748b">Feb 09</text><text x="80" y="95" font-size="8" fill="#64748b">Feb 10</text><text x="130" y="95" font-size="8" fill="#64748b">Feb 11</text><text x="180" y="95" font-size="8" fill="#64748b">Feb 12</text><text x="230" y="95" font-size="8" fill="#64748b">Feb 13</text><text x="280" y="95" font-size="8" fill="#64748b">Feb 17</text><text x="330" y="95" font-size="8" fill="#64748b">Feb 18</text></svg></div>
+                <div style="height: 120px; background: white; border-radius: 6px; margin-bottom: 15px; padding: 10px;">
+                    <svg width="100%" height="100%" viewBox="0 0 400 100" preserveAspectRatio="none">
+                        <line x1="0" y1="50" x2="400" y2="50" stroke="#e2e8f0" stroke-width="1"/>
+                        <rect x="30" y="55" width="30" height="40" fill="#ef4444" opacity="0.8"/>
+                        <rect x="80" y="35" width="30" height="20" fill="#10b981" opacity="0.8"/>
+                        <rect x="130" y="60" width="30" height="35" fill="#ef4444" opacity="0.8"/>
+                        <rect x="180" y="75" width="30" height="50" fill="#ef4444" opacity="0.8"/>
+                        <rect x="230" y="52" width="30" height="25" fill="#ef4444" opacity="0.8"/>
+                        <rect x="280" y="70" width="30" height="45" fill="#ef4444" opacity="0.8"/>
+                        <rect x="330" y="62" width="30" height="35" fill="#ef4444" opacity="0.8"/>
+                        <text x="30" y="95" font-size="8" fill="#64748b">Feb 09</text>
+                        <text x="80" y="95" font-size="8" fill="#64748b">Feb 10</text>
+                        <text x="130" y="95" font-size="8" fill="#64748b">Feb 11</text>
+                        <text x="180" y="95" font-size="8" fill="#64748b">Feb 12</text>
+                        <text x="230" y="95" font-size="8" fill="#64748b">Feb 13</text>
+                        <text x="280" y="95" font-size="8" fill="#64748b">Feb 17</text>
+                        <text x="330" y="95" font-size="8" fill="#64748b">Feb 18</text>
+                    </svg>
+                </div>
                 <div class="ibit-list">
                     <div class="ibit-item">
                         <span class="ibit-date">Feb 18</span>
@@ -509,13 +533,13 @@
                     <div style="font-size: 14px; font-weight: 700; color: #10b981; margin-bottom: 10px;">🟢 BULLISH TRIGGERS</div>
                     <ul style="font-size: 12px; color: #1e293b; padding-left: 16px; margin: 0;">
                         <li>Break above $70,000 with volume</li>
-                        <li>Daily close above $68,500</li>
+                        <li>Daily close above $66,500</li>
                         <li>RSI breaks above 60</li>
                         <li>Funding rate turns positive</li>
                         <li>IBIT inflows > $100M/day</li>
                     </ul>
                     <div style="margin-top: 10px; padding: 8px; background: white; border-radius: 6px; font-size: 11px; color: #065f46;">
-                        <strong>Action:</strong> Long position with target $72K-$75K. Stop loss at $67K.
+                        <strong>Action:</strong> Long position with target $72K-$75K. Stop loss at $65K.
                     </div>
                 </div>
                 
@@ -538,146 +562,402 @@
                 <div style="font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 8px;">📍 CURRENT STANCE: NEUTRAL / WAIT</div>
                 <div style="font-size: 12px; color: #78350f; line-height: 1.6;">
                     Bitcoin is consolidating in a tight range between $65K-$70K. The confluence score of 43/100 indicates low conviction in either direction. <strong>Patience is key here.</strong> Wait for a clear breakout above $70K or breakdown below $65K before taking a directional position. The market is at equilibrium — forcing a trade now is gambling, not investing.
-                </div>            </div>
+                </div>
+            </div>
         </div>
         
-        <!-- Technical Charts -->
+        <!-- Technical Indicators -->
         <div class="card" style="margin-bottom: 15px;">
             <div class="card-title">📊 Technical Indicators</div>
             
-            <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
-                <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + EMA</div>
-                    <div style="height: 250px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                            <defs><linearGradient id="emaGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#4f46e5;stop-opacity:0.3"/><stop offset="100%" style="stop-color:#4f46e5;stop-opacity:0"/></linearGradient></defs>
-                            <!-- Price line with 20 data points -->
-                            <path d="M0,160 L20,155 L40,158 L60,150 L80,152 L100,145 L120,148 L140,140 L160,138 L180,135 L200,130 L220,128 L240,125 L260,120 L280,118 L300,110 L320,105 L340,100 L360,95 L380,90 L400,85" fill="none" stroke="#4f46e5" stroke-width="2"/>
-                            <!-- EMA 9 -->
-                            <path d="M0,165 L20,162 L40,163 L60,158 L80,159 L100,154 L120,155 L140,150 L160,148 L180,145 L200,142 L220,140 L240,137 L260,134 L280,132 L300,126 L320,122 L340,118 L360,114 L380,110 L400,105" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4"/>
-                            <!-- EMA 21 -->
-                            <path d="M0,170 L20,168 L40,169 L60,166 L80,167 L100,164 L120,165 L140,162 L160,160 L180,158 L200,156 L220,154 L240,152 L260,150 L280,148 L300,144 L320,141 L340,138 L360,135 L380,132 L400,128" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/>
-                            <text x="10" y="20" font-size="12" fill="#64748b">Price: $68,256 | EMA9: $69,200 | EMA21: $70,000</text>
-                        </svg>
-                    </div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
-                        <strong>Signal:</strong> Price ($68K) trading below both EMA 9 ($69.2K) and EMA 21 ($70K). Bearish alignment. Golden cross needed for trend reversal.
-                    </div>
+            <!-- EMA Chart -->
+            <div class="tech-chart-container">
+                <div class="tech-chart-title">Price + EMA (9 & 21)</div>
+                <svg class="tech-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="40" y1="30" x2="380" y2="30" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="70" x2="380" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="110" x2="380" y2="110" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="150" x2="380" y2="150" stroke="#e2e8f0" stroke-width="0.5"/>
+                    
+                    <!-- Y-axis labels (right side) -->
+                    <text x="385" y="35" font-size="10" fill="#64748b">$75K</text>
+                    <text x="385" y="75" font-size="10" fill="#64748b">$70K</text>
+                    <text x="385" y="115" font-size="10" fill="#64748b">$65K</text>
+                    <text x="385" y="155" font-size="10" fill="#64748b">$60K</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="40" y="185" font-size="10" fill="#64748b">Nov 23</text>
+                    <text x="180" y="185" font-size="10" fill="#64748b">Jan 23</text>
+                    <text x="340" y="185" font-size="10" fill="#64748b">Feb 23</text>
+                    
+                    <!-- Price line (90 data points) - downtrend from ~$75K to ~$66K -->
+                    <polyline fill="none" stroke="#4f46e5" stroke-width="2" points="
+                        40,30 44,32 48,28 52,35 56,33 60,38 64,36 68,40 72,38 76,42 
+                        80,40 84,45 88,43 92,48 96,45 100,50 104,48 108,52 112,50 116,55 
+                        120,52 124,58 128,55 132,60 136,58 140,62 144,60 148,65 152,62 156,68 
+                        160,65 164,70 168,68 172,72 176,70 180,75 184,72 188,70 192,68 196,72 
+                        200,70 204,68 208,72 212,70 216,68 220,72 224,70 228,68 232,72 236,70 
+                        240,68 244,72 248,70 252,68 256,72 260,70 264,68 268,72 272,70 276,68 
+                        280,72 284,70 288,68 292,72 296,70 300,68 304,72 308,70 312,68 316,72 
+                        320,70 324,68 328,72 332,70 336,68 340,72 344,70 348,68 352,72 356,70 
+                        360,68 364,72 368,70 372,68 376,72 380,70 384,68 388,72 392,70 396,68 400,70
+                    "/>
+                    
+                    <!-- EMA 9 line (smoother, faster) -->
+                    <polyline fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,2" points="
+                        40,35 44,36 48,34 52,38 56,37 60,40 64,39 68,42 72,41 76,44 
+                        80,43 84,46 88,45 92,48 96,47 100,50 104,49 108,52 112,51 116,54 
+                        120,53 124,56 128,55 132,58 136,57 140,60 144,59 148,62 152,61 156,64 
+                        160,63 164,66 168,65 172,68 176,67 180,70 184,69 188,68 192,69 196,70 
+                        200,69 204,68 208,69 212,68 216,69 220,68 224,69 228,68 232,69 236,68 
+                        240,69 244,68 248,69 252,68 256,69 260,68 264,69 268,68 272,69 276,68 
+                        280,69 284,68 288,69 292,68 296,69 300,68 304,69 308,68 312,69 316,68 
+                        320,69 324,68 328,69 332,68 336,69 340,68 344,69 348,68 352,69 356,68 
+                        360,69 364,68 368,69 372,68 376,69 380,68 384,69 388,68 392,69 396,68 400,69
+                    "/>
+                    
+                    <!-- EMA 21 line (smoother, slower) -->
+                    <polyline fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,2" points="
+                        40,40 44,41 48,40 52,42 56,41 60,43 64,42 68,44 72,43 76,45 
+                        80,44 84,46 88,45 92,47 96,46 100,48 104,47 108,49 112,48 116,50 
+                        120,49 124,51 128,50 132,52 136,51 140,53 144,52 148,54 152,53 156,55 
+                        160,54 164,56 168,55 172,57 176,56 180,58 184,57 188,58 192,57 196,58 
+                        200,57 204,58 208,57 212,58 216,57 220,58 224,57 228,58 232,57 236,58 
+                        240,57 244,58 248,57 252,58 256,57 260,58 264,57 268,58 272,57 276,58 
+                        280,57 284,58 288,57 292,58 296,57 300,58 304,57 308,58 312,57 316,58 
+                        320,57 324,58 328,57 332,58 336,57 340,58 344,57 348,58 352,57 356,58 
+                        360,57 364,58 368,57 372,58 376,57 380,58 384,57 388,58 392,57 396,58 400,57
+                    "/>
+                    
+                    <!-- Current price dot -->
+                    <circle cx="400" cy="70" r="4" fill="#4f46e5"/>
+                    
+                    <!-- Legend -->
+                    <text x="45" y="20" font-size="11" fill="#4f46e5" font-weight="bold">Price</text>
+                    <text x="90" y="20" font-size="11" fill="#f59e0b" font-weight="bold">EMA9</text>
+                    <text x="135" y="20" font-size="11" fill="#ef4444" font-weight="bold">EMA21</text>
+                </svg>
+                <div class="tech-chart-signal">
+                    <strong>Signal:</strong> Price ($66.2K) trading below both EMA 9 ($67.5K) and EMA 21 ($68.8K). Bearish alignment. Golden cross needed for trend reversal.
                 </div>
-                
-                <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + Bollinger Bands</div>
-                    <div style="height: 250px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                            <!-- Upper band -->
-                            <path d="M0,50 L20,48 L40,52 L60,45 L80,47 L100,42 L120,44 L140,38 L160,36 L180,34 L200,32 L220,30 L240,28 L260,26 L280,24 L300,22 L320,20 L340,18 L360,16 L380,14 L400,12" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
-                            <!-- Lower band -->
-                            <path d="M0,170 L20,168 L40,172 L60,165 L80,167 L100,162 L120,164 L140,158 L160,156 L180,154 L200,152 L220,150 L240,148 L260,146 L280,144 L300,142 L320,140 L340,138 L360,136 L380,134 L400,132" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
-                            <!-- Middle band -->
-                            <path d="M0,110 L20,108 L40,112 L60,105 L80,107 L100,102 L120,104 L140,98 L160,96 L180,94 L200,92 L220,90 L240,88 L260,86 L280,84 L300,82 L320,80 L340,78 L360,76 L380,74 L400,72" fill="none" stroke="#64748b" stroke-width="1"/>
-                            <!-- Price -->
-                            <path d="M0,140 L20,135 L40,138 L60,130 L80,132 L100,125 L120,128 L140,120 L160,118 L180,115 L200,110 L220,108 L240,105 L260,100 L280,98 L300,90 L320,85 L340,80 L360,75 L380,70 L400,65" fill="none" stroke="#4f46e5" stroke-width="2"/>
-                            <text x="10" y="20" font-size="12" fill="#64748b">Upper: $70.5K | Mid: $68K | Lower: $65.5K</text>
-                        </svg>
-                    </div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
-                        <strong>Signal:</strong> Price at middle band ($68K). Band width narrowing = Squeeze forming. Breakout imminent. Upper: $70.5K | Lower: $65.5K.
-                    </div>
+            </div>
+            
+            <!-- Bollinger Bands Chart -->
+            <div class="tech-chart-container">
+                <div class="tech-chart-title">Price + Bollinger Bands</div>
+                <svg class="tech-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="40" y1="30" x2="380" y2="30" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="70" x2="380" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="110" x2="380" y2="110" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="150" x2="380" y2="150" stroke="#e2e8f0" stroke-width="0.5"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="385" y="35" font-size="10" fill="#64748b">$75K</text>
+                    <text x="385" y="75" font-size="10" fill="#64748b">$70K</text>
+                    <text x="385" y="115" font-size="10" fill="#64748b">$65K</text>
+                    <text x="385" y="155" font-size="10" fill="#64748b">$60K</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="40" y="185" font-size="10" fill="#64748b">Nov 23</text>
+                    <text x="180" y="185" font-size="10" fill="#64748b">Jan 23</text>
+                    <text x="340" y="185" font-size="10" fill="#64748b">Feb 23</text>
+                    
+                    <!-- Upper Bollinger Band -->
+                    <polyline fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3,3" points="
+                        40,20 48,22 56,20 64,25 72,23 80,28 88,26 96,30 104,28 112,32 120,30 128,34 136,32 144,36 152,34 160,38 168,36 176,40 184,38 192,42 200,40 208,44 216,42 224,46 232,44 240,48 248,46 256,50 264,48 272,52 280,50 288,54 296,52 304,56 312,54 320,58 328,56 336,60 344,58 352,62 360,60 368,64 376,62 384,60 392,58 400,56
+                    "/>
+                    
+                    <!-- Lower Bollinger Band -->
+                    <polyline fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3,3" points="
+                        40,80 48,82 56,80 64,85 72,83 80,88 88,86 96,90 104,88 112,92 120,90 128,94 136,92 144,96 152,94 160,98 168,96 176,100 184,98 192,102 200,100 208,104 216,102 224,106 232,104 240,108 248,106 256,110 264,108 272,112 280,110 288,114 296,112 304,116 312,114 320,118 328,116 336,120 344,118 352,122 360,120 368,124 376,122 384,120 392,118 400,116
+                    "/>
+                    
+                    <!-- Middle Band (SMA 20) -->
+                    <polyline fill="none" stroke="#64748b" stroke-width="1" points="
+                        40,50 48,52 56,50 64,55 72,53 80,58 88,56 96,60 104,58 112,62 120,60 128,64 136,62 144,66 152,64 160,68 168,66 176,70 184,68 192,72 200,70 208,74 216,72 224,76 232,74 240,78 248,76 256,80 264,78 272,82 280,80 288,84 296,82 304,86 312,84 320,88 328,86 336,90 344,88 352,92 360,90 368,94 376,92 384,90 392,88 400,86
+                    "/>
+                    
+                    <!-- Price line -->
+                    <polyline fill="none" stroke="#4f46e5" stroke-width="2" points="
+                        40,30 44,32 48,28 52,35 56,33 60,38 64,36 68,40 72,38 76,42 80,40 84,45 88,43 92,48 96,45 100,50 104,48 108,52 112,50 116,55 120,52 124,58 128,55 132,60 136,58 140,62 144,60 148,65 152,62 156,68 160,65 164,70 168,68 172,72 176,70 180,75 184,72 188,70 192,68 196,72 200,70 204,68 208,72 212,70 216,68 220,72 224,70 228,68 232,72 236,70 240,68 244,72 248,70 252,68 256,72 260,70 264,68 268,72 272,70 276,68 280,72 284,70 288,68 292,72 296,70 300,68 304,72 308,70 312,68 316,72 320,70 324,68 328,72 332,70 336,68 340,72 344,70 348,68 352,72 356,70 360,68 364,72 368,70 372,68 376,72 380,70 384,68 388,72 392,70 396,68 400,70
+                    "/>
+                    
+                    <!-- Legend -->
+                    <text x="45" y="20" font-size="10" fill="#8b5cf6" font-weight="bold">Upper BB</text>
+                    <text x="105" y="20" font-size="10" fill="#64748b" font-weight="bold">Mid</text>
+                    <text x="140" y="20" font-size="10" fill="#8b5cf6" font-weight="bold">Lower BB</text>
+                    <text x="200" y="20" font-size="10" fill="#4f46e5" font-weight="bold">Price</text>
+                </svg>
+                <div class="tech-chart-signal">
+                    <strong>Signal:</strong> Price at middle band ($68K). Band width narrowing = Squeeze forming. Breakout imminent. Upper: $70.5K | Lower: $65.5K.
                 </div>
-                
-                <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + VWAP</div>
-                    <div style="height: 250px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                            <path d="M0,150 L50,140 L100,145 L150,130 L200,120 L250,110 L300,100 L350,90 L400,85" fill="none" stroke="#4f46e5" stroke-width="2"/>
-                            <path d="M0,145 L50,138 L100,142 L150,128 L200,118 L250,108 L300,98 L350,88 L400,83" fill="none" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4"/>
-                            <text x="10" y="20" font-size="12" fill="#64748b">VWAP: $68,450</text>
-                        </svg>
-                    </div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
-                        <strong>Signal:</strong> Price ($68,256) below VWAP ($68,450). Sellers control the session. Flip above VWAP = Intraday bullish.
-                    </div>
+            </div>
+            
+            <!-- VWAP Chart -->
+            <div class="tech-chart-container">
+                <div class="tech-chart-title">Price + VWAP</div>
+                <svg class="tech-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="40" y1="30" x2="380" y2="30" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="70" x2="380" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="110" x2="380" y2="110" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="150" x2="380" y2="150" stroke="#e2e8f0" stroke-width="0.5"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="385" y="35" font-size="10" fill="#64748b">$75K</text>
+                    <text x="385" y="75" font-size="10" fill="#64748b">$70K</text>
+                    <text x="385" y="115" font-size="10" fill="#64748b">$65K</text>
+                    <text x="385" y="155" font-size="10" fill="#64748b">$60K</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="40" y="185" font-size="10" fill="#64748b">Nov 23</text>
+                    <text x="180" y="185" font-size="10" fill="#64748b">Jan 23</text>
+                    <text x="340" y="185" font-size="10" fill="#64748b">Feb 23</text>
+                    
+                    <!-- VWAP line -->
+                    <polyline fill="none" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4,2" points="
+                        40,45 48,46 56,47 64,48 72,49 80,50 88,51 96,52 104,53 112,54 120,55 128,56 136,57 144,58 152,59 160,60 168,61 176,62 184,63 192,64 200,65 208,66 216,67 224,68 232,69 240,70 248,71 256,72 264,73 272,74 280,75 288,76 296,77 304,78 312,79 320,80 328,81 336,82 344,83 352,84 360,85 368,86 376,87 384,88 392,89 400,90
+                    "/>
+                    
+                    <!-- Price line -->
+                    <polyline fill="none" stroke="#4f46e5" stroke-width="2" points="
+                        40,30 44,32 48,28 52,35 56,33 60,38 64,36 68,40 72,38 76,42 80,40 84,45 88,43 92,48 96,45 100,50 104,48 108,52 112,50 116,55 120,52 124,58 128,55 132,60 136,58 140,62 144,60 148,65 152,62 156,68 160,65 164,70 168,68 172,72 176,70 180,75 184,72 188,70 192,68 196,72 200,70 204,68 208,72 212,70 216,68 220,72 224,70 228,68 232,72 236,70 240,68 244,72 248,70 252,68 256,72 260,70 264,68 268,72 272,70 276,68 280,72 284,70 288,68 292,72 296,70 300,68 304,72 308,70 312,68 316,72 320,70 324,68 328,72 332,70 336,68 340,72 344,70 348,68 352,72 356,70 360,68 364,72 368,70 372,68 376,72 380,70 384,68 388,72 392,70 396,68 400,70
+                    "/>
+                    
+                    <!-- Legend -->
+                    <text x="45" y="20" font-size="11" fill="#4f46e5" font-weight="bold">Price</text>
+                    <text x="90" y="20" font-size="11" fill="#06b6d4" font-weight="bold">VWAP</text>
+                    <text x="340" y="20" font-size="11" fill="#06b6d4" font-weight="bold">VWAP: $66,450</text>
+                </svg>
+                <div class="tech-chart-signal">
+                    <strong>Signal:</strong> Price ($66,150) below VWAP ($66,450). Sellers control the session. Flip above VWAP = Intraday bullish.
                 </div>
-                
-                <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Volume</div>
-                    <div style="height: 200px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="none">
-                            <!-- 14 volume bars -->
-                            <rect x="10" y="90" width="20" height="40" fill="#10b981" opacity="0.6"/>
-                            <rect x="35" y="70" width="20" height="60" fill="#ef4444" opacity="0.6"/>
-                            <rect x="60" y="100" width="20" height="30" fill="#10b981" opacity="0.6"/>
-                            <rect x="85" y="80" width="20" height="50" fill="#ef4444" opacity="0.6"/>
-                            <rect x="110" y="110" width="20" height="20" fill="#ef4444" opacity="0.6"/>
-                            <rect x="135" y="95" width="20" height="35" fill="#10b981" opacity="0.6"/>
-                            <rect x="160" y="85" width="20" height="45" fill="#ef4444" opacity="0.6"/>
-                            <rect x="185" y="105" width="20" height="25" fill="#10b981" opacity="0.6"/>
-                            <rect x="210" y="75" width="20" height="55" fill="#ef4444" opacity="0.6"/>
-                            <rect x="235" y="100" width="20" height="30" fill="#10b981" opacity="0.6"/>
-                            <rect x="260" y="80" width="20" height="50" fill="#ef4444" opacity="0.6"/>
-                            <rect x="285" y="95" width="20" height="35" fill="#10b981" opacity="0.6"/>
-                            <rect x="310" y="110" width="20" height="20" fill="#ef4444" opacity="0.6"/>
-                            <rect x="335" y="85" width="20" height="45" fill="#10b981" opacity="0.6"/>
-                            <text x="10" y="20" font-size="12" fill="#64748b">Avg: 45K BTC | Current: 35K BTC</text>
-                        </svg>
-                    </div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
-                        <strong>Signal:</strong> Volume at 35K BTC (22% below 45K average). Declining volume on consolidation = Weak conviction. Breakout needs >50K BTC.
-                    </div>
+            </div>
+            
+            <!-- Volume Chart -->
+            <div class="tech-chart-container">
+                <div class="tech-chart-title">Volume</div>
+                <svg class="tech-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="40" y1="40" x2="380" y2="40" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="80" x2="380" y2="80" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="120" x2="380" y2="120" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="160" x2="380" y2="160" stroke="#e2e8f0" stroke-width="0.5"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="5" y="25" font-size="10" fill="#64748b">60K</text>
+                    <text x="5" y="65" font-size="10" fill="#64748b">40K</text>
+                    <text x="10" y="105" font-size="10" fill="#64748b">20K</text>
+                    <text x="15" y="165" font-size="10" fill="#64748b">0</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="40" y="185" font-size="10" fill="#64748b">Nov 23</text>
+                    <text x="180" y="185" font-size="10" fill="#64748b">Jan 23</text>
+                    <text x="340" y="185" font-size="10" fill="#64748b">Feb 23</text>
+                    
+                    <!-- Volume bars (90 bars) - alternating green/red -->
+                    <rect x="40" y="100" width="3" height="60" fill="#10b981" opacity="0.7"/>
+                    <rect x="44" y="120" width="3" height="40" fill="#ef4444" opacity="0.7"/>
+                    <rect x="48" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="52" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="56" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="60" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="64" y="70" width="3" height="90" fill="#10b981" opacity="0.7"/>
+                    <rect x="68" y="90" width="3" height="70" fill="#ef4444" opacity="0.7"/>
+                    <rect x="72" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="76" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="80" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="84" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="88" y="75" width="3" height="85" fill="#10b981" opacity="0.7"/>
+                    <rect x="92" y="95" width="3" height="65" fill="#ef4444" opacity="0.7"/>
+                    <rect x="96" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="100" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="104" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="108" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="112" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="116" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="120" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="124" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="128" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="132" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="136" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="140" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="144" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="148" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="152" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="156" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="160" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="164" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="168" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="172" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="176" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="180" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="184" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="188" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="192" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="196" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="200" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="204" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="208" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="212" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="216" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="220" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="224" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="228" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="232" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="236" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="240" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="244" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="248" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="252" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="256" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="260" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="264" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="268" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="272" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="276" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="280" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="284" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="288" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="292" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="296" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="300" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="304" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="308" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="312" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="316" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="320" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="324" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="328" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="332" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="336" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="340" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="344" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="348" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="352" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="356" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="360" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="364" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    <rect x="368" y="85" width="3" height="75" fill="#10b981" opacity="0.7"/>
+                    <rect x="372" y="105" width="3" height="55" fill="#ef4444" opacity="0.7"/>
+                    <rect x="376" y="95" width="3" height="65" fill="#10b981" opacity="0.7"/>
+                    <rect x="380" y="115" width="3" height="45" fill="#ef4444" opacity="0.7"/>
+                    <rect x="384" y="80" width="3" height="80" fill="#10b981" opacity="0.7"/>
+                    <rect x="388" y="100" width="3" height="60" fill="#ef4444" opacity="0.7"/>
+                    <rect x="392" y="90" width="3" height="70" fill="#10b981" opacity="0.7"/>
+                    <rect x="396" y="110" width="3" height="50" fill="#ef4444" opacity="0.7"/>
+                    
+                    <!-- Legend -->
+                    <text x="45" y="20" font-size="11" fill="#10b981" font-weight="bold">Buy</text>
+                    <text x="80" y="20" font-size="11" fill="#ef4444" font-weight="bold">Sell</text>
+                    <text x="280" y="20" font-size="11" fill="#64748b">Avg: 45K BTC | Current: 35K BTC</text>
+                </svg>
+                <div class="tech-chart-signal">
+                    <strong>Signal:</strong> Volume at 35K BTC (22% below 45K average). Declining volume on consolidation = Weak conviction. Breakout needs >50K BTC.
                 </div>
-                
-                <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">RSI</div>
-                    <div style="height: 200px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="none">
-                            <!-- Grid lines -->
-                            <line x1="30" y1="30" x2="400" y2="30" stroke="#ef4444" stroke-width="1" stroke-dasharray="3"/>
-                            <line x1="30" y1="52" x2="400" y2="52" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <line x1="30" y1="75" x2="400" y2="75" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <line x1="30" y1="97" x2="400" y2="97" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <line x1="30" y1="120" x2="400" y2="120" stroke="#10b981" stroke-width="1" stroke-dasharray="3"/>
-                            <!-- Scale labels -->
-                            <text x="5" y="25" font-size="10" fill="#ef4444">70</text>
-                            <text x="10" y="55" font-size="10" fill="#64748b">60</text>
-                            <text x="10" y="78" font-size="10" fill="#64748b">50</text>
-                            <text x="10" y="100" font-size="10" fill="#64748b">40</text>
-                            <text x="5" y="125" font-size="10" fill="#10b981">30</text>
-                            <!-- RSI line with 20 points -->
-                            <path d="M30,95 L50,92 L70,94 L90,88 L110,90 L130,85 L150,87 L170,82 L190,80 L210,78 L230,75 L250,77 L270,72 L290,70 L310,74 L330,68 L350,70 L370,65 L390,67 L400,72" fill="none" stroke="#f59e0b" stroke-width="2"/>
-                            <text x="370" y="60" font-size="14" fill="#f59e0b" font-weight="bold">48</text>
-                        </svg>
-                    </div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
-                        <strong>Signal:</strong> RSI at 48 — Neutral zone. Between 30 (oversold) and 70 (overbought). No directional edge. Wait for extreme reading.
-                    </div>
+            </div>
+            
+            <!-- RSI Chart -->
+            <div class="tech-chart-container">
+                <div class="tech-chart-title">RSI (Relative Strength Index)</div>
+                <svg class="tech-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="40" y1="35" x2="380" y2="35" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,2"/>
+                    <line x1="40" y1="65" x2="380" y2="65" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="95" x2="380" y2="95" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="125" x2="380" y2="125" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="155" x2="380" y2="155" stroke="#10b981" stroke-width="1" stroke-dasharray="4,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="20" y="30" font-size="10" fill="#ef4444" font-weight="bold">70</text>
+                    <text x="25" y="60" font-size="10" fill="#64748b">60</text>
+                    <text x="25" y="90" font-size="10" fill="#64748b">50</text>
+                    <text x="25" y="120" font-size="10" fill="#64748b">40</text>
+                    <text x="20" y="150" font-size="10" fill="#10b981" font-weight="bold">30</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="40" y="185" font-size="10" fill="#64748b">Nov 23</text>
+                    <text x="180" y="185" font-size="10" fill="#64748b">Jan 23</text>
+                    <text x="340" y="185" font-size="10" fill="#64748b">Feb 23</text>
+                    
+                    <!-- RSI line (90 data points) -->
+                    <polyline fill="none" stroke="#f59e0b" stroke-width="2" points="
+                        40,85 44,83 48,87 52,80 56,82 60,77 64,79 68,74 72,76 76,71 
+                        80,73 84,68 88,70 92,65 96,67 100,62 104,64 108,59 112,61 116,56 
+                        120,58 124,53 128,55 132,50 136,52 140,47 144,49 148,44 152,46 156,41 
+                        160,43 164,38 168,40 172,45 176,43 180,48 184,46 188,51 192,49 196,54 
+                        200,52 204,57 208,55 212,60 216,58 220,63 224,61 228,66 232,64 236,69 
+                        240,67 244,72 248,70 252,75 256,73 260,78 264,76 268,81 272,79 276,84 
+                        280,82 284,87 288,85 292,90 296,88 300,93 304,91 308,96 312,94 316,99 
+                        320,97 324,102 328,100 332,105 336,103 340,108 344,106 348,111 352,109 356,114 
+                        360,112 364,117 368,115 372,120 376,118 380,123 384,121 388,126 392,124 396,129 400,127
+                    "/>
+                    
+                    <!-- Current value label -->
+                    <text x="350" y="115" font-size="14" fill="#f59e0b" font-weight="bold">RSI: 48</text>
+                </svg>
+                <div class="tech-chart-signal">
+                    <strong>Signal:</strong> RSI at 48 — Neutral zone. Between 30 (oversold) and 70 (overbought). No directional edge. Wait for extreme reading.
                 </div>
-                
-                <div style="background: #f8fafc; border-radius: 8px; padding: 15px;">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">MACD</div>
-                    <div style="height: 200px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                        <svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="none">
-                            <!-- Grid lines -->
-                            <line x1="30" y1="30" x2="400" y2="30" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <line x1="30" y1="52" x2="400" y2="52" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <line x1="30" y1="75" x2="400" y2="75" stroke="#64748b" stroke-width="1" stroke-dasharray="3"/>
-                            <line x1="30" y1="97" x2="400" y2="97" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <line x1="30" y1="120" x2="400" y2="120" stroke="#e2e8f0" stroke-width="0.5"/>
-                            <!-- Scale labels -->
-                            <text x="5" y="25" font-size="10" fill="#64748b">+200</text>
-                            <text x="5" y="55" font-size="10" fill="#64748b">+100</text>
-                            <text x="10" y="78" font-size="10" fill="#64748b">0</text>
-                            <text x="5" y="100" font-size="10" fill="#64748b">-100</text>
-                            <text x="5" y="125" font-size="10" fill="#64748b">-200</text>
-                            <!-- MACD line with 20 points -->
-                            <path d="M30,90 L50,87 L70,89 L90,84 L110,86 L130,81 L150,83 L170,78 L190,76 L210,80 L230,77 L250,74 L270,76 L290,71 L310,69 L330,72 L350,68 L370,70 L390,65 L400,60" fill="none" stroke="#3b82f6" stroke-width="2"/>
-                            <!-- Signal line with 20 points -->
-                            <path d="M30,100 L50,97 L70,99 L90,95 L110,96 L130,93 L150,94 L170,91 L190,89 L210,90 L230,88 L250,86 L270,87 L290,84 L310,83 L330,81 L350,82 L370,79 L390,77 L400,73" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3"/>
-                            <text x="10" y="145" font-size="11" fill="#64748b">MACD: -120 | Signal: -80</text>
-                        </svg>
-                    </div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
-                        <strong>Signal:</strong> MACD (-120) below Signal (-80) = Bearish momentum. Histogram negative. Zero line cross = Trend change signal.
-                    </div>
+            </div>
+            
+            <!-- MACD Chart -->
+            <div class="tech-chart-container">
+                <div class="tech-chart-title">MACD</div>
+                <svg class="tech-chart-svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="40" y1="35" x2="380" y2="35" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="65" x2="380" y2="65" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="95" x2="380" y2="95" stroke="#64748b" stroke-width="1" stroke-dasharray="4,2"/>
+                    <line x1="40" y1="125" x2="380" y2="125" stroke="#e2e8f0" stroke-width="0.5"/>
+                    <line x1="40" y1="155" x2="380" y2="155" stroke="#e2e8f0" stroke-width="0.5"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="5" y="30" font-size="10" fill="#64748b">+200</text>
+                    <text x="5" y="60" font-size="10" fill="#64748b">+100</text>
+                    <text x="15" y="90" font-size="10" fill="#64748b">0</text>
+                    <text x="5" y="120" font-size="10" fill="#64748b">-100</text>
+                    <text x="5" y="150" font-size="10" fill="#64748b">-200</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="40" y="185" font-size="10" fill="#64748b">Nov 23</text>
+                    <text x="180" y="185" font-size="10" fill="#64748b">Jan 23</text>
+                    <text x="340" y="185" font-size="10" fill="#64748b">Feb 23</text>
+                    
+                    <!-- MACD line -->
+                    <polyline fill="none" stroke="#3b82f6" stroke-width="2" points="
+                        40,50 44,52 48,48 52,55 56,53 60,58 64,56 68,60 72,58 76,62 
+                        80,60 84,64 88,62 92,66 96,64 100,68 104,66 108,70 112,68 116,72 
+                        120,70 124,74 128,72 132,76 136,74 140,78 144,76 148,80 152,78 156,82 
+                        160,80 164,84 168,82 172,86 176,84 180,88 184,86 188,90 192,88 196,92 
+                        200,90 204,94 208,92 212,96 216,94 220,98 224,96 228,100 232,98 236,102 
+                        240,100 244,104 248,102 252,106 256,104 260,108 264,106 268,110 272,108 276,112 
+                        280,110 284,114 288,112 292,116 296,114 300,118 304,116 308,120 312,118 316,122 
+                        320,120 324,124 328,122 332,126 336,124 340,128 344,126 348,130 352,128 356,132 
+                        360,130 364,134 368,132 372,136 376,134 380,138 384,136 388,140 392,138 396,142 400,140
+                    "/>
+                    
+                    <!-- Signal line -->
+                    <polyline fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3,2" points="
+                        40,60 44,62 48,58 52,65 56,63 60,68 64,66 68,70 72,68 76,72 
+                        80,70 84,74 88,72 92,76 96,74 100,78 104,76 108,80 112,78 116,82 
+                        120,80 124,84 128,82 132,86 136,84 140,88 144,86 148,90 152,88 156,92 
+                        160,90 164,94 168,92 172,96 176,94 180,98 184,96 188,100 192,98 196,102 
+                        200,100 204,104 208,102 212,106 216,104 220,108 224,106 228,110 232,108 236,112 
+                        240,110 244,114 248,112 252,116 256,114 260,118 264,116 268,120 272,118 276,122 
+                        280,120 284,124 288,122 292,126 296,124 300,128 304,126 308,130 312,128 316,132 
+                        320,130 324,134 328,132 332,136 336,134 340,138 344,136 348,140 352,138 356,142 
+                        360,140 364,144 368,142 372,146 376,144 380,148 384,146 388,150 392,148 396,152 400,150
+                    "/>
+                    
+                    <!-- Current value label -->
+                    <text x="45" y="175" font-size="11" fill="#3b82f6" font-weight="bold">MACD: -120</text>
+                    <text x="140" y="175" font-size="11" fill="#f59e0b" font-weight="bold">Signal: -80</text>
+                </svg>
+                <div class="tech-chart-signal">
+                    <strong>Signal:</strong> MACD (-120) below Signal (-80) = Bearish momentum. Histogram negative. Zero line cross = Trend change signal.
                 </div>
             </div>
         </div>
@@ -717,204 +997,9 @@
             }
         }
         
-        // Initialize price chart
-        async function initPriceChart() {
-            try {
-                // Fetch 7 days of hourly data from CoinGecko
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7');
-                const data = await response.json();
-                
-                const chartContainer = document.getElementById('price-chart');
-                const chart = LightweightCharts.createChart(chartContainer, {
-                    layout: { background: { color: 'transparent' }, textColor: '#64748b' },
-                    grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } },
-                    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-                    rightPriceScale: { borderColor: '#e2e8f0' },
-                    timeScale: { borderColor: '#e2e8f0', timeVisible: false },
-                    handleScroll: false,
-                    handleScale: false
-                });
-                
-                const lineSeries = chart.addAreaSeries({
-                    lineColor: '#667eea',
-                    topColor: 'rgba(102, 126, 234, 0.3)',
-                    bottomColor: 'rgba(102, 126, 234, 0.0)',
-                    lineWidth: 2
-                });
-                
-                // Convert prices to chart data
-                const prices = data.prices.map(p => ({
-                    time: p[0] / 1000,
-                    value: p[1]
-                }));
-                
-                lineSeries.setData(prices);
-                chart.timeScale().fitContent();
-            } catch (e) {
-                console.log('Chart load failed, using fallback');
-                document.getElementById('price-chart').innerHTML = '<div style="padding: 80px; text-align: center; color: #64748b;">📈 7-Day Price Chart<br><span style="font-size: 11px;">$65,000 → $68,256 (+5.0%)</span></div>';
-            }
-        }
-        
         // Update on load and every 60 seconds
         updatePrice();
-        initPriceChart();
-        
-        // Initialize technical charts with indicators
-        async function initTechCharts() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7');
-                const data = await response.json();
-                const prices = data.prices.map(p => ({ time: p[0] / 1000, value: p[1] }));
-                
-                function calcEMA(data, period) {
-                    const k = 2 / (period + 1);
-                    const ema = [{ time: data[0].time, value: data[0].value }];
-                    for (let i = 1; i < data.length; i++) {
-                        ema.push({ time: data[i].time, value: data[i].value * k + ema[i-1].value * (1 - k) });
-                    }
-                    return ema;
-                }
-                
-                function calcBB(data, period = 20, stdDev = 2) {
-                    const bb = [];
-                    for (let i = period - 1; i < data.length; i++) {
-                        const slice = data.slice(i - period + 1, i + 1);
-                        const avg = slice.reduce((a, b) => a + b.value, 0) / period;
-                        const variance = slice.reduce((a, b) => a + Math.pow(b.value - avg, 2), 0) / period;
-                        const std = Math.sqrt(variance);
-                        bb.push({ time: data[i].time, upper: avg + stdDev * std, middle: avg, lower: avg - stdDev * std });
-                    }
-                    return bb;
-                }
-                
-                function calcRSI(data, period = 14) {
-                    const rsi = []; let gains = 0, losses = 0;
-                    for (let i = 1; i <= period; i++) {
-                        const change = data[i].value - data[i-1].value;
-                        if (change > 0) gains += change; else losses += Math.abs(change);
-                    }
-                    let avgGain = gains / period, avgLoss = losses / period;
-                    for (let i = period; i < data.length; i++) {
-                        const change = data[i].value - data[i-1].value;
-                        avgGain = ((avgGain * (period - 1)) + (change > 0 ? change : 0)) / period;
-                        avgLoss = ((avgLoss * (period - 1)) + (change < 0 ? Math.abs(change) : 0)) / period;
-                        rsi.push({ time: data[i].time, value: 100 - (100 / (1 + avgGain / avgLoss)) });
-                    }
-                    return rsi;
-                }
-                
-                function calcMACD(data, fast = 12, slow = 26, signal = 9) {
-                    const ema = (arr, period) => {
-                        const k = 2 / (period + 1);
-                        const result = [{ time: arr[0].time, value: arr[0].value }];
-                        for (let i = 1; i < arr.length; i++) result.push({ time: arr[i].time, value: arr[i].value * k + result[i-1].value * (1 - k) });
-                        return result;
-                    };
-                    const fastEMA = ema(data, fast), slowEMA = ema(data, slow);
-                    const macd = fastEMA.map((f, i) => ({ time: f.time, value: f.value - slowEMA[i].value }));
-                    return { macd, signal: ema(macd, signal) };
-                }
-                
-                // EMA Chart
-                const emaEl = document.getElementById('chart-ema');
-                if (emaEl) {
-                    try {
-                        emaEl.innerHTML = '';
-                        const chart = LightweightCharts.createChart(emaEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
-                        chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
-                        chart.addLineSeries({ color: '#f59e0b', lineWidth: 2 }).setData(calcEMA(prices, 9));
-                        chart.addLineSeries({ color: '#ef4444', lineWidth: 2 }).setData(calcEMA(prices, 21));
-                        chart.timeScale().fitContent();
-                    } catch (err) {
-                        emaEl.innerHTML = '<div style="padding: 100px; text-align: center; color: #94a3b8;">📈 EMA Chart<br><small>Price: $' + Math.round(prices[prices.length-1].value).toLocaleString() + '</small></div>';
-                    }
-                }
-                
-                // BB Chart
-                const bbEl = document.getElementById('chart-bb');
-                if (bbEl) {
-                    const chart = LightweightCharts.createChart(bbEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
-                    const bb = calcBB(prices);
-                    chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
-                    chart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 }).setData(bb.map(d => ({ time: d.time, value: d.upper })));
-                    chart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, lineStyle: 2 }).setData(bb.map(d => ({ time: d.time, value: d.lower })));
-                    chart.addLineSeries({ color: '#64748b', lineWidth: 1 }).setData(bb.map(d => ({ time: d.time, value: d.middle })));
-                    chart.timeScale().fitContent();
-                }
-                
-                // VWAP Chart
-                const vwapEl = document.getElementById('chart-vwap');
-                if (vwapEl) {
-                    const chart = LightweightCharts.createChart(vwapEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
-                    let cumulativeTPV = 0, cumulativeVol = 0;
-                    const vwapData = prices.map(p => { const vol = Math.random() * 1000 + 500; cumulativeTPV += p.value * vol; cumulativeVol += vol; return { time: p.time, value: cumulativeTPV / cumulativeVol }; });
-                    chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
-                    chart.addLineSeries({ color: '#06b6d4', lineWidth: 2 }).setData(vwapData);
-                    chart.timeScale().fitContent();
-                }
-                
-                // Volume Chart
-                const volEl = document.getElementById('chart-volume');
-                if (volEl) {
-                    const chart = LightweightCharts.createChart(volEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
-                    chart.addLineSeries({ color: '#4f46e5', lineWidth: 2 }).setData(prices);
-                    chart.timeScale().fitContent();
-                }
-                
-                // RSI Chart
-                const rsiEl = document.getElementById('chart-rsi');
-                if (rsiEl) {
-                    const chart = LightweightCharts.createChart(rsiEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
-                    const rsi = calcRSI(prices);
-                    chart.addLineSeries({ color: '#f59e0b', lineWidth: 2 }).setData(rsi);
-                    chart.addLineSeries({ color: '#ef4444', lineWidth: 1, lineStyle: 2, lastValueVisible: false }).setData(rsi.map(d => ({ time: d.time, value: 70 })));
-                    chart.addLineSeries({ color: '#10b981', lineWidth: 1, lineStyle: 2, lastValueVisible: false }).setData(rsi.map(d => ({ time: d.time, value: 30 })));
-                    chart.timeScale().fitContent();
-                }
-                
-                // MACD Chart
-                const macdEl = document.getElementById('chart-macd');
-                if (macdEl) {
-                    const chart = LightweightCharts.createChart(macdEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { borderColor: '#e2e8f0', visible: true }, timeScale: { borderColor: '#e2e8f0', timeVisible: false }, handleScroll: false, handleScale: false });
-                    const macd = calcMACD(prices);
-                    chart.addLineSeries({ color: '#3b82f6', lineWidth: 2 }).setData(macd.macd);
-                    chart.addLineSeries({ color: '#f59e0b', lineWidth: 2 }).setData(macd.signal);
-                    chart.timeScale().fitContent();
-                }
-                
-                // IBIT Flows Chart
-                const ibitEl = document.getElementById('ibit-chart');
-                if (ibitEl) {
-                    const chart = LightweightCharts.createChart(ibitEl, { layout: { background: { color: 'transparent' }, textColor: '#64748b' }, grid: { vertLines: { color: '#e2e8f0' }, horzLines: { color: '#e2e8f0' } }, rightPriceScale: { visible: false }, timeScale: { visible: false }, handleScroll: false, handleScale: false });
-                    const ibitData = [
-                        { time: 1, value: -20.9 },
-                        { time: 2, value: 26.5 },
-                        { time: 3, value: -73.4 },
-                        { time: 4, value: -157.6 },
-                        { time: 5, value: -9.4 },
-                        { time: 6, value: -119.7 },
-                        { time: 7, value: -84.2 }
-                    ];
-                    const ibitSeries = chart.addHistogramSeries({ color: '#64748b' });
-                    ibitSeries.setData(ibitData.map(d => ({ time: d.time, value: d.value, color: d.value >= 0 ? '#10b981' : '#ef4444' })));
-                }
-            } catch (e) {
-                console.log('Tech charts error:', e);
-            }
-        }
-        
-        initTechCharts();
-        
-        // Debug: Log chart initialization
-        console.log('Charts initialized');
-        
         setInterval(updatePrice, 60000);
-        
-        // Auto-reload page every 5 minutes to refresh all data
-        setTimeout(() => {
-            window.location.reload();
-        }, 300000);
     </script>
 </body>
 </html>
