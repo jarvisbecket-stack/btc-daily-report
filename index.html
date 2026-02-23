@@ -208,10 +208,12 @@
                     <div style="height: 200px; width: 100%; background: white; border-radius: 6px;">
                         <svg width="100%" height="100%" viewBox="0 0 400 180" preserveAspectRatio="none">
                             <defs><linearGradient id="priceGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#667eea;stop-opacity:0.3"/><stop offset="100%" style="stop-color:#667eea;stop-opacity:0"/></linearGradient></defs>
-                            <path d="M0,120 L50,100 L100,110 L150,90 L200,80 L250,70 L300,60 L350,50 L400,40 L400,180 L0,180 Z" fill="url(#priceGrad)"/>
-                            <path d="M0,120 L50,100 L100,110 L150,90 L200,80 L250,70 L300,60 L350,50 L400,40" fill="none" stroke="#667eea" stroke-width="2"/>
-                            <circle cx="400" cy="40" r="4" fill="#667eea"/>
-                            <text x="320" y="30" font-size="12" fill="#667eea" font-weight="bold">$68,256</text>
+                            <!-- Area fill -->
+                            <path d="M0,140 L20,135 L40,138 L60,132 L80,134 L100,128 L120,130 L140,124 L160,122 L180,118 L200,115 L220,112 L240,108 L260,105 L280,100 L300,95 L320,90 L340,85 L360,80 L380,75 L400,70 L400,180 L0,180 Z" fill="url(#priceGrad)"/>
+                            <!-- Price line with 20 points -->
+                            <path d="M0,140 L20,135 L40,138 L60,132 L80,134 L100,128 L120,130 L140,124 L160,122 L180,118 L200,115 L220,112 L240,108 L260,105 L280,100 L300,95 L320,90 L340,85 L360,80 L380,75 L400,70" fill="none" stroke="#667eea" stroke-width="2"/>
+                            <circle cx="400" cy="70" r="4" fill="#667eea"/>
+                            <text x="320" y="60" font-size="12" fill="#667eea" font-weight="bold">$68,256</text>
                             <text x="10" y="170" font-size="10" fill="#64748b">Feb 17</text>
                             <text x="360" y="170" font-size="10" fill="#64748b">Feb 23</text>
                         </svg>
@@ -524,10 +526,13 @@
                     <div style="height: 250px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                         <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
                             <defs><linearGradient id="emaGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#4f46e5;stop-opacity:0.3"/><stop offset="100%" style="stop-color:#4f46e5;stop-opacity:0"/></linearGradient></defs>
-                            <path d="M0,150 L50,140 L100,145 L150,130 L200,120 L250,110 L300,100 L350,90 L400,85" fill="none" stroke="#4f46e5" stroke-width="2"/>
-                            <path d="M0,160 L50,150 L100,155 L150,145 L200,135 L250,125 L300,115 L350,105 L400,100" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4"/>
-                            <path d="M0,170 L50,165 L100,168 L150,160 L200,155 L250,145 L300,135 L350,125 L400,120" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/>
-                            <text x="10" y="20" font-size="12" fill="#64748b">$68,000</text>
+                            <!-- Price line with 20 data points -->
+                            <path d="M0,160 L20,155 L40,158 L60,150 L80,152 L100,145 L120,148 L140,140 L160,138 L180,135 L200,130 L220,128 L240,125 L260,120 L280,118 L300,110 L320,105 L340,100 L360,95 L380,90 L400,85" fill="none" stroke="#4f46e5" stroke-width="2"/>
+                            <!-- EMA 9 -->
+                            <path d="M0,165 L20,162 L40,163 L60,158 L80,159 L100,154 L120,155 L140,150 L160,148 L180,145 L200,142 L220,140 L240,137 L260,134 L280,132 L300,126 L320,122 L340,118 L360,114 L380,110 L400,105" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4"/>
+                            <!-- EMA 21 -->
+                            <path d="M0,170 L20,168 L40,169 L60,166 L80,167 L100,164 L120,165 L140,162 L160,160 L180,158 L200,156 L220,154 L240,152 L260,150 L280,148 L300,144 L320,141 L340,138 L360,135 L380,132 L400,128" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/>
+                            <text x="10" y="20" font-size="12" fill="#64748b">Price: $68,256 | EMA9: $69,200 | EMA21: $70,000</text>
                         </svg>
                     </div>
                     <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
@@ -539,10 +544,14 @@
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + Bollinger Bands</div>
                     <div style="height: 250px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                         <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none">
-                            <path d="M0,60 L50,55 L100,65 L150,50 L200,45 L250,40 L300,35 L350,30 L400,25" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
-                            <path d="M0,180 L50,175 L100,185 L150,170 L200,165 L250,160 L300,155 L350,150 L400,145" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
-                            <path d="M0,120 L50,115 L100,125 L150,110 L200,105 L250,100 L300,95 L350,90 L400,85" fill="none" stroke="#64748b" stroke-width="1"/>
-                            <path d="M0,150 L50,140 L100,145 L150,130 L200,120 L250,110 L300,100 L350,90 L400,85" fill="none" stroke="#4f46e5" stroke-width="2"/>
+                            <!-- Upper band -->
+                            <path d="M0,50 L20,48 L40,52 L60,45 L80,47 L100,42 L120,44 L140,38 L160,36 L180,34 L200,32 L220,30 L240,28 L260,26 L280,24 L300,22 L320,20 L340,18 L360,16 L380,14 L400,12" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
+                            <!-- Lower band -->
+                            <path d="M0,170 L20,168 L40,172 L60,165 L80,167 L100,162 L120,164 L140,158 L160,156 L180,154 L200,152 L220,150 L240,148 L260,146 L280,144 L300,142 L320,140 L340,138 L360,136 L380,134 L400,132" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
+                            <!-- Middle band -->
+                            <path d="M0,110 L20,108 L40,112 L60,105 L80,107 L100,102 L120,104 L140,98 L160,96 L180,94 L200,92 L220,90 L240,88 L260,86 L280,84 L300,82 L320,80 L340,78 L360,76 L380,74 L400,72" fill="none" stroke="#64748b" stroke-width="1"/>
+                            <!-- Price -->
+                            <path d="M0,140 L20,135 L40,138 L60,130 L80,132 L100,125 L120,128 L140,120 L160,118 L180,115 L200,110 L220,108 L240,105 L260,100 L280,98 L300,90 L320,85 L340,80 L360,75 L380,70 L400,65" fill="none" stroke="#4f46e5" stroke-width="2"/>
                             <text x="10" y="20" font-size="12" fill="#64748b">Upper: $70.5K | Mid: $68K | Lower: $65.5K</text>
                         </svg>
                     </div>
@@ -569,13 +578,21 @@
                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Volume</div>
                     <div style="height: 200px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                         <svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="none">
-                            <rect x="20" y="80" width="30" height="50" fill="#10b981" opacity="0.6"/>
-                            <rect x="70" y="60" width="30" height="70" fill="#ef4444" opacity="0.6"/>
-                            <rect x="120" y="90" width="30" height="40" fill="#10b981" opacity="0.6"/>
-                            <rect x="170" y="70" width="30" height="60" fill="#ef4444" opacity="0.6"/>
-                            <rect x="220" y="100" width="30" height="30" fill="#ef4444" opacity="0.6"/>
-                            <rect x="270" y="85" width="30" height="45" fill="#10b981" opacity="0.6"/>
-                            <rect x="320" y="75" width="30" height="55" fill="#ef4444" opacity="0.6"/>
+                            <!-- 14 volume bars -->
+                            <rect x="10" y="90" width="20" height="40" fill="#10b981" opacity="0.6"/>
+                            <rect x="35" y="70" width="20" height="60" fill="#ef4444" opacity="0.6"/>
+                            <rect x="60" y="100" width="20" height="30" fill="#10b981" opacity="0.6"/>
+                            <rect x="85" y="80" width="20" height="50" fill="#ef4444" opacity="0.6"/>
+                            <rect x="110" y="110" width="20" height="20" fill="#ef4444" opacity="0.6"/>
+                            <rect x="135" y="95" width="20" height="35" fill="#10b981" opacity="0.6"/>
+                            <rect x="160" y="85" width="20" height="45" fill="#ef4444" opacity="0.6"/>
+                            <rect x="185" y="105" width="20" height="25" fill="#10b981" opacity="0.6"/>
+                            <rect x="210" y="75" width="20" height="55" fill="#ef4444" opacity="0.6"/>
+                            <rect x="235" y="100" width="20" height="30" fill="#10b981" opacity="0.6"/>
+                            <rect x="260" y="80" width="20" height="50" fill="#ef4444" opacity="0.6"/>
+                            <rect x="285" y="95" width="20" height="35" fill="#10b981" opacity="0.6"/>
+                            <rect x="310" y="110" width="20" height="20" fill="#ef4444" opacity="0.6"/>
+                            <rect x="335" y="85" width="20" height="45" fill="#10b981" opacity="0.6"/>
                             <text x="10" y="20" font-size="12" fill="#64748b">Avg: 45K BTC | Current: 35K BTC</text>
                         </svg>
                     </div>
@@ -592,8 +609,9 @@
                             <line x1="0" y1="105" x2="400" y2="105" stroke="#10b981" stroke-width="1" stroke-dasharray="3"/>
                             <text x="5" y="25" font-size="10" fill="#ef4444">70</text>
                             <text x="5" y="110" font-size="10" fill="#10b981">30</text>
-                            <path d="M0,90 L50,85 L100,95 L150,80 L200,75 L250,85 L300,70 L350,75 L400,72" fill="none" stroke="#f59e0b" stroke-width="2"/>
-                            <text x="350" y="65" font-size="12" fill="#f59e0b" font-weight="bold">48</text>
+                            <!-- RSI line with 20 points -->
+                            <path d="M0,95 L20,92 L40,94 L60,88 L80,90 L100,85 L120,87 L140,82 L160,80 L180,78 L200,75 L220,77 L240,72 L260,70 L280,74 L300,68 L320,70 L340,65 L360,67 L380,70 L400,72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+                            <text x="350" y="60" font-size="14" fill="#f59e0b" font-weight="bold">48</text>
                         </svg>
                     </div>
                     <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
@@ -606,8 +624,10 @@
                     <div style="height: 200px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                         <svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="none">
                             <line x1="0" y1="75" x2="400" y2="75" stroke="#64748b" stroke-width="1" stroke-dasharray="3"/>
-                            <path d="M0,90 L50,85 L100,95 L150,80 L200,85 L250,70 L300,75 L350,65 L400,60" fill="none" stroke="#3b82f6" stroke-width="2"/>
-                            <path d="M0,100 L50,95 L100,100 L150,90 L200,95 L250,85 L300,80 L350,75 L400,70" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3"/>
+                            <!-- MACD line with 20 points -->
+                            <path d="M0,90 L20,87 L40,89 L60,84 L80,86 L100,81 L120,83 L140,78 L160,76 L180,80 L200,77 L220,74 L240,76 L260,71 L280,69 L300,72 L320,68 L340,70 L360,65 L380,62 L400,60" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                            <!-- Signal line with 20 points -->
+                            <path d="M0,100 L20,97 L40,99 L60,95 L80,96 L100,93 L120,94 L140,91 L160,89 L180,90 L200,88 L220,86 L240,87 L260,84 L280,83 L300,81 L320,82 L340,79 L360,77 L380,75 L400,73" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3"/>
                             <text x="10" y="20" font-size="12" fill="#64748b">MACD: -120 | Signal: -80</text>
                         </svg>
                     </div>
