@@ -244,6 +244,9 @@ class ReportManager:
                     <div style="margin-top: 10px; font-size: 12px; color: #94a3b8;">
                         Last updated: <span id="last-update">{datetime.now().strftime('%H:%M:%S')}</span>
                     </div>
+                    <button onclick="updatePrice()" style="margin-top: 15px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                        🔄 Refresh Price
+                    </button>
                 </div>
             </div>
             
