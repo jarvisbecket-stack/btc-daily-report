@@ -91,6 +91,33 @@ class ReportManager:
         df['MACD_Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
         
         mc = mpf.make_marketcolors(up='#10b981', down='#ef4444', edge='inherit', wick='inherit', volume='in')
+        
+        # Supertrend calculation
+        def calculate_supertrend(df, period=10, multiplier=3):
+            hl2 = (df['High'] + df['Low']) / 2
+            atr = df['High'].rolling(period).max() - df['Low'].rolling(period).min()
+            
+            upperband = hl2 + (multiplier * atr)
+            lowerband = hl2 - (multiplier * atr)
+            
+            supertrend = pd.Series(index=df.index, dtype=float)
+            direction = pd.Series(index=df.index, dtype=int)
+            
+            for i in range(len(df)):
+                if i == 0:
+                    supertrend.iloc[i] = upperband.iloc[i]
+                    direction.iloc[i] = 1
+                else:
+                    if df['Close'].iloc[i] > supertrend.iloc[i-1]:
+                        supertrend.iloc[i] = max(lowerband.iloc[i], supertrend.iloc[i-1])
+                        direction.iloc[i] = 1
+                    else:
+                        supertrend.iloc[i] = min(upperband.iloc[i], supertrend.iloc[i-1])
+                        direction.iloc[i] = -1
+            
+            return supertrend, direction
+        
+        df['Supertrend'], df['Supertrend_Dir'] = calculate_supertrend(df)
         s = mpf.make_mpf_style(marketcolors=mc, figcolor='white', facecolor='white', edgecolor='#e2e8f0', gridcolor='#f1f5f9')
         
         # 90-Day
@@ -121,6 +148,12 @@ class ReportManager:
         vwap = mpf.make_addplot(df['VWAP'], color='#06b6d4', width=2)
         fig, axes = mpf.plot(df, type='candle', style=s, addplot=[vwap], figsize=(14, 6), returnfig=True, tight_layout=True)
         fig.savefig(f'{REPORT_DIR}/chart_vwap.png', dpi=150, bbox_inches='tight', facecolor='white')
+        plt.close(fig)
+        
+        # Supertrend
+        supertrend_plot = mpf.make_addplot(df['Supertrend'], color='#ec4899', width=2)
+        fig, axes = mpf.plot(df, type='candle', style=s, addplot=[supertrend_plot], figsize=(14, 6), returnfig=True, tight_layout=True)
+        fig.savefig(f'{REPORT_DIR}/chart_supertrend.png', dpi=150, bbox_inches='tight', facecolor='white')
         plt.close(fig)
         
         # RSI
@@ -377,6 +410,14 @@ class ReportManager:
                     <img src="chart_vwap.png" alt="VWAP">
                     <div class="commentary">
                         <strong>VWAP Analysis:</strong> Price trading below VWAP since late January, indicating sustained selling pressure. VWAP at $71K now acts as strong resistance. Institutional algos typically buy near VWAP on pullbacks — failure to reclaim suggests continued weakness. Target: Reclaim VWAP for bullish reversal confirmation.
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Supertrend (10, 3)</div>
+                    <img src="chart_supertrend.png" alt="Supertrend">
+                    <div class="commentary">
+                        <strong>Supertrend Analysis:</strong> Trend-following indicator showing current bearish trend (price below supertrend line). Supertrend acts as dynamic support/resistance. A flip above the line signals trend change to bullish. Currently showing sell signal — wait for bullish flip before entering long positions.
                     </div>
                 </div>
                 
