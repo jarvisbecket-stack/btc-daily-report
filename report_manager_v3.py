@@ -500,7 +500,14 @@ class ReportManager:
     <script>
         async function updatePrice() {{
             try {{
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+                // Add cache-busting parameter
+                const cacheBuster = Date.now();
+                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT&_=' + cacheBuster);
+                
+                if (!response.ok) {{
+                    throw new Error('Network response was not ok: ' + response.status);
+                }}
+                
                 const data = await response.json();
                 
                 const price = parseFloat(data.lastPrice).toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
@@ -525,8 +532,11 @@ class ReportManager:
                 const dateOptions = {{ timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }};
                 const cstDate = now.toLocaleDateString('en-US', dateOptions);
                 document.querySelector('.subtitle').textContent = cstDate + ' CST | Live Binance Data | Auto-refresh: 60s';
+                
+                console.log('Price updated successfully:', price);
             }} catch (e) {{
                 console.error('Price update failed:', e);
+                alert('Failed to refresh price. Please check your internet connection or try again later.');
             }}
         }}
         
