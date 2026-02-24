@@ -367,21 +367,33 @@ class ReportManager:
                 <div class="chart-container">
                     <div style="font-weight: 600; margin-bottom: 10px;">Bollinger Bands (20, 2)</div>
                     <img src="chart_bb.png" alt="BB">
+                    <div class="commentary">
+                        <strong>Bollinger Bands Analysis:</strong> Price currently trading near the lower band, indicating oversold conditions. Bands have widened significantly following the February volatility spike. A squeeze (band narrowing) typically precedes major moves. Watch for price reclaiming the middle band ($68K) as a bullish signal.
+                    </div>
                 </div>
                 
                 <div class="chart-container">
                     <div style="font-weight: 600; margin-bottom: 10px;">VWAP</div>
                     <img src="chart_vwap.png" alt="VWAP">
+                    <div class="commentary">
+                        <strong>VWAP Analysis:</strong> Price trading below VWAP since late January, indicating sustained selling pressure. VWAP at $71K now acts as strong resistance. Institutional algos typically buy near VWAP on pullbacks — failure to reclaim suggests continued weakness. Target: Reclaim VWAP for bullish reversal confirmation.
+                    </div>
                 </div>
                 
                 <div class="chart-container">
                     <div style="font-weight: 600; margin-bottom: 10px;">RSI (14)</div>
                     <img src="chart_rsi.png" alt="RSI">
+                    <div class="commentary">
+                        <strong>RSI Analysis:</strong> Currently at 42, neutral territory but recovering from oversold conditions (sub-30) during February capitulation. No clear divergence yet. RSI needs to break above 50 for bullish momentum, or below 30 for capitulation continuation. Watch for hidden bullish divergence on 4H timeframe.
+                    </div>
                 </div>
                 
                 <div class="chart-container">
                     <div style="font-weight: 600; margin-bottom: 10px;">MACD (12, 26, 9)</div>
                     <img src="chart_macd.png" alt="MACD">
+                    <div class="commentary">
+                        <strong>MACD Analysis:</strong> MACD line below signal line = bearish momentum. Histogram showing decreasing negative bars suggests selling pressure easing. Zero line cross would signal trend change. No bullish crossover yet — wait for MACD to cross above signal for entry signal. Current setup favors patience.
+                    </div>
                 </div>
             </div>
             
