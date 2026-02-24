@@ -18,19 +18,32 @@ class ReportManager:
         self.data = {}
         
     def fetch_price_data(self):
-        """Fetch current BTC price and 24h change"""
+        """Fetch current BTC price and 24h change from Binance"""
         try:
             import urllib.request
-            url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true"
+            # Binance 24hr ticker stats
+            url = "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"
             with urllib.request.urlopen(url, timeout=30) as response:
                 data = json.loads(response.read().decode())
                 return {
-                    "price": data["bitcoin"]["usd"],
-                    "change_24h": data["bitcoin"]["usd_24h_change"]
+                    "price": float(data["lastPrice"]),
+                    "change_24h": float(data["priceChangePercent"])
                 }
         except Exception as e:
-            print(f"Price fetch error: {e}")
-            return {"price": 66150, "change_24h": -1.5}
+            print(f"Binance price fetch error: {e}")
+            # Fallback to CoinGecko
+            try:
+                import urllib.request
+                url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true"
+                with urllib.request.urlopen(url, timeout=30) as response:
+                    data = json.loads(response.read().decode())
+                    return {
+                        "price": data["bitcoin"]["usd"],
+                        "change_24h": data["bitcoin"]["usd_24h_change"]
+                    }
+            except Exception as e2:
+                print(f"CoinGecko fallback error: {e2}")
+                return {"price": 66150, "change_24h": -1.5}
     
     def fetch_binance_ohlc(self, days=120):
         """Fetch OHLC data from Binance"""
