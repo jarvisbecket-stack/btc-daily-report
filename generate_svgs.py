@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+"""
+Generate SVG charts with proper scales and dates
+"""
+
+import json
+
+# Load data
+with open('/root/btc-daily-report/chart_data.json', 'r') as f:
+    data = json.load(f)
+
+prices = data['prices']
+ema9 = data['ema9']
+ema21 = data['ema21']
+bb_upper = data['bb_upper']
+bb_lower = data['bb_lower']
+rsi = data['rsi']
+macd = data['macd']
+macd_signal = data['macd_signal']
+volume = data['volume']
+vwap = data['vwap']
+
+def map_value(val, min_val, max_val, height):
+    """Map value to Y coordinate (inverted)"""
+    return height - ((val - min_val) / (max_val - min_val)) * height
+
+def generate_path(values, width, height, min_val, max_val):
+    """Generate SVG path for line chart"""
+    points = []
+    for i, val in enumerate(values):
+        x = (i / (len(values) - 1)) * width
+        y = map_value(val, min_val, max_val, height)
+        points.append(f"{x:.1f},{y:.1f}")
+    return "M" + " L".join(points)
+
+def generate_bars(values, width, height, max_val):
+    """Generate SVG bars for volume"""
+    bars = []
+    bar_width = width / len(values) * 0.8
+    for i, val in enumerate(values):
+        x = (i / len(values)) * width
+        bar_height = (val / max_val) * height
+        y = height - bar_height
+        color = "#10b981" if i > 0 and prices[i] > prices[i-1] else "#ef4444"
+        bars.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_width:.1f}" height="{bar_height:.1f}" fill="{color}" opacity="0.7"/>')
+    return "\n".join(bars)
+
+# Chart dimensions
+W, H = 380, 150
+
+# EMA Chart SVG
+min_p, max_p = 60000, 76000
+def to_path(vals): return generate_path(vals, W, H, min_p, max_p)
+
+ema_svg = f'''<svg viewBox="0 0 400 200" style="width:100%;height:180px;">
+  <!-- Grid lines -->
+  <line x1="40" y1="20" x2="420" y2="20" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="70" x2="420" y2="70" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="120" x2="420" y2="120" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="170" x2="420" y2="170" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Y-axis labels -->
+  <text x="35" y="25" text-anchor="end" font-size="10" fill="#64748b">$75K</text>
+  <text x="35" y="75" text-anchor="end" font-size="10" fill="#64748b">$70K</text>
+  <text x="35" y="125" text-anchor="end" font-size="10" fill="#64748b">$65K</text>
+  <text x="35" y="175" text-anchor="end" font-size="10" fill="#64748b">$60K</text>
+  
+  <!-- X-axis labels -->
+  <text x="40" y="195" text-anchor="middle" font-size="10" fill="#64748b">Nov 23</text>
+  <text x="230" y="195" text-anchor="middle" font-size="10" fill="#64748b">Jan 23</text>
+  <text x="420" y="195" text-anchor="middle" font-size="10" fill="#64748b">Feb 23</text>
+  
+  <!-- Lines -->
+  <path d="{to_path(prices)}" fill="none" stroke="#4f46e5" stroke-width="2" transform="translate(40,15)"/>
+  <path d="{to_path(ema9)}" fill="none" stroke="#f59e0b" stroke-width="2" transform="translate(40,15)"/>
+  <path d="{to_path(ema21)}" fill="none" stroke="#ef4444" stroke-width="2" transform="translate(40,15)"/>
+  
+  <!-- Current value -->
+  <text x="420" y="{map_value(prices[-1], min_p, max_p, H)+15:.0f}" font-size="11" fill="#4f46e5" font-weight="600">${prices[-1]:,.0f}</text>
+</svg>'''
+
+# RSI Chart SVG
+min_r, max_r = 20, 90
+def to_rsi_path(vals): return generate_path(vals, W, H, min_r, max_r)
+
+rsi_svg = f'''<svg viewBox="0 0 400 200" style="width:100%;height:180px;">
+  <!-- Grid lines -->
+  <line x1="40" y1="20" x2="420" y2="20" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="57" x2="420" y2="57" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="95" x2="420" y2="95" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="132" x2="420" y2="132" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="170" x2="420" y2="170" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Overbought/Oversold lines -->
+  <line x1="40" y1="33" x2="420" y2="33" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="40" y1="157" x2="420" y2="157" stroke="#10b981" stroke-width="1" stroke-dasharray="4,2"/>
+  
+  <!-- Y-axis labels -->
+  <text x="35" y="25" text-anchor="end" font-size="10" fill="#64748b">70</text>
+  <text x="35" y="62" text-anchor="end" font-size="10" fill="#64748b">60</text>
+  <text x="35" y="100" text-anchor="end" font-size="10" fill="#64748b">50</text>
+  <text x="35" y="137" text-anchor="end" font-size="10" fill="#64748b">40</text>
+  <text x="35" y="175" text-anchor="end" font-size="10" fill="#64748b">30</text>
+  
+  <!-- X-axis labels -->
+  <text x="40" y="195" text-anchor="middle" font-size="10" fill="#64748b">Nov 23</text>
+  <text x="230" y="195" text-anchor="middle" font-size="10" fill="#64748b">Jan 23</text>
+  <text x="420" y="195" text-anchor="middle" font-size="10" fill="#64748b">Feb 23</text>
+  
+  <!-- RSI Line -->
+  <path d="{to_rsi_path(rsi)}" fill="none" stroke="#f59e0b" stroke-width="2" transform="translate(40,10)"/>
+  
+  <!-- Current value -->
+  <text x="420" y="{map_value(rsi[-1], min_r, max_r, H)+10:.0f}" font-size="11" fill="#f59e0b" font-weight="600">{rsi[-1]:.0f}</text>
+</svg>'''
+
+# MACD Chart SVG
+min_m, max_m = -300, 800
+def to_macd_path(vals): return generate_path(vals, W, H, min_m, max_m)
+
+macd_svg = f'''<svg viewBox="0 0 400 200" style="width:100%;height:180px;">
+  <!-- Grid lines -->
+  <line x1="40" y1="20" x2="420" y2="20" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="57" x2="420" y2="57" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="95" x2="420" y2="95" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="132" x2="420" y2="132" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="40" y1="170" x2="420" y2="170" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Zero line -->
+  <line x1="40" y1="132" x2="420" y2="132" stroke="#64748b" stroke-width="1" stroke-dasharray="4,2"/>
+  
+  <!-- Y-axis labels -->
+  <text x="35" y="25" text-anchor="end" font-size="10" fill="#64748b">+200</text>
+  <text x="35" y="62" text-anchor="end" font-size="10" fill="#64748b">+100</text>
+  <text x="35" y="100" text-anchor="end" font-size="10" fill="#64748b">0</text>
+  <text x="35" y="137" text-anchor="end" font-size="10" fill="#64748b">-100</text>
+  <text x="35" y="175" text-anchor="end" font-size="10" fill="#64748b">-200</text>
+  
+  <!-- X-axis labels -->
+  <text x="40" y="195" text-anchor="middle" font-size="10" fill="#64748b">Nov 23</text>
+  <text x="230" y="195" text-anchor="middle" font-size="10" fill="#64748b">Jan 23</text>
+  <text x="420" y="195" text-anchor="middle" font-size="10" fill="#64748b">Feb 23</text>
+  
+  <!-- MACD Lines -->
+  <path d="{to_macd_path(macd)}" fill="none" stroke="#3b82f6" stroke-width="2" transform="translate(40,10)"/>
+  <path d="{to_macd_path(macd_signal)}" fill="none" stroke="#f59e0b" stroke-width="2" transform="translate(40,10)"/>
+  
+  <!-- Current value -->
+  <text x="420" y="{map_value(macd[-1], min_m, max_m, H)+10:.0f}" font-size="11" fill="#3b82f6" font-weight="600">{macd[-1]:.0f}</text>
+</svg>'''
+
+# Save SVG files
+with open('/root/btc-daily-report/chart_ema.svg', 'w') as f:
+    f.write(ema_svg)
+with open('/root/btc-daily-report/chart_rsi.svg', 'w') as f:
+    f.write(rsi_svg)
+with open('/root/btc-daily-report/chart_macd.svg', 'w') as f:
+    f.write(macd_svg)
+
+print("SVG charts generated:")
+print("- chart_ema.svg")
+print("- chart_rsi.svg")
+print("- chart_macd.svg")

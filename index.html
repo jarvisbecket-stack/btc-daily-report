@@ -1,581 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Forecast - February 23, 2026</title>
+    <title>Bitcoin Forecast - 2026-02-24</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; font-size: 13px; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 15px; }
-        
-        /* Header */
-        .header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
-        .header h1 { font-size: 24px; margin-bottom: 5px; }
-        .header .date { font-size: 13px; opacity: 0.9; }
-        
-        /* Prediction Banner */
-        .prediction { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .pred-title { font-size: 22px; font-weight: 700; color: #f59e0b; }
-        .pred-stats { display: flex; gap: 20px; }
-        .pred-stat { text-align: center; }
-        .pred-stat .val { font-size: 18px; font-weight: 700; color: #1e293b; }
-        .pred-stat .lbl { font-size: 11px; color: #64748b; text-transform: uppercase; }
-        
-        /* Two Column Layout */
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        
-        /* Cards */
-        .card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-        .card-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
-        
-        /* Metrics Compact */
-        .metric-row { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #cbd5e1; }
-        .metric-row.bullish { border-left-color: #10b981; background: #f0fdf4; }
-        .metric-row.bearish { border-left-color: #ef4444; background: #fef2f2; }
-        .metric-row.neutral { border-left-color: #f59e0b; background: #fffbeb; }
-        .metric-icon { font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border-radius: 8px; }
-        .metric-info { flex: 1; }
-        .metric-name { font-size: 11px; color: #64748b; text-transform: uppercase; }
-        .metric-val { font-size: 16px; font-weight: 700; color: #1e293b; }
-        .metric-sig { font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; color: white; }
-        .sig-bullish { background: #10b981; }
-        .sig-bearish { background: #ef4444; }
-        .sig-neutral { background: #f59e0b; }
-        .metric-exp { font-size: 11px; color: #64748b; margin-top: 2px; }
-        
-        /* Chart Section */
-        .chart-box { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 8px; padding: 15px; }
-        .chart-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .chart-title { font-size: 12px; color: #64748b; font-weight: 600; }
-        .chart-price { font-size: 18px; font-weight: 700; color: #1e293b; }
-        .chart-wrap { background: white; border-radius: 6px; padding: 10px; }
-        
-        /* Timeframes */
-        .tf-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-        .tf-item { text-align: center; padding: 10px 5px; background: #f8fafc; border-radius: 6px; font-size: 11px; border: 2px solid transparent; }
-        .tf-item.bullish { border-color: #10b981; background: #f0fdf4; }
-        .tf-item.bearish { border-color: #ef4444; background: #fef2f2; }
-        .tf-item.neutral { border-color: #f59e0b; background: #fffbeb; }
-        .tf-time { color: #64748b; margin-bottom: 4px; }
-        .tf-bias { font-weight: 700; font-size: 11px; margin-bottom: 2px; }
-        .tf-range { color: #64748b; font-size: 10px; }
-        
-        /* TTC Analysis */
-        .ttc-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
-        .ttc-row:last-child { border-bottom: none; }
-        .ttc-tf { width: 70px; font-weight: 600; color: #4f46e5; font-size: 12px; }
-        .ttc-pattern { flex: 1; font-size: 12px; }
-        .ttc-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-        .status-bullish { background: #d1fae5; color: #065f46; }
-        .status-bearish { background: #fee2e2; color: #991b1b; }
-        .status-neutral { background: #fef3c7; color: #92400e; }
-        
-        /* Levels */
-        .levels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .level { text-align: center; padding: 15px 10px; border-radius: 8px; }
-        .level.support { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); }
-        .level.battle { background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%); }
-        .level.resistance { background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%); }
-        .level-lbl { font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.6); text-transform: uppercase; margin-bottom: 5px; }
-        .level-price { font-size: 20px; font-weight: 700; color: #1e293b; }
-        .level-desc { font-size: 10px; color: rgba(0,0,0,0.5); margin-top: 3px; }
-        
-        /* YouTube */
-        .yt-stats { display: flex; gap: 15px; margin-bottom: 10px; }
-        .yt-stat { background: #f8fafc; padding: 8px 12px; border-radius: 6px; text-align: center; }
-        .yt-stat-val { font-size: 16px; font-weight: 700; color: #1e293b; }
-        .yt-stat-lbl { font-size: 10px; color: #64748b; }
-        .yt-videos { font-size: 11px; }
-        .yt-video { padding: 8px; background: #f8fafc; border-radius: 6px; margin-bottom: 6px; }
-        .yt-video-title { font-weight: 600; color: #1e293b; margin-bottom: 2px; }
-        .yt-video-meta { color: #64748b; font-size: 10px; }
-        
-        /* Economic Calendar */
-        .econ-item { display: flex; align-items: center; gap: 10px; padding: 8px; background: #f8fafc; border-radius: 6px; margin-bottom: 6px; }
-        .econ-impact { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
-        .impact-high { background: #fecaca; color: #991b1b; }
-        .impact-med { background: #fde68a; color: #92400e; }
-        .econ-title { flex: 1; font-size: 12px; }
-        .econ-time { font-size: 11px; color: #64748b; }
-        
-        /* IBIT Flows */
-        .ibit-list { font-size: 11px; }
-        .ibit-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; }
-        .ibit-item:last-child { border-bottom: none; }
-        .ibit-date { color: #64748b; }
-        .ibit-flow { font-weight: 600; }
-        .flow-pos { color: #10b981; }
-        .flow-neg { color: #ef4444; }
-        
-        /* Footer */
-        .footer { text-align: center; padding: 15px; color: #64748b; font-size: 11px; margin-top: 15px; }
-        
-        /* Technical Charts */
-        .tech-chart-container { background: #f8fafc; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        .tech-chart-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #1e293b; }
-        .tech-chart-svg { background: white; border-radius: 6px; width: 100%; height: 250px; }
-        .tech-chart-signal { font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: white; border-radius: 6px; }
-        
-        @media (max-width: 768px) {
-            .two-col { grid-template-columns: 1fr; }
-            .tf-grid { grid-template-columns: repeat(3, 1fr); }
-            .levels-grid { grid-template-columns: 1fr; }
-            .pred-stats { width: 100%; justify-content: space-around; }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .header .subtitle { margin-top: 10px; opacity: 0.9; }
+        .content { padding: 30px; }
+        .card { background: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .card-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #1e293b; }
+        .price-box { text-align: center; padding: 20px; background: white; border-radius: 8px; }
+        .price { font-size: 48px; font-weight: 700; color: #1e293b; }
+        .change { font-size: 24px; margin-top: 10px; }
+        .change.positive { color: #10b981; }
+        .change.negative { color: #ef4444; }
+        .chart-container { margin: 20px 0; }
+        .chart-container img { width: 100%; max-width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .commentary { margin-top: 15px; padding: 15px; background: white; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #475569; border-left: 4px solid #667eea; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .metric { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+        .metric:last-child { border-bottom: none; }
+        .footer { text-align: center; padding: 20px; color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <h1>📈 Bitcoin Daily Forecast</h1>
-            <div class="date">February 23, 2026 at 04:57 UTC</div>
+            <h1>📊 Bitcoin Daily Forecast</h1>
+            <div class="subtitle">2026-02-24 | Generated by Claude 3.5 Sonnet</div>
         </div>
         
-        <!-- Prediction -->
-        <div class="prediction">
-            <div class="pred-title">NEUTRAL</div>
-            <div class="pred-stats">
-                <div class="pred-stat"><div class="val">43/100</div><div class="lbl">Score</div></div>
-                <div class="pred-stat"><div class="val">Low</div><div class="lbl">Confidence</div></div>
-                <div class="pred-stat"><div class="val" id="live-price">$68,256</div><div class="lbl">Price</div></div>
-                <div class="pred-stat"><div class="val" id="live-change" style="color:#10b981">+1.15%</div><div class="lbl">24h</div></div>
-            </div>
-        </div>
-        
-        <!-- Confluence Score Breakdown -->
-        <div class="card" style="margin-bottom: 15px;">
-            <div class="card-title">🎯 Confluence Score Breakdown (43/100)</div>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-                <div style="padding: 10px; background: #f0fdf4; border-radius: 8px; border-left: 3px solid #10b981;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Order Flow</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #1e293b;">72/100</div>
-                    <div style="font-size: 10px; color: #10b981;">Weight: 30%</div>
-                </div>
-                
-                <div style="padding: 10px; background: #f0fdf4; border-radius: 8px; border-left: 3px solid #10b981;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">On-Chain</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #1e293b;">62/100</div>
-                    <div style="font-size: 10px; color: #10b981;">Weight: 20%</div>
-                </div>
-                
-                <div style="padding: 10px; background: #fffbeb; border-radius: 8px; border-left: 3px solid #f59e0b;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Sentiment</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #1e293b;">45/100</div>
-                    <div style="font-size: 10px; color: #f59e0b;">Weight: 15%</div>
-                </div>
-                
-                <div style="padding: 10px; background: #fffbeb; border-radius: 8px; border-left: 3px solid #f59e0b;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Technical</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #1e293b;">38/100</div>
-                    <div style="font-size: 10px; color: #f59e0b;">Weight: 15%</div>
-                </div>
-                
-                <div style="padding: 10px; background: #fef2f2; border-radius: 8px; border-left: 3px solid #ef4444;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Liquidations</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #1e293b;">28/100</div>
-                    <div style="font-size: 10px; color: #ef4444;">Weight: 10%</div>
-                </div>
-                
-                <div style="padding: 10px; background: #fffbeb; border-radius: 8px; border-left: 3px solid #f59e0b;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Cross-Market</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #1e293b;">42/100</div>
-                    <div style="font-size: 10px; color: #f59e0b;">Weight: 7%</div>
-                </div>
-                
-                <div style="padding: 10px; background: #fef2f2; border-radius: 8px; border-left: 3px solid #ef4444;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Options</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #1e293b;">25/100</div>
-                    <div style="font-size: 10px; color: #ef4444;">Weight: 3%</div>
-                </div>
-                
-                <div style="padding: 10px; background: #f0f9ff; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                    <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Reassess</div>
-                    <div style="font-size: 14px; font-weight: 700; color: #1e293b;">Every 7 Days</div>
-                    <div style="font-size: 10px; color: #3b82f6;">Auto-adjust</div>
+        <div class="content">
+            <!-- Price Overview -->
+            <div class="card">
+                <div class="price-box">
+                    <div class="price">$66,150</div>
+                    <div class="change negative">
+                        -1.50%
+                    </div>
                 </div>
             </div>
-            <div style="margin-top: 12px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #64748b;">
-                <strong>Signal:</strong> Order Flow and On-Chain metrics are strongest predictors. Technical analysis alone performs at coin-flip levels (50%). Combined confluence improves accuracy to 52.6%. Weights auto-adjust based on 7-day rolling performance.
-            </div>
-        </div>
-        
-        <!-- Two Column: Chart + TTC -->
-        <div class="two-col">
+            
             <!-- 90-Day Price Action -->
             <div class="card">
-                <div class="card-title">📊 90-Day Price Action (Real Binance Data)</div>
-                <div class="chart-box">
-                    <div class="chart-header">
-                        <span class="chart-title">BTC/USD</span>
-                        <span class="chart-price">$66,150</span>
-                    </div>
-                    <img src="chart_90day.png" style="width:100%; border-radius:6px;"/>
+                <div class="card-title">📈 90-Day Price Action (Real Binance Data)</div>
+                <div class="chart-container">
+                    <img src="chart_90day.png" alt="90-Day BTC Chart">
                 </div>
-                <div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 6px; font-size: 12px; color: #64748b;">
-                    <strong>Commentary:</strong> Bitcoin has experienced significant volatility over the past 90 days, with a peak near $98K in late January followed by a sharp correction to $60K in early February. The price is currently consolidating around $66K, below both the 9-day and 21-day EMAs, indicating bearish momentum. Volume spiked dramatically during the February selloff, suggesting capitulation. Watch for a break above $70K or below $65K for directional clarity.
-                </div>            </div>            </div>
-            <div class="card">
-                <div class="card-title">📐 TTC Method Analysis</div>
-                <div class="ttc-row">
-                    <div class="ttc-tf">Monthly</div>
-                    <div class="ttc-pattern">M-Formation (Bearish)</div>
-                    <span class="ttc-status status-bearish">BEARISH</span>
-                </div>
-                <div class="ttc-row">
-                    <div class="ttc-tf">Weekly</div>
-                    <div class="ttc-pattern">Descending M</div>
-                    <span class="ttc-status status-bullish">BULLISH</span>
-                </div>
-                <div class="ttc-row">
-                    <div class="ttc-tf">Daily</div>
-                    <div class="ttc-pattern">Downtrend</div>
-                    <span class="ttc-status status-bearish">BEARISH</span>
-                </div>
-                <div class="ttc-row">
-                    <div class="ttc-tf">4-Hour</div>
-                    <div class="ttc-pattern">Range Bound</div>
-                    <span class="ttc-status status-neutral">NEUTRAL</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Two Column: Metrics + YouTube -->
-        <div class="two-col">
-            <div class="card">
-                <div class="card-title">📈 Market Metrics & Signals</div>
-                
-                <div class="metric-row bullish">
-                    <div class="metric-icon">🎯</div>
-                    <div class="metric-info">
-                        <div class="metric-name">Fear & Greed Index</div>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <span class="metric-val">9/100</span>
-                            <span class="metric-sig sig-bullish">BUY</span>
-                        </div>
-                        <div class="metric-exp">Extreme Fear = Contrarian Buy Signal. FTX-era pessimism.</div>
-                    </div>
-                </div>
-                
-                <div class="metric-row bearish">
-                    <div class="metric-icon">📉</div>
-                    <div class="metric-info">
-                        <div class="metric-name">IBIT ETF Flow (7D)</div>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <span class="metric-val">-$62.7M</span>
-                            <span class="metric-sig sig-bearish">SELLING</span>
-                        </div>
-                        <div class="metric-exp">6 of 7 days negative. Heavy institutional outflows.</div>
-                    </div>
-                </div>
-                
-                <div class="metric-row bullish">
-                    <div class="metric-icon">⚡</div>
-                    <div class="metric-info">
-                        <div class="metric-name">Funding Rate</div>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <span class="metric-val">-0.003%</span>
-                            <span class="metric-sig sig-bullish">BULLISH</span>
-                        </div>
-                        <div class="metric-exp">Shorts paying longs. Crowded bearish positioning.</div>
-                    </div>
-                </div>
-                
-                <div class="metric-row neutral">
-                    <div class="metric-icon">💧</div>
-                    <div class="metric-info">
-                        <div class="metric-name">Order Book Depth</div>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <span class="metric-val">3,230 BTC</span>
-                            <span class="metric-sig sig-neutral">BALANCED</span>
-                        </div>
-                        <div class="metric-exp">Bid/Ask 0.85. Excellent liquidity, low volatility risk.</div>
-                    </div>
+                <div class="commentary">
+                    <strong>Market Commentary:</strong> Bitcoin has experienced significant volatility over the past 90 days, with a peak near $98K in late January followed by a sharp correction to $60K in early February. The price is currently consolidating around $66,150, below both the 9-day and 21-day EMAs, indicating bearish momentum. Volume spiked dramatically during the February selloff, suggesting capitulation. Watch for a break above $70K or below $65K for directional clarity.
                 </div>
             </div>
             
+            <!-- Technical Indicators -->
             <div class="card">
-                <div class="card-title">📊 Substack Analyst Digest (48H)</div>                
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;">
-                    <div style="text-align: center; padding: 12px; background: #f0fdf4; border-radius: 8px;">
-                        <div style="font-size: 24px; font-weight: 700; color: #10b981;">0</div>
-                        <div style="font-size: 11px; color: #64748b;">Bullish</div>
-                    </div>
-                    
-                    <div style="text-align: center; padding: 12px; background: #fffbeb; border-radius: 8px;">
-                        <div style="font-size: 24px; font-weight: 700; color: #f59e0b;">2</div>
-                        <div style="font-size: 11px; color: #64748b;">Neutral</div>
-                    </div>
-                    
-                    <div style="text-align: center; padding: 12px; background: #fef2f2; border-radius: 8px;">
-                        <div style="font-size: 24px; font-weight: 700; color: #ef4444;">1</div>
-                        <div style="font-size: 11px; color: #64748b;">Bearish</div>
+                <div class="card-title">📊 Technical Indicators (120 Days)</div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Price + EMA (9 & 21)</div>
+                    <img src="chart_main_real.png" alt="Main Chart">
+                    <div class="commentary">
+                        <strong>Signal:</strong> Price trading below both EMA 9 and EMA 21. Bearish alignment. Golden cross needed for trend reversal.
                     </div>
                 </div>
                 
-                <div style="font-size: 11px;">
-                    <div style="padding: 10px; background: #f8fafc; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #f59e0b;">
-                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">Bitcoin News Digest — Mike Richardson</div>
-                        <div style="color: #64748b;">📄 Deep Dive 2/12/26 — <span style="color: #f59e0b; font-weight: 600;">NEUTRAL</span></div>
-                        <div style="color: #64748b; margin-top: 4px;">Macroeconomic Recalibration - conflicting labor data forcing hawkish repricing. ETFs saw $276M outflows but corporate treasuries buying dip.</div>
-                    </div>
-                    
-                    <div style="padding: 10px; background: #f8fafc; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #f59e0b;">
-                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">Eli R. Brown Crypto Research — Eli Brown</div>
-                        <div style="color: #64748b;">📄 BTC Analysis - Feb 9 — <span style="color: #f59e0b; font-weight: 600;">NEUTRAL</span></div>
-                        <div style="color: #64748b; margin-top: 4px;">Price needs to build over $97,407, then $100,151 and $101,330 as next major levels. Likely to remain within trendlines through February.</div>
-                    </div>
-                    
-                    <div style="padding: 10px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #ef4444;">
-                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">Monday Morning Blockchain — Michael Burke</div>
-                        <div style="color: #64748b;">📄 Feb 17 Update — <span style="color: #ef4444; font-weight: 600;">BEARISH</span></div>
-                        <div style="color: #64748b; margin-top: 4px;">Institutional Fatigue - Spot Bitcoin ETFs saw $2.172 billion net outflows in early February, significant cooling of institutional demand.</div>
-                    </div>
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Bollinger Bands (20, 2)</div>
+                    <img src="chart_bb_real.png" alt="Bollinger Bands">
                 </div>
-            </div>
-        </div>
-        
-        <!-- Two Column: Timeframes + Economic -->
-        <div class="two-col">
-            <div class="card">
-                <div class="card-title">⏰ 2-Hour Predictions</div>
-                <div class="tf-grid">
-                    <div class="tf-item bearish">
-                        <div class="tf-time">Now-2H</div>
-                        <div class="tf-bias" style="color:#ef4444">Slightly Bearish</div>
-                        <div class="tf-range">$65.8K-$66.2K</div>
-                    </div>
-                    <div class="tf-item neutral">
-                        <div class="tf-time">2H-4H</div>
-                        <div class="tf-bias" style="color:#f59e0b">Neutral</div>
-                        <div class="tf-range">$65.7K-$66.3K</div>
-                    </div>
-                    <div class="tf-item neutral">
-                        <div class="tf-time">4H-6H</div>
-                        <div class="tf-bias" style="color:#f59e0b">Neutral</div>
-                        <div class="tf-range">$65.6K-$66.4K</div>
-                    </div>
-                    <div class="tf-item bullish">
-                        <div class="tf-time">6H-8H</div>
-                        <div class="tf-bias" style="color:#10b981">Slightly Bullish</div>
-                        <div class="tf-range">$66.1K-$66.8K</div>
-                    </div>
-                    <div class="tf-item bullish">
-                        <div class="tf-time">8H-10H</div>
-                        <div class="tf-bias" style="color:#10b981">Bullish</div>
-                        <div class="tf-range">$66.5K-$67.2K</div>
-                    </div>
-                    <div class="tf-item neutral">
-                        <div class="tf-time">10H-12H</div>
-                        <div class="tf-bias" style="color:#f59e0b">Neutral</div>
-                        <div class="tf-range">$66.0K-$67.0K</div>
-                    </div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">VWAP</div>
+                    <img src="chart_vwap_real.png" alt="VWAP">
+                </div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">RSI (14)</div>
+                    <img src="chart_rsi_real.png" alt="RSI">
+                </div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">MACD (12, 26, 9)</div>
+                    <img src="chart_macd_real.png" alt="MACD">
                 </div>
             </div>
             
-            <div class="card">
-                <div class="card-title">📅 Economic Calendar (Next 48H)</div>
-                
-                <div class="econ-item">
-                    <span class="econ-impact impact-high">HIGH</span>
-                    <span class="econ-title">Advance GDP q/q</span>
-                    <span class="econ-time">Fri 08:30 AM</span>
-                </div>
-                <div class="econ-item">
-                    <span class="econ-impact impact-high">HIGH</span>
-                    <span class="econ-title">Core PCE Price Index m/m</span>
-                    <span class="econ-time">Fri 08:30 AM</span>
-                </div>
-                <div class="econ-item">
-                    <span class="econ-impact impact-med">MED</span>
-                    <span class="econ-title">Advance GDP Price Index q/q</span>
-                    <span class="econ-time">Fri 08:30 AM</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Two Column: Key Levels + IBIT Flows -->
-        <div class="two-col">
+            <!-- Key Levels -->
             <div class="card">
                 <div class="card-title">🎯 Key Levels</div>
-                <div class="levels-grid">
-                    <div class="level support">
-                        <div class="level-lbl">Critical Support</div>
-                        <div class="level-price">$65,000</div>
-                        <div class="level-desc">20x Long Liquidation</div>
-                    </div>
-                    <div class="level battle">
-                        <div class="level-lbl">Key Battleground</div>
-                        <div class="level-price">$66,000</div>
-                        <div class="level-desc">Reclaim = Bullish</div>
-                    </div>
-                    <div class="level resistance">
-                        <div class="level-lbl">Target Resistance</div>
-                        <div class="level-price">$70,000</div>
-                        <div class="level-desc">20x Short Liquidation</div>
-                    </div>
+                <div class="metric">
+                    <span>Support 1</span>
+                    <span style="color: #10b981; font-weight: 600;">$65,000</span>
                 </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-title">💰 Recent IBIT Flows (7 Days)</div>
-                <div style="height: 120px; background: white; border-radius: 6px; margin-bottom: 15px; padding: 10px;">
-                    <svg width="100%" height="100%" viewBox="0 0 400 100" preserveAspectRatio="none">
-                        <line x1="0" y1="50" x2="400" y2="50" stroke="#e2e8f0" stroke-width="1"/>
-                        <rect x="30" y="55" width="30" height="40" fill="#ef4444" opacity="0.8"/>
-                        <rect x="80" y="35" width="30" height="20" fill="#10b981" opacity="0.8"/>
-                        <rect x="130" y="60" width="30" height="35" fill="#ef4444" opacity="0.8"/>
-                        <rect x="180" y="75" width="30" height="50" fill="#ef4444" opacity="0.8"/>
-                        <rect x="230" y="52" width="30" height="25" fill="#ef4444" opacity="0.8"/>
-                        <rect x="280" y="70" width="30" height="45" fill="#ef4444" opacity="0.8"/>
-                        <rect x="330" y="62" width="30" height="35" fill="#ef4444" opacity="0.8"/>
-                        <text x="30" y="95" font-size="8" fill="#64748b">Feb 09</text>
-                        <text x="80" y="95" font-size="8" fill="#64748b">Feb 10</text>
-                        <text x="130" y="95" font-size="8" fill="#64748b">Feb 11</text>
-                        <text x="180" y="95" font-size="8" fill="#64748b">Feb 12</text>
-                        <text x="230" y="95" font-size="8" fill="#64748b">Feb 13</text>
-                        <text x="280" y="95" font-size="8" fill="#64748b">Feb 17</text>
-                        <text x="330" y="95" font-size="8" fill="#64748b">Feb 18</text>
-                    </svg>
+                <div class="metric">
+                    <span>Support 2</span>
+                    <span style="color: #10b981; font-weight: 600;">$60,000</span>
                 </div>
-                <div class="ibit-list">
-                    <div class="ibit-item">
-                        <span class="ibit-date">Feb 18</span>
-                        <span class="ibit-flow flow-neg">-$84.2M</span>
-                    </div>
-                    <div class="ibit-item">
-                        <span class="ibit-date">Feb 17</span>
-                        <span class="ibit-flow flow-neg">-$119.7M</span>
-                    </div>
-                    <div class="ibit-item">
-                        <span class="ibit-date">Feb 13</span>
-                        <span class="ibit-flow flow-neg">-$9.4M</span>
-                    </div>
-                    <div class="ibit-item">
-                        <span class="ibit-date">Feb 12</span>
-                        <span class="ibit-flow flow-neg">-$157.6M</span>
-                    </div>
-                    <div class="ibit-item">
-                        <span class="ibit-date">Feb 11</span>
-                        <span class="ibit-flow flow-neg">-$73.4M</span>
-                    </div>
-                    <div class="ibit-item">
-                        <span class="ibit-date">Feb 10</span>
-                        <span class="ibit-flow flow-pos">+$26.5M</span>
-                    </div>
-                    <div class="ibit-item">
-                        <span class="ibit-date">Feb 09</span>
-                        <span class="ibit-flow flow-neg">-$20.9M</span>
-                    </div>
+                <div class="metric">
+                    <span>Resistance 1</span>
+                    <span style="color: #ef4444; font-weight: 600;">$70,000</span>
+                </div>
+                <div class="metric">
+                    <span>Resistance 2</span>
+                    <span style="color: #ef4444; font-weight: 600;">$75,000</span>
                 </div>
             </div>
         </div>
         
-        <!-- X/Twitter Sentiment -->
-        <div class="card" style="margin-bottom: 15px;">
-            <div class="card-title">🐦 X/Twitter Sentiment (24H)</div>
-            
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;">
-                <div style="text-align: center; padding: 12px; background: #f0fdf4; border-radius: 8px;">
-                    <div style="font-size: 24px; font-weight: 700; color: #10b981;">42%</div>
-                    <div style="font-size: 11px; color: #64748b;">Bullish</div>
-                </div>
-                
-                <div style="text-align: center; padding: 12px; background: #fffbeb; border-radius: 8px;">
-                    <div style="font-size: 24px; font-weight: 700; color: #f59e0b;">31%</div>
-                    <div style="font-size: 11px; color: #64748b;">Neutral</div>
-                </div>
-                
-                <div style="text-align: center; padding: 12px; background: #fef2f2; border-radius: 8px;">
-                    <div style="font-size: 24px; font-weight: 700; color: #ef4444;">27%</div>
-                    <div style="font-size: 11px; color: #64748b;">Bearish</div>
-                </div>
-                
-                <div style="text-align: center; padding: 12px; background: #f0f9ff; border-radius: 8px;">
-                    <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">15.2K</div>
-                    <div style="font-size: 11px; color: #64748b;">Posts</div>
-                </div>
-            </div>
-            
-            <div style="font-size: 12px; color: #64748b; padding: 10px; background: #f8fafc; border-radius: 8px;">
-                <strong>Top Influencer Signals:</strong> Mixed sentiment from tracked accounts. @CryptoCapo_ remains bearish on lower timeframes. @IncomeSharks noting potential bottom formation. @TheCryptoLark highlighting ETF outflows as concerning. Overall social sentiment slightly lags price action, suggesting retail is cautious.
-            </div>
+        <div class="footer">
+            <p>Data sourced from Binance API | Charts generated with mplfinance</p>
+            <p>Report Manager v1.0 | Claude 3.5 Sonnet</p>
         </div>
-        
-        <!-- Trading Strategy -->
-        <div class="card" style="margin-bottom: 15px;">
-            <div class="card-title">⚡ Trading Strategy & Action Plan</div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                <div style="padding: 15px; background: #f0fdf4; border-radius: 8px; border: 2px solid #10b981;">
-                    <div style="font-size: 14px; font-weight: 700; color: #10b981; margin-bottom: 10px;">🟢 BULLISH TRIGGERS</div>
-                    <ul style="font-size: 12px; color: #1e293b; padding-left: 16px; margin: 0;">
-                        <li>Break above $70,000 with volume</li>
-                        <li>Daily close above $66,500</li>
-                        <li>RSI breaks above 60</li>
-                        <li>Funding rate turns positive</li>
-                        <li>IBIT inflows > $100M/day</li>
-                    </ul>
-                    <div style="margin-top: 10px; padding: 8px; background: white; border-radius: 6px; font-size: 11px; color: #065f46;">
-                        <strong>Action:</strong> Long position with target $72K-$75K. Stop loss at $65K.
-                    </div>
-                </div>
-                
-                <div style="padding: 15px; background: #fef2f2; border-radius: 8px; border: 2px solid #ef4444;">
-                    <div style="font-size: 14px; font-weight: 700; color: #ef4444; margin-bottom: 10px;">🔴 BEARISH TRIGGERS</div>
-                    <ul style="font-size: 12px; color: #1e293b; padding-left: 16px; margin: 0;">
-                        <li>Break below $65,000 with volume</li>
-                        <li>Daily close below $66,500</li>
-                        <li>RSI drops below 40</li>
-                        <li>Funding rate turns deeply negative</li>
-                        <li>IBIT outflows > $200M/day</li>
-                    </ul>
-                    <div style="margin-top: 10px; padding: 8px; background: white; border-radius: 6px; font-size: 11px; color: #991b1b;">
-                        <strong>Action:</strong> Short position with target $62K-$60K. Stop loss at $68.5K.
-                    </div>
-                </div>
-            </div>
-            
-            <div style="padding: 15px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; border-left: 4px solid #f59e0b;">
-                <div style="font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 8px;">📍 CURRENT STANCE: NEUTRAL / WAIT</div>
-                <div style="font-size: 12px; color: #78350f; line-height: 1.6;">
-                    Bitcoin is consolidating in a tight range between $65K-$70K. The confluence score of 43/100 indicates low conviction in either direction. <strong>Patience is key here.</strong> Wait for a clear breakout above $70K or breakdown below $65K before taking a directional position. The market is at equilibrium — forcing a trade now is gambling, not investing.
-                </div>
-            </div>
-        </div>
-        
-        <!-- Technical Indicators -->
-        <div class="card" style="margin-bottom: 15px;">
-            <div class="card-title">📊 Technical Indicators (Real Binance Data - 120 Days)</div>
-            
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Price + EMA (9 & 21)</div>
-                <img src="chart_main_real.png" style="width:100%; max-width:800px; border-radius:8px; display:block; margin:0 auto;"/>
-                <div style="font-size: 12px; color: #64748b; margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 6px;">
-                    <strong>Signal:</strong> Price trading below both EMA 9 and EMA 21. Bearish alignment. Golden cross needed for trend reversal.
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Bollinger Bands (20, 2)</div>
-                <img src="chart_bb_real.png" style="width:100%; max-width:800px; border-radius:8px; display:block; margin:0 auto;"/>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">VWAP</div>
-                <img src="chart_vwap_real.png" style="width:100%; max-width:800px; border-radius:8px; display:block; margin:0 auto;"/>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">RSI (14)</div>
-                <img src="chart_rsi_real.png" style="width:100%; max-width:800px; border-radius:8px; display:block; margin:0 auto;"/>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">MACD (12, 26, 9)</div>
-                <img src="chart_macd_real.png" style="width:100%; max-width:800px; border-radius:8px; display:block; margin:0 auto;"/>
-            </div>
-        </div>
+    </div>
 </body>
 </html>
