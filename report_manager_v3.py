@@ -498,43 +498,77 @@ class ReportManager:
     
     <!-- Live Price Refresh Script -->
     <script>
+        // Cache for price data
+        let lastPriceData = null;
+        let lastUpdateTime = 0;
+        const CACHE_DURATION = 30000; // 30 seconds minimum between API calls
+        
         async function updatePrice() {{
+            const now = Date.now();
+            
+            // Check if we should use cached data
+            if (lastPriceData && (now - lastUpdateTime) < CACHE_DURATION) {{
+                console.log('Using cached price data');
+                updateDisplay(lastPriceData);
+                return;
+            }}
+            
             try {{
-                // Try CoinGecko first (better CORS support)
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&_=' + Date.now());
+                // Try CoinGecko with rate limit handling
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+                
+                if (response.status === 429) {{
+                    // Rate limited - use cached data if available
+                    console.log('Rate limited by CoinGecko, using cached data');
+                    if (lastPriceData) {{
+                        updateDisplay(lastPriceData);
+                        document.getElementById('last-update').textContent = 'Rate limited - using cached data';
+                    }}
+                    return;
+                }}
                 
                 if (!response.ok) {{
                     throw new Error('CoinGecko failed: ' + response.status);
                 }}
                 
                 const data = await response.json();
-                const btc = data.bitcoin;
+                lastPriceData = data.bitcoin;
+                lastUpdateTime = now;
                 
-                const price = btc.usd.toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
-                const change = btc.usd_24h_change;
-                const changeClass = change >= 0 ? 'positive' : 'negative';
-                const changeSign = change >= 0 ? '+' : '';
-                
-                document.getElementById('live-price').textContent = price;
-                document.getElementById('live-change').textContent = changeSign + change.toFixed(2) + '%';
-                document.getElementById('live-change').className = 'change ' + changeClass;
-                
-                // Update time in CST
-                const now = new Date();
-                const cstOptions = {{ timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }};
-                const cstTime = now.toLocaleTimeString('en-US', cstOptions);
-                document.getElementById('last-update').textContent = cstTime + ' CST';
-                
-                // Update date
-                const dateOptions = {{ timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }};
-                const cstDate = now.toLocaleDateString('en-US', dateOptions);
-                document.querySelector('.subtitle').textContent = cstDate + ' CST | Live CoinGecko Data | Auto-refresh: 60s';
-                
-                console.log('Price updated from CoinGecko:', price);
+                updateDisplay(lastPriceData);
+                console.log('Price updated from CoinGecko:', lastPriceData.usd);
             }} catch (e) {{
                 console.error('Price update failed:', e);
-                document.getElementById('last-update').textContent = 'Error - check console';
+                // Use cached data if available
+                if (lastPriceData) {{
+                    updateDisplay(lastPriceData);
+                    document.getElementById('last-update').textContent = 'API error - using cached data';
+                }} else {{
+                    document.getElementById('last-update').textContent = 'Error - no cached data';
+                }}
             }}
+        }}
+        
+        function updateDisplay(btc) {{
+            const price = btc.usd.toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
+            const change = btc.usd_24h_change;
+            const changeClass = change >= 0 ? 'positive' : 'negative';
+            const changeSign = change >= 0 ? '+' : '';
+            
+            document.getElementById('live-price').textContent = price;
+            document.getElementById('live-change').textContent = changeSign + change.toFixed(2) + '%';
+            document.getElementById('live-change').className = 'change ' + changeClass;
+            
+            // Update time in CST
+            const now = new Date();
+            const cstOptions = {{ timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }};
+            const cstTime = now.toLocaleTimeString('en-US', cstOptions);
+            document.getElementById('last-update').textContent = cstTime + ' CST';
+            
+            // Update date
+            const dateOptions = {{ timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }};
+            const cstDate = now.toLocaleDateString('en-US', dateOptions);
+            document.querySelector('.subtitle').textContent = cstDate + ' CST | Live CoinGecko Data | Auto-refresh: 60s';
         }}
         
         // Update immediately and every 60 seconds
