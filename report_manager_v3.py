@@ -500,27 +500,24 @@ class ReportManager:
     <script>
         async function updatePrice() {{
             try {{
-                // Add cache-busting parameter
-                const cacheBuster = Date.now();
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT&_=' + cacheBuster);
+                // Try CoinGecko first (better CORS support)
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&_=' + Date.now());
                 
                 if (!response.ok) {{
-                    throw new Error('Network response was not ok: ' + response.status);
+                    throw new Error('CoinGecko failed: ' + response.status);
                 }}
                 
                 const data = await response.json();
+                const btc = data.bitcoin;
                 
-                const price = parseFloat(data.lastPrice).toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
-                const change = parseFloat(data.priceChangePercent);
+                const price = btc.usd.toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
+                const change = btc.usd_24h_change;
                 const changeClass = change >= 0 ? 'positive' : 'negative';
                 const changeSign = change >= 0 ? '+' : '';
                 
                 document.getElementById('live-price').textContent = price;
                 document.getElementById('live-change').textContent = changeSign + change.toFixed(2) + '%';
                 document.getElementById('live-change').className = 'change ' + changeClass;
-                document.getElementById('live-high').textContent = parseFloat(data.highPrice).toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
-                document.getElementById('live-low').textContent = parseFloat(data.lowPrice).toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
-                document.getElementById('live-vol').textContent = (parseFloat(data.volume)/1000).toFixed(1) + 'K';
                 
                 // Update time in CST
                 const now = new Date();
@@ -531,12 +528,12 @@ class ReportManager:
                 // Update date
                 const dateOptions = {{ timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }};
                 const cstDate = now.toLocaleDateString('en-US', dateOptions);
-                document.querySelector('.subtitle').textContent = cstDate + ' CST | Live Binance Data | Auto-refresh: 60s';
+                document.querySelector('.subtitle').textContent = cstDate + ' CST | Live CoinGecko Data | Auto-refresh: 60s';
                 
-                console.log('Price updated successfully:', price);
+                console.log('Price updated from CoinGecko:', price);
             }} catch (e) {{
                 console.error('Price update failed:', e);
-                alert('Failed to refresh price. Please check your internet connection or try again later.');
+                document.getElementById('last-update').textContent = 'Error - check console';
             }}
         }}
         
