@@ -227,7 +227,7 @@ class ReportManager:
     <div class="container">
         <div class="header">
             <h1>📊 Bitcoin Daily Forecast</h1>
-            <div class="subtitle">{self.date} | Live Binance Data | Auto-refresh: 60s</div>
+            <div class="subtitle">{self.date} CST | Live Binance Data | Auto-refresh: 60s</div>
         </div>
         
         <div class="content">
@@ -514,7 +514,17 @@ class ReportManager:
                 document.getElementById('live-high').textContent = parseFloat(data.highPrice).toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
                 document.getElementById('live-low').textContent = parseFloat(data.lowPrice).toLocaleString('en-US', {{style: 'currency', currency: 'USD', maximumFractionDigits: 0}});
                 document.getElementById('live-vol').textContent = (parseFloat(data.volume)/1000).toFixed(1) + 'K';
-                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                
+                // Update time in CST
+                const now = new Date();
+                const cstOptions = {{ timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }};
+                const cstTime = now.toLocaleTimeString('en-US', cstOptions);
+                document.getElementById('last-update').textContent = cstTime + ' CST';
+                
+                // Update date
+                const dateOptions = {{ timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }};
+                const cstDate = now.toLocaleDateString('en-US', dateOptions);
+                document.querySelector('.subtitle').textContent = cstDate + ' CST | Live Binance Data | Auto-refresh: 60s';
             }} catch (e) {{
                 console.error('Price update failed:', e);
             }}

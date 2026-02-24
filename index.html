@@ -38,22 +38,22 @@
     <div class="container">
         <div class="header">
             <h1>📊 Bitcoin Daily Forecast</h1>
-            <div class="subtitle">2026-02-25 | Live Binance Data | Auto-refresh: 60s</div>
+            <div class="subtitle">2026-02-25 CST | Live Binance Data | Auto-refresh: 60s</div>
         </div>
         
         <div class="content">
             <!-- Section 1: Price Overview with Live Refresh -->
             <div class="card">
                 <div class="price-box">
-                    <div class="price" id="live-price">$64,665</div>
-                    <div class="change negative" id="live-change">-0.13%</div>
+                    <div class="price" id="live-price">$64,461</div>
+                    <div class="change negative" id="live-change">+0.35%</div>
                     <div style="margin-top: 10px; font-size: 14px; color: #64748b;">
                         High: <span id="live-high">$65,036</span> | 
                         Low: <span id="live-low">$62,510</span> | 
-                        Vol: <span id="live-vol">26.8K</span> BTC
+                        Vol: <span id="live-vol">25.5K</span> BTC
                     </div>
                     <div style="margin-top: 10px; font-size: 12px; color: #94a3b8;">
-                        Last updated: <span id="last-update">03:07:27</span>
+                        Last updated: <span id="last-update">03:43:39</span>
                     </div>
                     <button onclick="updatePrice()" style="margin-top: 15px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
                         🔄 Refresh Price
@@ -78,7 +78,7 @@
                     <img src="chart_90day.png" alt="90-Day">
                 </div>
                 <div class="commentary">
-                    <strong>Market Commentary:</strong> Bitcoin peaked near $98K in late January, then corrected sharply to $60K in early February. Currently consolidating around $64,665, below both EMAs indicating bearish momentum. Volume spiked during the February selloff suggesting capitulation. Watch for break above $70K or below $65K for directional clarity.
+                    <strong>Market Commentary:</strong> Bitcoin peaked near $98K in late January, then corrected sharply to $60K in early February. Currently consolidating around $64,461, below both EMAs indicating bearish momentum. Volume spiked during the February selloff suggesting capitulation. Watch for break above $70K or below $65K for directional clarity.
                 </div>
             </div>
             
@@ -302,7 +302,7 @@
         </div>
         
         <div class="footer">
-            <p>Data: Binance API | Charts: mplfinance | Updated: 2026-02-25 03:07 CST</p>
+            <p>Data: Binance API | Charts: mplfinance | Updated: 2026-02-25 03:43 CST</p>
             <p>Report Manager v3.0 | All 12 Sections | Live Price Refresh</p>
         </div>
     </div>
@@ -325,7 +325,17 @@
                 document.getElementById('live-high').textContent = parseFloat(data.highPrice).toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0});
                 document.getElementById('live-low').textContent = parseFloat(data.lowPrice).toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0});
                 document.getElementById('live-vol').textContent = (parseFloat(data.volume)/1000).toFixed(1) + 'K';
-                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                
+                // Update time in CST
+                const now = new Date();
+                const cstOptions = { timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                const cstTime = now.toLocaleTimeString('en-US', cstOptions);
+                document.getElementById('last-update').textContent = cstTime + ' CST';
+                
+                // Update date
+                const dateOptions = { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' };
+                const cstDate = now.toLocaleDateString('en-US', dateOptions);
+                document.querySelector('.subtitle').textContent = cstDate + ' CST | Live Binance Data | Auto-refresh: 60s';
             } catch (e) {
                 console.error('Price update failed:', e);
             }
