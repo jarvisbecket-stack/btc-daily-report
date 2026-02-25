@@ -296,34 +296,34 @@ class ReportManager:
                 <div class="card-title">📐 TTC Method Analysis</div>
                 
                 <div class="chart-container">
-                    <div style="font-weight: 600; margin-bottom: 10px;">Monthly: M-Formation (BEARISH)</div>
-                    <img src="ttc_monthly.png" alt="TTC Monthly">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Monthly: M-Formation (BEARISH) - REAL DATA</div>
+                    <img src="ttc_monthly_real.png" alt="TTC Monthly Real">
                     <div class="commentary">
-                        <strong>Formation:</strong> Classic M-formation bearish reversal pattern. Two peaks with lower high on second peak. <strong>Target:</strong> $58K | <strong>Invalidation:</strong> Close above $75K.
+                        <strong>Formation:</strong> Real M-pattern with peaks at $97K-$99K. <strong>Target:</strong> $69K (measured move) | <strong>Invalidation:</strong> Close above $103K.
                     </div>
                 </div>
                 
                 <div class="chart-container">
-                    <div style="font-weight: 600; margin-bottom: 10px;">Weekly: Descending M (NEUTRAL)</div>
-                    <img src="ttc_weekly.png" alt="TTC Weekly">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Weekly: Descending M - REAL DATA</div>
+                    <img src="ttc_weekly_real.png" alt="TTC Weekly Real">
                     <div class="commentary">
-                        <strong>Formation:</strong> Descending M pattern with lower highs. <strong>Action:</strong> Wait for breakout above $70K (bullish) or below $62K (bearish).
+                        <strong>Formation:</strong> Lower highs pattern. <strong>Action:</strong> Wait for breakout above $100K (bullish) or below $59K (bearish).
                     </div>
                 </div>
                 
                 <div class="chart-container">
-                    <div style="font-weight: 600; margin-bottom: 10px;">Daily: Downtrend Channel (BEARISH)</div>
-                    <img src="ttc_daily.png" alt="TTC Daily">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Daily: Downtrend Channel - REAL DATA</div>
+                    <img src="ttc_daily_real.png" alt="TTC Daily Real">
                     <div class="commentary">
-                        <strong>Formation:</strong> Clear downtrend channel. Price below $70K resistance. <strong>Strategy:</strong> Sell rallies until $70K reclaimed.
+                        <strong>Formation:</strong> Real downtrend channel $61K-$63K. <strong>Strategy:</strong> Sell rallies until $70K reclaimed.
                     </div>
                 </div>
                 
                 <div class="chart-container">
-                    <div style="font-weight: 600; margin-bottom: 10px;">4H: Consolidation Range (NEUTRAL)</div>
-                    <img src="ttc_4h.png" alt="TTC 4H">
+                    <div style="font-weight: 600; margin-bottom: 10px;">4H: Consolidation Range - REAL DATA</div>
+                    <img src="ttc_4h_real.png" alt="TTC 4H Real">
                     <div class="commentary">
-                        <strong>Formation:</strong> Range-bound between $63K-$66K. <strong>Action:</strong> WAIT — No trade zone until breakout confirmed.
+                        <strong>Formation:</strong> Real range $62.5K-$71K. <strong>Status:</strong> IN RANGE - WAIT for breakout.
                     </div>
                 </div>
             </div>
