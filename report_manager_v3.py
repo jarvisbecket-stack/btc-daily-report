@@ -187,6 +187,26 @@ class ReportManager:
     def generate_html(self):
         """Generate complete HTML with all 12 sections and live price"""
         
+        # Load real X sentiment data
+        x_sentiment = {"bullish": 42, "neutral": 31, "bearish": 27}
+        reddit_sentiment = {"bullish": 26, "neutral": 48, "bearish": 26}
+        
+        try:
+            with open('/root/.openclaw/workspace/hybrid_x_sentiment.json', 'r') as f:
+                data = json.load(f)
+                x_sentiment = data.get('overall', x_sentiment)
+                print(f"✅ Loaded real X sentiment: {x_sentiment}")
+        except Exception as e:
+            print(f"⚠️ Using default X sentiment: {e}")
+        
+        try:
+            with open('/root/.openclaw/workspace/reddit_sentiment.json', 'r') as f:
+                data = json.load(f)
+                reddit_sentiment = data.get('overall', reddit_sentiment)
+                print(f"✅ Loaded real Reddit sentiment: {reddit_sentiment}")
+        except Exception as e:
+            print(f"⚠️ Using default Reddit sentiment: {e}")
+        
         html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -347,15 +367,15 @@ class ReportManager:
                 <div class="card-title">🐦 X/Twitter Sentiment (Last 24H)</div>
                 
                 <div class="sentiment-bar">
-                    <div class="sentiment-bullish" style="width: 42%;"></div>
-                    <div class="sentiment-neutral" style="width: 31%;"></div>
-                    <div class="sentiment-bearish" style="width: 27%;"></div>
+                    <div class="sentiment-bullish" style="width: {x_sentiment['bullish']}%"></div>
+                    <div class="sentiment-neutral" style="width: {x_sentiment['neutral']}%"></div>
+                    <div class="sentiment-bearish" style="width: {x_sentiment['bearish']}%"></div>
                 </div>
                 
                 <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 10px;">
-                    <span>🟢 Bullish: 42%</span>
-                    <span>🟡 Neutral: 31%</span>
-                    <span>🔴 Bearish: 27%</span>
+                    <span>🟢 Bullish: {x_sentiment['bullish']}</span>
+                    <span>🟡 Neutral: {x_sentiment['neutral']}</span>
+                    <span>🔴 Bearish: {x_sentiment['bearish']}</span>
                 </div>
                 <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #64748b;">
                     Based on 15,200 posts analyzed
