@@ -294,12 +294,37 @@ class ReportManager:
             <!-- Section 4: TTC Method Analysis -->
             <div class="card">
                 <div class="card-title">📐 TTC Method Analysis</div>
-                <div class="metric"><span>Monthly</span><span style="color: #ef4444; font-weight: 600;">BEARISH (M-Formation)</span></div>
-                <div class="metric"><span>Weekly</span><span style="color: #f59e0b; font-weight: 600;">NEUTRAL (Descending M)</span></div>
-                <div class="metric"><span>Daily</span><span style="color: #ef4444; font-weight: 600;">BEARISH (Downtrend)</span></div>
-                <div class="metric"><span>4H</span><span style="color: #f59e0b; font-weight: 600;">NEUTRAL (Consolidation)</span></div>
-                <div class="commentary">
-                    <strong>TTC Commentary:</strong> Monthly timeframe shows classic M-formation (bearish reversal pattern). Weekly is in descending M pattern with no clear breakout. Daily remains in downtrend below $70K resistance. 4H showing consolidation between $63K-$66K. Multi-timeframe confluence suggests patience — wait for daily close above $70K or below $62K for directional entry.
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Monthly: M-Formation (BEARISH)</div>
+                    <img src="ttc_monthly.png" alt="TTC Monthly">
+                    <div class="commentary">
+                        <strong>Formation:</strong> Classic M-formation bearish reversal pattern. Two peaks with lower high on second peak. <strong>Target:</strong> $58K | <strong>Invalidation:</strong> Close above $75K.
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Weekly: Descending M (NEUTRAL)</div>
+                    <img src="ttc_weekly.png" alt="TTC Weekly">
+                    <div class="commentary">
+                        <strong>Formation:</strong> Descending M pattern with lower highs. <strong>Action:</strong> Wait for breakout above $70K (bullish) or below $62K (bearish).
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Daily: Downtrend Channel (BEARISH)</div>
+                    <img src="ttc_daily.png" alt="TTC Daily">
+                    <div class="commentary">
+                        <strong>Formation:</strong> Clear downtrend channel. Price below $70K resistance. <strong>Strategy:</strong> Sell rallies until $70K reclaimed.
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div style="font-weight: 600; margin-bottom: 10px;">4H: Consolidation Range (NEUTRAL)</div>
+                    <img src="ttc_4h.png" alt="TTC 4H">
+                    <div class="commentary">
+                        <strong>Formation:</strong> Range-bound between $63K-$66K. <strong>Action:</strong> WAIT — No trade zone until breakout confirmed.
+                    </div>
                 </div>
             </div>
             
