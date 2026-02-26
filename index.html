@@ -3,91 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Bitcoin Daily Forecast - 2026-02-26</title>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --accent: #6366f1; --bull: #10b981; --bear: #ef4444; }
-        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header { background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 40px; border-radius: 16px; text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 2.5rem; }
-        .header .date { margin-top: 10px; opacity: 0.9; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 12px; padding: 24px; border: 1px solid #334155; }
-        .card-title { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
-        .price { font-size: 56px; font-weight: 700; text-align: center; }
-        .change { font-size: 28px; text-align: center; margin-top: 8px; }
-        .positive { color: var(--bull); } .negative { color: var(--bear); }
-        .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-        .metric { background: var(--bg); padding: 12px; border-radius: 8px; }
-        .metric-label { font-size: 12px; color: var(--muted); }
-        .metric-value { font-size: 18px; font-weight: 600; margin-top: 4px; }
-        .score { font-size: 72px; font-weight: 800; text-align: center; color: #f59e0b; }
-        .signal { font-size: 24px; text-align: center; color: #f59e0b; margin-top: 8px; }
-        .sentiment-bar { display: flex; height: 40px; border-radius: 20px; overflow: hidden; margin: 16px 0; }
-        .bullish { background: var(--bull); display: flex; align-items: center; justify-content: center; font-weight: 600; width: 50%; }
-        .bearish { background: var(--bear); display: flex; align-items: center; justify-content: center; font-weight: 600; width: 50%; }
-        .commentary { background: var(--bg); padding: 16px; border-radius: 8px; border-left: 4px solid var(--accent); margin-top: 16px; font-size: 14px; line-height: 1.6; }
-        .footer { text-align: center; padding: 30px; color: var(--muted); font-size: 12px; margin-top: 30px; border-top: 1px solid #334155; }
-        @media (max-width: 768px) { .price { font-size: 40px; } }
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --bg-hover: #252535;
+            --text-primary: #e8e8f0;
+            --text-secondary: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --border-color: #2a2a3a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .logo { font-size: 3rem; margin-bottom: 0.5rem; }
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: var(--text-secondary); margin-top: 0.5rem; }
+        .report-date {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border-radius: 20px;
+            color: var(--accent-primary);
+        }
+        nav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            overflow-x: auto;
+        }
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .nav-link:hover { background: var(--bg-hover); color: var(--text-primary); }
+        main { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+        section { margin-bottom: 3rem; }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .section-icon { font-size: 1.5rem; }
+        h2 { font-size: 1.5rem; font-weight: 600; }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        @media (max-width: 768px) { .card-grid { grid-template-columns: 1fr; } }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.2s;
+        }
+        .card:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+        .card-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+        .price { font-size: 3rem; font-weight: 700; text-align: center; }
+        .change { font-size: 1.5rem; text-align: center; margin-top: 0.5rem; }
+        .positive { color: var(--accent-success); }
+        .negative { color: var(--accent-danger); }
+        .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .metric { background: var(--bg-secondary); padding: 1rem; border-radius: 8px; }
+        .metric-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+        .metric-value { font-size: 1.25rem; font-weight: 600; margin-top: 0.25rem; }
+        .score-box { text-align: center; padding: 2rem; }
+        .score-value { font-size: 5rem; font-weight: 800; }
+        .score-label { font-size: 1.5rem; font-weight: 600; margin-top: 0.5rem; text-transform: uppercase; }
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .indicator {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .indicator-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .indicator-value { font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem; }
+        .commentary {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-primary);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .level {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .level-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .level-value { font-size: 1.25rem; font-weight: 600; margin-top: 0.25rem; }
+        .resistance { border-top: 3px solid var(--accent-danger); }
+        .pivot { border-top: 3px solid var(--accent-warning); }
+        .support { border-top: 3px solid var(--accent-success); }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📊 Bitcoin Daily Forecast</h1>
-            <div class="date">2026-02-26 CST | Real Market Data | Auto-refresh: 60s</div>
+    <header>
+        <div class="logo">📊</div>
+        <h1>Bitcoin Daily Forecast</h1>
+        <p class="subtitle">Comprehensive Technical Analysis with Real Market Data</p>
+        <div class="report-date">📅 2026-02-26 | 17:51:46 CST</div>
+    </header>
+    
+    <nav>
+        <div class="nav-content">
+            <a href="#overview" class="nav-link">Overview</a>
+            <a href="#price-action" class="nav-link">Price Action</a>
+            <a href="#indicators" class="nav-link">Indicators</a>
+            <a href="#levels" class="nav-link">Levels</a>
+            <a href="#commentary" class="nav-link">Commentary</a>
         </div>
+    </nav>
+    
+    <main>
+        <!-- Overview Section -->
+        <section id="overview">
+            <div class="section-header">
+                <span class="section-icon">📈</span>
+                <h2>Market Overview</h2>
+            </div>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">Current Price</div>
+                    <div class="price">$67,425.30</div>
+                    <div class="change negative">-0.64%</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Confluence Score</div>
+                    <div class="score-box">
+                        <div class="score-value" style="color: #f59e0b">50</div>
+                        <div class="score-label" style="color: #f59e0b">NEUTRAL</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">24h Range</div>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">High</div>
+                            <div class="metric-value">$68,860.00</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Low</div>
+                            <div class="metric-value">$66,500.00</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Volume BTC</div>
+                            <div class="metric-value">0.02M</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Volume USD</div>
+                            <div class="metric-value">$1.41B</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-        <div class="grid">
-            <div class="card">
-                <div class="card-title">💰 Price Action</div>
-                <div class="price">$67,226.92</div>
-                <div class="change negative">-2.71%</div>
-                <div class="metrics">
-                    <div class="metric"><div class="metric-label">24h High</div><div class="metric-value">$69,988.83</div></div>
-                    <div class="metric"><div class="metric-label">24h Low</div><div class="metric-value">$66,500.00</div></div>
-                    <div class="metric"><div class="metric-label">Volume (BTC)</div><div class="metric-value">0.02M</div></div>
-                    <div class="metric"><div class="metric-label">Volume (USD)</div><div class="metric-value">$1.59B</div></div>
-                </div>
+        <!-- Price Action Section -->
+        <section id="price-action">
+            <div class="section-header">
+                <span class="section-icon">📉</span>
+                <h2>Price Action (90-Day)</h2>
             </div>
             
-            <div class="card">
-                <div class="card-title">🎯 Confluence Score</div>
-                <div class="score">50</div>
-                <div class="signal">NEUTRAL</div>
-                <div class="metrics">
-                    <div class="metric"><div class="metric-label">RSI (14)</div><div class="metric-value">52.8</div></div>
-                    <div class="metric"><div class="metric-label">EMA 9/21</div><div class="metric-value">$67,019 / $69,430</div></div>
-                </div>
-            </div>
+            <div class="chart-container">
+                <div class="chart-title">📊 Price Chart with EMA 9/21</div>
+                
+        <svg viewBox="0 0 800 300" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="priceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
+                </linearGradient>
+            </defs>
             
-            <div class="card">
-                <div class="card-title">🐦 X/Twitter Sentiment</div>
-                <div class="sentiment-bar">
-                    <div class="bullish">🐂 50%</div>
-                    <div class="bearish">🐻 50%</div>
-                </div>
-                <div class="commentary">
-                    Analyzed 0 recent tweets. Bullish: 50%, Bearish: 50%.
-                </div>
-            </div>
+            <!-- Grid lines -->
+            <g stroke="#2a2a3a" stroke-width="1">
+                <line x1="40" y1="40" x2="760" y2="40" />
+                <line x1="40" y1="150.0" x2="760" y2="150.0" />
+                <line x1="40" y1="260" x2="760" y2="260" />
+            </g>
             
-            <div class="card">
-                <div class="card-title">📊 Market Commentary</div>
-                <div class="commentary">
-                    Bitcoin is trading at $67,226.92 with a -2.71% change over 24h. 
-                    Confluence score of 50/100 suggests a NEUTRAL bias. 
-                    RSI at 52.8 indicates neutral conditions.
-                    Social sentiment is 50% bullish based on X analysis.
-                </div>
-            </div>
-        </div>
+            <!-- Price area fill -->
+            <path d="M40.0,79.74084892979008 L48.08988764044944,82.60017061317339 L56.17977528089888,108.92882070106506 L64.26966292134831,76.66826077965047 L72.35955056179776,62.760249715644704 L80.4494382022472,71.497001344225 L88.53932584269663,89.25641091924314 L96.62921348314606,89.85905025333474 L104.71910112359551,82.37197549374417 L112.80898876404494,80.8272153862062 L120.89887640449439,67.61464688243197 L128.98876404494382,71.90214300485991 L137.07865168539325,68.68369351669938 L145.1685393258427,83.19201737152312 L153.25842696629212,83.37562041153967 L161.34831460674158,96.73928497570054 L169.43820224719101,107.98482576775925 L177.52808988764045,98.73461896391274 L185.61797752808988,109.20535621962566 L193.70786516853934,113.90245321062969 L201.79775280898878,96.96696308551336 L209.8876404494382,95.51959466446078 L217.97752808988764,93.59399234825767 L226.06741573033707,93.84002429945201 L234.1573033707865,101.1737410815841 L242.24719101123597,99.98817340502535 L250.3370786516854,102.85874004756485 L258.4269662921348,101.92624857822355 L266.51685393258424,98.6467919553304 L274.6067415730337,98.1575716058318 L282.69662921348316,102.78209337193667 L290.7865168539326,94.71441681315267 L298.87640449438203,100.12537483197187 L306.96629213483146,92.42955743976842 L315.0561797752809,84.95818684727533 L323.14606741573033,80.8681237721022 L331.23595505617976,75.0406498810878 L339.3258426966292,59.982874056457405 L347.4157303370787,60.70500723813461 L355.5056179775281,76.11066590838587 L363.59550561797755,77.8178962878709 L371.685393258427,80.78236480198532 L379.7752808988764,81.66502946954813 L387.86516853932585,78.37587891634786 L395.9550561797753,76.54986557749976 L404.0449438202247,49.93808809843861 L412.13483146067415,40.0 L420.2247191011236,48.705020163374996 L428.314606741573,49.05309688760207 L436.4044943820225,51.658631475545405 L444.49438202247194,61.188605108054986 L452.5842696629214,67.92356012821838 L460.6741573033708,95.08815013959256 L468.76404494382024,88.45058680591461 L476.85393258426967,87.7723994416296 L484.9438202247191,87.5100816875194 L493.03370786516854,89.93304725467894 L501.12359550561797,106.44491262537483 L509.2134831460674,95.60890807569018 L517.3033707865169,89.77367904043015 L525.3932584269663,89.45061265639535 L533.4831460674158,119.50069796298209 L541.5730337078652,122.01898717816147 L549.6629213483146,157.68877313618034 L557.7528089887641,169.14622324475232 L565.8426966292135,157.70480043428807 L573.9325842696629,176.8884422500258 L582.0224719101124,193.71956105883567 L590.1123595505618,260.0 L598.2022471910112,210.4291179815945 L606.2921348314607,218.7715851514838 L614.3820224719101,212.04399751835382 L622.4719101123595,213.2872763933409 L630.561797752809,221.66742063902393 L638.6516853932584,233.03368317650705 L646.7415730337079,238.27066745941477 L654.8314606741574,221.58553924102984 L662.9213483146068,215.32332488884296 L671.0112359550562,221.72371006100713 L679.1011235955057,221.33692224175374 L687.1910112359551,230.31292007031328 L695.2808988764045,237.05033088615448 L703.370786516854,233.54287302243824 L711.4606741573034,226.97504136076935 L719.5505617977528,227.2599136593941 L727.6404494382023,229.40892875607489 L735.7303370786517,248.71523110329855 L743.8202247191011,252.57903784510393 L751.9101123595506,227.18165132871476 L760.0,230.81842622272774 L760,260 L40,260 Z" fill="url(#priceGradient)" />
+            
+            <!-- Price line -->
+            <path d="M40.0,79.74084892979008 L48.08988764044944,82.60017061317339 L56.17977528089888,108.92882070106506 L64.26966292134831,76.66826077965047 L72.35955056179776,62.760249715644704 L80.4494382022472,71.497001344225 L88.53932584269663,89.25641091924314 L96.62921348314606,89.85905025333474 L104.71910112359551,82.37197549374417 L112.80898876404494,80.8272153862062 L120.89887640449439,67.61464688243197 L128.98876404494382,71.90214300485991 L137.07865168539325,68.68369351669938 L145.1685393258427,83.19201737152312 L153.25842696629212,83.37562041153967 L161.34831460674158,96.73928497570054 L169.43820224719101,107.98482576775925 L177.52808988764045,98.73461896391274 L185.61797752808988,109.20535621962566 L193.70786516853934,113.90245321062969 L201.79775280898878,96.96696308551336 L209.8876404494382,95.51959466446078 L217.97752808988764,93.59399234825767 L226.06741573033707,93.84002429945201 L234.1573033707865,101.1737410815841 L242.24719101123597,99.98817340502535 L250.3370786516854,102.85874004756485 L258.4269662921348,101.92624857822355 L266.51685393258424,98.6467919553304 L274.6067415730337,98.1575716058318 L282.69662921348316,102.78209337193667 L290.7865168539326,94.71441681315267 L298.87640449438203,100.12537483197187 L306.96629213483146,92.42955743976842 L315.0561797752809,84.95818684727533 L323.14606741573033,80.8681237721022 L331.23595505617976,75.0406498810878 L339.3258426966292,59.982874056457405 L347.4157303370787,60.70500723813461 L355.5056179775281,76.11066590838587 L363.59550561797755,77.8178962878709 L371.685393258427,80.78236480198532 L379.7752808988764,81.66502946954813 L387.86516853932585,78.37587891634786 L395.9550561797753,76.54986557749976 L404.0449438202247,49.93808809843861 L412.13483146067415,40.0 L420.2247191011236,48.705020163374996 L428.314606741573,49.05309688760207 L436.4044943820225,51.658631475545405 L444.49438202247194,61.188605108054986 L452.5842696629214,67.92356012821838 L460.6741573033708,95.08815013959256 L468.76404494382024,88.45058680591461 L476.85393258426967,87.7723994416296 L484.9438202247191,87.5100816875194 L493.03370786516854,89.93304725467894 L501.12359550561797,106.44491262537483 L509.2134831460674,95.60890807569018 L517.3033707865169,89.77367904043015 L525.3932584269663,89.45061265639535 L533.4831460674158,119.50069796298209 L541.5730337078652,122.01898717816147 L549.6629213483146,157.68877313618034 L557.7528089887641,169.14622324475232 L565.8426966292135,157.70480043428807 L573.9325842696629,176.8884422500258 L582.0224719101124,193.71956105883567 L590.1123595505618,260.0 L598.2022471910112,210.4291179815945 L606.2921348314607,218.7715851514838 L614.3820224719101,212.04399751835382 L622.4719101123595,213.2872763933409 L630.561797752809,221.66742063902393 L638.6516853932584,233.03368317650705 L646.7415730337079,238.27066745941477 L654.8314606741574,221.58553924102984 L662.9213483146068,215.32332488884296 L671.0112359550562,221.72371006100713 L679.1011235955057,221.33692224175374 L687.1910112359551,230.31292007031328 L695.2808988764045,237.05033088615448 L703.370786516854,233.54287302243824 L711.4606741573034,226.97504136076935 L719.5505617977528,227.2599136593941 L727.6404494382023,229.40892875607489 L735.7303370786517,248.71523110329855 L743.8202247191011,252.57903784510393 L751.9101123595506,227.18165132871476 L760.0,230.81842622272774" fill="none" stroke="#6366f1" stroke-width="2" />
+            
+            <!-- EMA 9 -->
+            <path d="M40.0,79.74084892979008 L48.08988764044944,80.31271326646672 L56.17977528089888,86.03593475338633 L64.26966292134831,84.16239995863916 L72.35955056179776,79.88196991004023 L80.4494382022472,78.20497619687714 L88.53932584269663,80.41526314135027 L96.62921348314606,82.30402056374717 L104.71910112359551,82.31761154974649 L112.80898876404494,82.0195323170384 L120.89887640449439,79.13855523011719 L128.98876404494382,77.69127278506565 L137.07865168539325,75.88975693139233 L145.1685393258427,77.35020901941854 L153.25842696629212,78.55529129784267 L161.34831460674158,82.19209003341427 L169.43820224719101,87.35063718028329 L177.52808988764045,89.62743353700924 L185.61797752808988,93.54301807353247 L193.70786516853934,97.61490510095189 L201.79775280898878,97.48531669786408 L209.8876404494382,97.09217229118343 L217.97752808988764,96.3925363025983 L226.06741573033707,95.88203390196904 L234.1573033707865,96.94037533789205 L242.24719101123597,97.54993495131868 L250.3370786516854,98.6116959705679 L258.4269662921348,99.274606492099 L266.51685393258424,99.14904358474527 L274.6067415730337,98.95074918896253 L282.69662921348316,99.71701802555734 L290.7865168539326,98.71649778307639 L298.87640449438203,98.99827319285552 L306.96629213483146,97.68453004223804 L315.0561797752809,95.13926140324548 L323.14606741573033,92.28503387701679 L331.23595505617976,88.83615707783105 L339.3258426966292,83.06550047355628 L347.4157303370787,78.59340182647199 L355.5056179775281,78.09685464285477 L363.59550561797755,78.04106297185788 L371.685393258427,78.58932333788337 L379.7752808988764,79.20446456421632 L387.86516853932585,79.03874743464263 L395.9550561797753,78.54097106321399 L404.0449438202247,72.82039447025886 L412.13483146067415,66.25631557620707 L420.2247191011236,62.74605649364062 L428.314606741573,60.007464572432895 L436.4044943820225,58.33769795305537 L444.49438202247194,58.90787938405526 L452.5842696629214,60.71101553288793 L460.6741573033708,67.58644245422883 L468.76404494382024,71.75927132456596 L476.85393258426967,74.96189694797863 L484.9438202247191,77.47153389588681 L493.03370786516854,79.96383656764519 L501.12359550561797,85.26005177919109 L509.2134831460674,87.32982303849093 L517.3033707865169,87.8185942388788 L525.3932584269663,88.14499792238206 L533.4831460674158,94.416137930502 L541.5730337078652,99.93670778003386 L549.6629213483146,111.48712085126309 L557.7528089887641,123.01894132996085 L565.8426966292135,129.95611315082635 L573.9325842696629,139.34257897066624 L582.0224719101124,150.21797538830006 L590.1123595505618,172.17438031063995 L598.2022471910112,179.82532784483087 L606.2921348314607,187.61457930616146 L614.3820224719101,192.50046294859993 L622.4719101123595,196.65782563754811 L630.561797752809,201.65974463784323 L638.6516853932584,207.93453234557595 L646.7415730337079,214.00175936834367 L654.8314606741574,215.5185153428809 L662.9213483146068,215.47947725207334 L671.0112359550562,216.72832381386004 L679.1011235955057,217.65004349943877 L687.1910112359551,220.1826188136137 L695.2808988764045,223.5561612281218 L703.370786516854,225.5535035869851 L711.4606741573034,225.83781114174184 L719.5505617977528,226.1222316452723 L727.6404494382023,226.77957106743278 L735.7303370786517,231.16670307460592 L743.8202247191011,235.44917002870545 L751.9101123595506,233.79566628870728 L760.0,233.20021827551133" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,5" />
+            
+            <!-- EMA 21 -->
+            <path d="M40.0,79.74084892979008 L48.08988764044944,80.0007872646431 L56.17977528089888,82.63060848613608 L64.26966292134831,82.08857687645559 L72.35955056179776,80.33145622547283 L80.4494382022472,79.52832396354123 L88.53932584269663,80.41269550496875 L96.62921348314606,81.27145502754752 L104.71910112359551,81.37150234265636 L112.80898876404494,81.32202171025179 L120.89887640449439,80.0758967259045 L128.98876404494382,79.33282820580956 L137.07865168539325,78.36472505225419 L145.1685393258427,78.80356980855137 L153.25842696629212,79.21921077245943 L161.34831460674158,80.81194479093588 L169.43820224719101,83.2822066979198 L177.52808988764045,84.68697144937377 L185.61797752808988,86.91591551939669 L193.70786516853934,89.36923712769061 L201.79775280898878,90.05993948749264 L209.8876404494382,90.55627177630794 L217.97752808988764,90.83242819193978 L226.06741573033707,91.10584601989544 L234.1573033707865,92.02110920732164 L242.24719101123597,92.74538777074932 L250.3370786516854,93.66478343227794 L258.4269662921348,94.41582571827303 L266.51685393258424,94.80045901255096 L274.6067415730337,95.10565106648559 L282.69662921348316,95.80350945789027 L290.7865168539326,95.70450103564141 L298.87640449438203,96.10639865348963 L306.96629213483146,95.77214036133313 L315.0561797752809,94.78905367823694 L323.14606741573033,93.523514595861 L331.23595505617976,91.84325416724533 L339.3258426966292,88.9468559753555 L347.4157303370787,86.37941518106268 L355.5056179775281,85.44589251991025 L363.59550561797755,84.75243831699757 L371.685393258427,84.39152254290556 L379.7752808988764,84.14365953623673 L387.86516853932585,83.6193158435195 L395.9550561797753,82.97663854660865 L404.0449438202247,79.97313396041139 L412.13483146067415,76.33921269128311 L420.2247191011236,73.82701337056415 L428.314606741573,71.57483914484027 L436.4044943820225,69.764274811268 L444.49438202247194,68.98466847461228 L452.5842696629214,68.8882040794856 L460.6741573033708,71.27001735767709 L468.76404494382024,72.83188730751687 L476.85393258426967,74.19011568334534 L484.9438202247191,75.40102168372482 L493.03370786516854,76.7221149174479 L501.12359550561797,79.42418743635034 L509.2134831460674,80.8955256762903 L517.3033707865169,81.70263052757576 L525.3932584269663,82.40699253928665 L533.4831460674158,85.77914757780448 L541.5730337078652,89.0736784505643 L549.6629213483146,95.31141433107484 L557.7528089887641,102.02366968686371 L565.8426966292135,107.08559066390234 L573.9325842696629,113.43130444445902 L582.0224719101124,120.73023686394782 L590.1123595505618,133.39112442177077 L598.2022471910112,140.3945783817548 L606.2921348314607,147.51976081536654 L614.3820224719101,153.38560051563815 L622.4719101123595,158.83120741361108 L630.561797752809,164.54359043410318 L638.6516853932584,170.76996250159448 L646.7415730337079,176.90639022503277 L654.8314606741574,180.9681310446689 L662.9213483146068,184.0913304850484 L671.0112359550562,187.5124559010446 L679.1011235955057,190.58740738656365 L687.1910112359551,194.19881763054087 L695.2808988764045,198.0944097446876 L703.370786516854,201.31699731539214 L711.4606741573034,203.64954677406283 L719.5505617977528,205.7959437636384 L727.6404494382023,207.9425787629508 L735.7303370786517,211.64918352116425 L743.8202247191011,215.37007936879516 L751.9101123595506,216.44385863787878 L760.0,217.75063750922874" fill="none" stroke="#10b981" stroke-width="1.5" />
+            
+            <!-- Labels -->
+            <text x="40" y="30" fill="#94a3b8" font-size="12">$96,952</text>
+            <text x="40" y="275" fill="#94a3b8" font-size="12">$62,910</text>
+            
+            <!-- Legend -->
+            <g transform="translate(600, 20)">
+                <line x1="0" y1="0" x2="20" y2="0" stroke="#6366f1" stroke-width="2" />
+                <text x="25" y="5" fill="#e2e8f0" font-size="12">Price</text>
+                <line x1="0" y1="20" x2="20" y2="20" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,5" />
+                <text x="25" y="25" fill="#e2e8f0" font-size="12">EMA 9</text>
+                <line x1="0" y1="40" x2="20" y2="40" stroke="#10b981" stroke-width="1.5" />
+                <text x="25" y="45" fill="#e2e8f0" font-size="12">EMA 21</text>
+            </g>
+        </svg>
         
-        <div class="footer">
-            <p>Generated by Jarvis Becket for Ricardo Davila</p>
-            <p>Data: Binance API, X API | Not Financial Advice</p>
-            <p>Report Time: 2026-02-26 15:12:59 CST</p>
-        </div>
-    </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">📈 RSI (14)</div>
+                
+        <svg viewBox="0 0 600 200" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background zones -->
+            <rect x="30" y="30" width="540" height="42.0" fill="rgba(16,185,129,0.1)" />
+            <rect x="30" y="72.0" width="540" height="56.0" fill="rgba(245,158,11,0.05)" />
+            <rect x="30" y="128.0" width="540" height="42.0" fill="rgba(239,68,68,0.1)" />
+            
+            <!-- Overbought/oversold lines -->
+            <line x1="30" y1="72.0" x2="570" y2="72.0" stroke="#ef4444" stroke-width="1" stroke-dasharray="5,5" />
+            <line x1="30" y1="128.0" x2="570" y2="128.0" stroke="#10b981" stroke-width="1" stroke-dasharray="5,5" />
+            
+            <!-- RSI line -->
+            <path d="M30.0,101.73204988044621 L37.2,106.28796485429518 L44.4,99.53569295949248 L51.6,112.94664736866054 L58.8,128.05836765768046 L66.0,126.5433240273988 L73.2,104.86217520294718 L80.4,103.54250938461102 L87.6,107.39048326658369 L94.8,108.67585206760774 L102.0,123.70152056545214 L109.2,120.47696551389903 L116.4,125.0069548639799 L123.60000000000001,115.97555330217799 L130.8,112.54916182129378 L138.0,101.37299554376597 L145.2,94.45574761100356 L152.4,95.63736496038098 L159.6,89.30792311706382 L166.8,75.92897631129298 L174.0,84.13347450649367 L181.20000000000002,81.56155126880905 L188.4,78.1816809888553 L195.6,68.11801894534773 L202.8,58.17190880107948 L210.0,79.60312684593767 L217.20000000000002,78.30132497483974 L224.4,82.12772001236124 L231.6,85.21801499749668 L238.8,83.36014152738375 L246.0,77.16623686175183 L253.20000000000002,68.32799040296956 L260.4,59.331442438230596 L267.6,70.71052472086748 L274.8,74.18905313485774 L282.0,78.6772162989122 L289.2,90.26399821942013 L296.40000000000003,106.09010066650762 L303.6,120.44647469841286 L310.8,107.92871282195175 L318.0,106.45701110878225 L325.2,104.47602574387086 L332.40000000000003,105.42143701206872 L339.6,116.3767516395319 L346.8,110.34316486062372 L354.0,125.7691692088648 L361.2,135.10858172879966 L368.40000000000003,141.31799494587565 L375.6,141.82774620254875 L382.8,147.8306152894032 L390.0,148.10260973228864 L397.2,138.84019866081684 L404.40000000000003,137.2235556371523 L411.6,144.92600872654947 L418.8,152.5029994891792 L426.0,130.84739275352717 L433.2,131.66102273258372 L440.40000000000003,126.87317387655524 L447.6,131.0292634833307 L454.8,134.44733097690047 L462.0,136.0163122405258 L469.2,132.69972820112255 L476.40000000000003,125.96582631313217 L483.6,116.87977546622396 L490.8,115.73153790290213 L498.0,119.98340979940996 L505.2,117.5829569365633 L512.4000000000001,114.97144237004883 L519.6,86.7546895979552 L526.8,111.96256323619818 L534.0,106.69408863516071 L541.2,114.43918668904206 L548.4,124.2546168889204 L555.6,122.14062299552587 L562.8000000000001,96.33467757324415 L570.0,95.26461155243507" fill="none" stroke="#8b5cf6" stroke-width="2" />
+            
+            <!-- Labels -->
+            <text x="5" y="35" fill="#94a3b8" font-size="10">70</text>
+            <text x="5" y="105.0" fill="#94a3b8" font-size="10">50</text>
+            <text x="5" y="170" fill="#94a3b8" font-size="10">30</text>
+            
+            <!-- Current value -->
+            <text x="300.0" y="20" fill="#8b5cf6" font-size="14" font-weight="bold" text-anchor="middle">RSI: 53.4</text>
+        </svg>
+        
+            </div>
+        </section>
+        
+        <!-- Technical Indicators Section -->
+        <section id="indicators">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2>Technical Indicators</h2>
+            </div>
+            
+            <div class="indicator-grid">
+                <div class="indicator">
+                    <div class="indicator-label">RSI (14)</div>
+                    <div class="indicator-value" style="color: #e8e8f0">53.4</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-label">EMA 9</div>
+                    <div class="indicator-value">$67,057</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-label">EMA 21</div>
+                    <div class="indicator-value">$69,447</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-label">EMA 50</div>
+                    <div class="indicator-value">$75,876</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-label">MACD</div>
+                    <div class="indicator-value" style="color: #ef4444">-3275.44</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-label">VWAP</div>
+                    <div class="indicator-value">$80,449</div>
+                </div>
+            </div>
+            
+            <div class="chart-container" style="margin-top: 1.5rem;">
+                <div class="chart-title">📊 Bollinger Bands</div>
+                <div class="indicator-grid">
+                    <div class="indicator">
+                        <div class="indicator-label">Upper Band</div>
+                        <div class="indicator-value">$71,083</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">Middle (SMA 20)</div>
+                        <div class="indicator-value">$67,855</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">Lower Band</div>
+                        <div class="indicator-value">$64,626</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Key Levels Section -->
+        <section id="levels">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2>Key Levels (20-Day)</h2>
+            </div>
+            
+            <div class="levels-grid">
+                <div class="level resistance">
+                    <div class="level-label">Resistance</div>
+                    <div class="level-value">$72,271</div>
+                </div>
+                <div class="level pivot">
+                    <div class="level-label">Current</div>
+                    <div class="level-value">$67,425</div>
+                </div>
+                <div class="level support">
+                    <div class="level-label">Support</div>
+                    <div class="level-value">$62,510</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Commentary Section -->
+        <section id="commentary">
+            <div class="section-header">
+                <span class="section-icon">💡</span>
+                <h2>Market Commentary</h2>
+            </div>
+            
+            <div class="commentary">
+                <p><strong>Current Market Status:</strong> Bitcoin is trading at $67,425.30 with a -0.64% change over 24 hours. The confluence score of 50/100 indicates a <strong>NEUTRAL</strong> market bias.</p>
+                
+                <p style="margin-top: 1rem;"><strong>Technical Analysis:</strong> RSI is at 53.4, indicating neutral conditions. Price is below the EMA 21 ($69,447), suggesting bearish short-term momentum.</p>
+                
+                <p style="margin-top: 1rem;"><strong>Key Levels:</strong> Watch for a break above resistance at $72,271 for bullish continuation, or a drop below support at $62,510 for bearish pressure. The Bollinger Bands show contracting volatility.</p>
+                
+                <p style="margin-top: 1rem;"><strong>MACD Analysis:</strong> The MACD is at -3275.44 with signal at -3937.47, indicating a bullish crossover signal.</p>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Generated by Jarvis Becket for Ricardo Davila</p>
+        <p style="margin-top: 0.5rem;">Data: Binance API | Not Financial Advice</p>
+        <p style="margin-top: 0.5rem;">2026-02-26 17:51:46 CST</p>
+    </footer>
 </body>
 </html>
