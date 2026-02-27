@@ -455,5 +455,24 @@
         // Initialize on load
         initChart();
     </script>
-</body>
+<script>
+(function(){
+const P="jarvisb",K="gpa";
+function C(){return sessionStorage.getItem(K)==="t"}
+function S(){sessionStorage.setItem(K,"t")}
+if(!C()){
+document.body.style.display="none";
+const d=document.createElement("div");
+d.innerHTML="<div style='position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;display:flex;align-items:center;justify-content:center;z-index:999999'><div style='text-align:center;padding:2rem;background:#1a1a25;border-radius:12px;border:1px solid #2a2a3a;max-width:400px'><div style='font-size:3rem;margin-bottom:1rem'>🔒</div><h2 style='color:#e8e8f0;margin:0 0 1rem'>Protected</h2><input type='password' id='p' placeholder='Password' style='padding:0.75rem 1rem;border:1px solid #2a2a3a;border-radius:6px;background:#12121a;color:#e8e8f0;width:200px;margin-bottom:0.5rem' onkeypress='if(event.key===\"Enter\")V()'><br><button onclick='V()' style='padding:0.75rem 1.5rem;background:#10b981;color:#0a0a0f;border:none;border-radius:6px;cursor:pointer;font-weight:600'>Access</button><p id='e' style='color:#ef4444;margin-top:0.5rem;display:none'>Wrong password</p></div></div>";
+document.body.appendChild(d);
+document.body.style.display="block";
+window.V=function(){
+const i=document.getElementById("p");
+if(i.value===P){S();d.remove();}
+else{document.getElementById("e").style.display="block";i.value="";}
+};
+setTimeout(()=>document.getElementById("p")?.focus(),100);
+}
+})();
+</script></body>
 </html>
