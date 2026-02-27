@@ -21,12 +21,7 @@ class BitcoinDailyReport:
         self.ohlc_data = []
         self.technicals = {}
         
-    def fetch_youtube_summary(self):
-        """Get a summary of YouTube insights for HTML display"""
-        insights = self.fetch_youtube_insights()
-        if insights:
-            return "<br>".join([f"• {i.get('content', '')[:200]}" for i in insights[:3]])
-        return "YouTube insights currently being processed. Check latest video analyses from crypto experts for additional market context."
+    def fetch_youtube_insights(self):
         """Fetch BTC/crypto insights from YouTube via Supadata"""
         try:
             # Supadata API for YouTube transcripts
@@ -63,6 +58,13 @@ class BitcoinDailyReport:
         except Exception as e:
             print(f"YouTube fetch error: {e}")
             return []
+    
+    def fetch_youtube_summary(self):
+        """Get a summary of YouTube insights for HTML display"""
+        insights = self.fetch_youtube_insights()
+        if insights:
+            return "<br>".join([f"• {i.get('content', '')[:200]}" for i in insights[:3]])
+        return "YouTube insights currently being processed. Check latest video analyses from crypto experts for additional market context."
     
     def fetch_binance_data(self):
         """Fetch comprehensive BTC data"""
